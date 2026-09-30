@@ -1,6 +1,9 @@
 import type { Departure, Stay } from '@/lib/types';
 
-/** Sample inventory so the booking engine has something to show. Edit/delete in Admin → Trips / Stays. */
+/**
+ * Former sample inventory (made-up prices/dates). No longer seeded; the ids are kept so
+ * db.ts can remove these samples from existing databases. Add real trips/stays in Admin.
+ */
 export const seedDepartures: Departure[] = [
   {
     id: 'ziro-music-slow-week-oct26', destSlug: 'ziro-valley-arunachal-pradesh', title: 'Ziro slow week',

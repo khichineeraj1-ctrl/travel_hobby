@@ -3,9 +3,10 @@ import type { SiteSettings } from '@/lib/types';
 export const defaultSettings: SiteSettings = {
   banner: {
     enabled: true,
-    text: 'October is peak season for 14 hidden spots — and most of them are still empty.',
+    // {month}, {monthSlug} and {peakCount} are filled in live, so the numbers are always true
+    text: '{month} is peak season for {peakCount} hidden spots — and most of them are still empty.',
     linkLabel: 'See what’s peaking',
-    linkHref: '/when/october',
+    linkHref: '/when/{monthSlug}',
   },
   hero: {
     title: 'Explore.',

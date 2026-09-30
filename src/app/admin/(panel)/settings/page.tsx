@@ -13,7 +13,7 @@ export default async function Settings({ searchParams }: { searchParams: Promise
       <form action={saveSettings} className="space-y-6 pb-28">
         <Panel title="Announcement banner" sub="The strip under the top navigation.">
           <Check name="bannerEnabled" label="Show banner" defaultChecked={s.banner.enabled} />
-          <Field label="Text"><Text name="bannerText" defaultValue={s.banner.text} /></Field>
+          <Field label="Text" hint="Tokens filled in live: {month}, {monthSlug}, {peakCount} (places at their best this month)."><Text name="bannerText" defaultValue={s.banner.text} /></Field>
           <div className="grid gap-5 sm:grid-cols-2">
             <Field label="Link label"><Text name="bannerLinkLabel" defaultValue={s.banner.linkLabel} /></Field>
             <Field label="Link URL" hint="e.g. /when/october or /vibe/stargazing"><Text name="bannerLinkHref" defaultValue={s.banner.linkHref} /></Field>

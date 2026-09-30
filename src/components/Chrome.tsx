@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import { getSettings } from '@/lib/repo';
+import { getByMonth, getSettings } from '@/lib/repo';
+import { currentMonth, monthLabel, monthName } from '@/lib/months';
 import { LeadForm } from './LeadForm';
 import { Wordmark } from './Wordmark';
 import { SITE_NAME } from '@/lib/seo';
@@ -44,13 +45,16 @@ export function GlobalNav() {
 export function Banner() {
   const { banner } = getSettings();
   if (!banner.enabled || !banner.text) return null;
+  const m = currentMonth();
+  const fill = (s: string) =>
+    s.replaceAll('{month}', monthLabel(m)).replaceAll('{monthSlug}', monthName(m)).replaceAll('{peakCount}', String(getByMonth(m).length));
   return (
     <div className="bg-white">
       <p className="wrap-narrow py-4 text-center text-sm text-ink">
-        {banner.text}{' '}
+        {fill(banner.text)}{' '}
         {banner.linkLabel && (
-          <Link href={banner.linkHref || '/'} className="text-blue-link hover:underline">
-            {banner.linkLabel} <span aria-hidden className="inline-flex h-4 w-4 items-center justify-center rounded-full border border-current text-[11px] leading-none">+</span>
+          <Link href={fill(banner.linkHref || '/')} className="text-blue-link hover:underline">
+            {fill(banner.linkLabel)} <span aria-hidden className="inline-flex h-4 w-4 items-center justify-center rounded-full border border-current text-[11px] leading-none">+</span>
           </Link>
         )}
       </p>

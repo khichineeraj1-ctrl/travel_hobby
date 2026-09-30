@@ -27,13 +27,23 @@ function ensure() {
 
 /** Older db.json files predate the booking engine — add the new collections without touching existing content. */
 function migrate(db: Partial<Db>): Db {
-  if (!db.departures) db.departures = structuredClone(seedDepartures);
-  if (!db.stays) db.stays = structuredClone(seedStays);
+  if (!db.departures) db.departures = [];
+  if (!db.stays) db.stays = [];
   if (!db.bookings) db.bookings = [];
   if (!db.leads) db.leads = [];
   if (!db.roadTrips) db.roadTrips = structuredClone(seedRoadTrips);
   if (!db.events) db.events = structuredClone(seedEvents);
   if (!db.routeCache) db.routeCache = {};
+
+  // one-time clean-ups of launch placeholders (only touch data nobody has booked or edited)
+  const booked = new Set((db.bookings ?? []).flatMap((b) => [b.departureId, b.stayId]).filter(Boolean));
+  const sameAsSeed = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b);
+  db.departures = db.departures.filter((d) => booked.has(d.id) || !seedDepartures.some((s) => s.id === d.id && sameAsSeed(s, d)));
+  db.stays = db.stays.filter((st) => booked.has(st.id) || !seedStays.some((s) => s.id === st.id && sameAsSeed(s, st)));
+  if (db.settings?.banner?.text === 'October is peak season for 14 hidden spots — and most of them are still empty.') {
+    db.settings.banner.text = '{month} is peak season for {peakCount} hidden spots — and most of them are still empty.';
+    if (db.settings.banner.linkHref === '/when/october') db.settings.banner.linkHref = '/when/{monthSlug}';
+  }
   return db as Db;
 }
 
