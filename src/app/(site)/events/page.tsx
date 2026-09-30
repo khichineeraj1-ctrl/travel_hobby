@@ -1,4 +1,5 @@
 import { PageHead } from '@/components/Listing';
+import { GuideEnd } from '@/components/GuideEnd';
 import { guide, guideQuiet } from '@/lib/guide';
 import { EventCard } from '@/components/EventCard';
 import { readDb } from '@/lib/db';
@@ -24,6 +25,7 @@ export default function Events() {
   });
   return (
     <div className="wrap" {...guide('Spot one you like? Tap it — we’ll show how to get there and plan around it.', { label: 'Plan my trip', href: '/plan-my-trip' })}>
+      <GuideEnd text="That’s the calendar. New events land every week — get the ones near you on WhatsApp." label="Get alerts" href="#newsletter" />
       <JsonLd
         data={upcoming.map((e) => ({
           '@context': 'https://schema.org', '@type': 'Event', name: e.name, startDate: e.startDate, endDate: e.endDate,

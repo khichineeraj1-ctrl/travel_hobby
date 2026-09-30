@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { GuideEnd } from '@/components/GuideEnd';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
@@ -126,6 +127,9 @@ export default async function PlacePage({ params }: { params: Promise<{ slug: st
         ]}
       />
 
+      <GuideEnd {...(season === 'skip'
+        ? { text: `Read it all — but ${nowL} isn’t ${d.name}’s month. Here’s what’s peaking right now instead.`, label: `Best in ${nowL}`, href: `/when/${monthName(now)}` }
+        : { text: `You read all of ${d.name} 👀 Sounds like the one? Get a free day-by-day plan on WhatsApp.`, label: 'Plan it free', href: '#enquire' })} />
       <div className="wrap pt-6">
         <Breadcrumbs items={[{ name: 'Places', path: '/places' }, { name: d.state, path: `/state/${d.stateSlug}` }, { name: d.name, path: `/places/${d.slug}` }]} />
       </div>

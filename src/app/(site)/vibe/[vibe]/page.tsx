@@ -21,6 +21,7 @@ export default async function Page({ params }: { params: Promise<{ vibe: string 
       h1={v.seoTitle + '.'}
       intro={v.blurb}
       items={getByVibe(v.id).sort((a, b) => a.crowd - b.crowd)}
+      end={{ text: `All ${v.label.toLowerCase()} places, seen. Want the one that fits your dates and budget?`, label: 'Match my vibe', href: `/plan?vibes=${v.id}` }}
     >
       <CrossLinks title="Other vibes">
         <LinkChips items={getVibes().map((x) => ({ href: `/vibe/${x.id}`, label: `${x.emoji} ${x.label}`, active: x.id === v.id }))} />

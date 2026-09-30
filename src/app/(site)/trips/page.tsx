@@ -1,4 +1,5 @@
 import { PageHead } from '@/components/Listing';
+import { GuideEnd } from '@/components/GuideEnd';
 import { guide, guideQuiet } from '@/lib/guide';
 import { TripCard } from '@/components/BookSection';
 import { readDb } from '@/lib/db';
@@ -25,6 +26,7 @@ export default function Trips() {
 
   return (
     <div className="wrap" {...guide('Dates don’t work? We’ll build a trip around yours instead.', { label: 'Custom trip', href: '/book/custom' })}>
+      <GuideEnd text="No dates that work? Tell us yours — we build small-group trips around real dates." label="Custom trip" href="/book/custom" />
       <JsonLd
         data={trips.map((t) => ({
           '@context': 'https://schema.org',

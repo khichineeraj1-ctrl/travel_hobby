@@ -20,6 +20,7 @@ const RULES = {
   perPage: 3,            // at most 3 messages per page
   perSession: 8,         // and 8 per visit
   busyMs: 15_000,        // stay quiet for 15 s after they click/tap something themselves
+  endShowForMs: 14_000,  // the end-of-page suggestion stays a bit longer (it always fires once, ignoring gaps/caps)
 };
 
 function sectionAt(): { key: string; msg: Msg } | null {
@@ -42,8 +43,9 @@ export function Guide({ ask = false }: { ask?: boolean }) {
   const [msg, setMsg] = useState<Msg | null>(null);
   const [visible, setVisible] = useState(false);
   const [off, setOff] = useState(false);
-  const [typing, setTyping] = useState(false);
   const hovering = useRef(false);
+  const typing = useRef(false);
+  const [isTyping, setTyping] = useState(false);
 
   useEffect(() => {
     try { setOff(sessionStorage.getItem(KEY) === '1'); } catch { /* storage blocked */ }
@@ -63,14 +65,16 @@ export function Guide({ ask = false }: { ask?: boolean }) {
     let shownHere = 0;
     const said = new Set<string>();
     let isVisible = false;
-    let exitSaid = false;
+    let endSaid = false;
+    let showFor = RULES.showForMs;
+    let shownKey = '';
 
     const sessionCount = () => { try { return Number(sessionStorage.getItem(SESSION_COUNT) || 0); } catch { return 0; } };
     const bump = () => { try { sessionStorage.setItem(SESSION_COUNT, String(sessionCount() + 1)); } catch { /* */ } };
     const hide = () => { if (isVisible) { isVisible = false; lastHidden = Date.now(); setVisible(false); } };
-    const say = (m: Msg, key: string) => {
+    const say = (m: Msg, key: string, ms = RULES.showForMs) => {
       said.add(key); shownHere++; bump();
-      shownAt = Date.now(); shownY = window.scrollY; isVisible = true;
+      shownAt = Date.now(); shownY = window.scrollY; isVisible = true; showFor = ms; shownKey = key;
       setMsg(m); setVisible(true);
     };
     const allowed = (now: number) =>
@@ -85,7 +89,7 @@ export function Guide({ ask = false }: { ask?: boolean }) {
 
       if (isVisible) {
         const scrolledAway = Math.abs(window.scrollY - shownY) > window.innerHeight * 0.6;
-        if (!hovering.current && (now - shownAt > RULES.showForMs || scrolledAway)) hide();
+        if (!hovering.current && (now - shownAt > showFor || (scrolledAway && shownKey !== 'end'))) hide();
         return;
       }
       if (!cur || cur.msg.quiet || !cur.msg.text || said.has(cur.key)) return;
@@ -94,36 +98,42 @@ export function Guide({ ask = false }: { ask?: boolean }) {
       if (settled) say(cur.msg, cur.key);
     };
 
+    // the page's own "you reached the end" line (set with <GuideEnd/>), else a sensible default
+    const endMsg = (): Msg | null => {
+      const el = Array.from(document.querySelectorAll<HTMLElement>('[data-guide-end]')).pop();
+      if (el && !el.dataset.guideEnd) return null; // page opted out (checkout, forms)
+      return el
+        ? { text: el.dataset.guideEnd!, label: el.dataset.guideEndCta, href: el.dataset.guideEndHref }
+        : { text: 'Scrolled all the way? Let the dice pick your next escape — or tell us 4 things and we’ll match you.', label: 'Match me', href: '/plan-my-trip' };
+    };
+    const sayEnd = () => {
+      if (endSaid || typing.current) return;
+      endSaid = true;
+      const m = endMsg();
+      if (m) say(m, 'end', RULES.endShowForMs);
+    };
+
     const onScroll = () => {
       const y = window.scrollY;
       const now = Date.now();
-      // reached the bottom of the page = about to leave → the page's last section speaks (once)
-      const atEnd = window.innerHeight + y >= document.documentElement.scrollHeight - 40;
-      if (atEnd && !exitSaid && y > lastScrollY) {
-        exitSaid = true;
-        const cur = sectionAt();
-        if (cur && !cur.msg.quiet && cur.msg.text && !said.has(cur.key) && now - lastAction > RULES.busyMs && shownHere < RULES.perPage && sessionCount() < RULES.perSession && now - start > 4000) {
-          say(cur.msg, cur.key);
-        }
-      }
+      // hit the bottom after actually scrolling (not a short page) → suggest what fits this page, once
+      const docH = document.documentElement.scrollHeight;
+      const atEnd = window.innerHeight + y >= docH - 60;
+      if (atEnd && y > lastScrollY && y > window.innerHeight * 0.8 && now - start > 3000) sayEnd();
       lastScroll = now; lastScrollY = y;
     };
-    // desktop exit intent: pointer heads for the tabs/close button
+    // desktop exit intent: pointer heads for the tabs/close button → same end-of-page suggestion
     const onLeave = (e: MouseEvent) => {
-      if (e.clientY > 8 || exitSaid) return;
-      exitSaid = true;
-      const now = Date.now();
-      if (isVisible || now - start < 6000 || shownHere >= RULES.perPage || sessionCount() >= RULES.perSession) return;
-      const last = Array.from(document.querySelectorAll<HTMLElement>('[data-guide]')).filter((el) => el.dataset.guide && el.dataset.guideQuiet !== '1').pop();
-      if (last && !said.has(last.dataset.guide!)) say({ text: last.dataset.guide!, label: last.dataset.guideCta, href: last.dataset.guideHref }, last.dataset.guide!);
+      if (e.clientY > 8 || Date.now() - start < 8000) return;
+      sayEnd();
     };
     const onAction = (e: Event) => {
       if ((e.target as HTMLElement)?.closest?.('.guide-bar')) return;
       lastAction = Date.now();
       hide();
     };
-    const focus = (e: FocusEvent) => setTyping(!!(e.target as HTMLElement)?.closest?.('input, textarea, select'));
-    const blur = () => setTyping(false);
+    const focus = (e: FocusEvent) => { typing.current = !!(e.target as HTMLElement)?.closest?.('input, textarea, select'); setTyping(typing.current); };
+    const blur = () => { typing.current = false; setTyping(false); };
 
     const iv = setInterval(tick, 500);
     window.addEventListener('scroll', onScroll, { passive: true });
@@ -143,7 +153,7 @@ export function Guide({ ask = false }: { ask?: boolean }) {
 
   if (path?.startsWith('/admin')) return null;
   const m = msg;
-  const show = visible && !!m && !off && !typing;
+  const show = visible && !!m && !off && !isTyping;
 
   const dismiss = () => { setOff(true); try { sessionStorage.setItem(KEY, '1'); } catch { /* ignore */ } };
   const reopen = () => {
@@ -180,7 +190,7 @@ export function Guide({ ask = false }: { ask?: boolean }) {
         </div>
       </div>
       {/* when the guide isn't talking: just the dice (plus a way to bring the guide back if dismissed) */}
-      <div className={`fixed bottom-6 right-6 z-40 flex items-center gap-2 transition ${!show && !typing ? 'opacity-100' : 'pointer-events-none opacity-0'}`}>
+      <div className={`fixed bottom-6 right-6 z-40 flex items-center gap-2 transition ${!show && !isTyping ? 'opacity-100' : 'pointer-events-none opacity-0'}`}>
         {off && <button onClick={reopen} className="rounded-full bg-white px-3 py-2 text-xs text-mute shadow-tile ring-1 ring-black/5 hover:text-ink">tips</button>}
         <Link href="/roll" prefetch={false} aria-label="Surprise me with a destination" className="flex h-14 w-14 items-center justify-center rounded-full bg-white text-2xl shadow-tilehover ring-1 ring-black/5 transition hover:scale-105">🎲</Link>
       </div>

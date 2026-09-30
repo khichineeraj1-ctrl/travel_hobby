@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { GuideEnd } from '@/components/GuideEnd';
 import { guide, guideQuiet } from '@/lib/guide';
 import { PageHead } from '@/components/Listing';
 import { PlaceGrid } from '@/components/PlaceCard';
@@ -42,6 +43,7 @@ export default async function Spots({ searchParams }: { searchParams: Promise<{ 
 
   return (
     <div className="wrap" {...guide('Found a spot you love? Open its place page — we’ll plan the trip around it.', { label: 'Free itinerary', href: '/plan-my-trip' })}>
+      <GuideEnd text="Pick a spot you liked — we’ll build the whole trip around it, free." label="Plan around it" href="/plan-my-trip" />
       <PageHead crumbs={[{ name: 'Top spots', path: '/spots' }]} kicker="More choices" h1="Top spots." intro="The best-rated waterfalls, viewpoints, lakes, treks and ruins around every place on here. Pick a base, then pick your detours." />
       <div className="mt-8 flex flex-wrap gap-2">
         {FILTERS.map((x) => (

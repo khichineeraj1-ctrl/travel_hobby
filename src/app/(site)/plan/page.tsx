@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { GuideEnd } from '@/components/GuideEnd';
 import Link from 'next/link';
 import { Planner } from '@/components/Planner';
 import { SuggestionCard } from '@/components/SuggestionCard';
@@ -26,6 +27,7 @@ export default async function PlanPage({ searchParams }: { searchParams: Promise
 
   return (
     <div className="wrap pt-12">
+      <GuideEnd {...(results.length ? { text: `Still torn? ${results[0].destination.name} is your best match — want a free day-by-day plan for it?`, label: 'Plan it free', href: `/places/${results[0].destination.slug}#enquire` } : { text: 'Nothing clicked? A real human knows places that aren’t on here yet.', label: 'Ask a human', href: '#ask' })} />
       <p className="kicker">Your matches</p>
       <h1 className="mt-2 text-[40px] font-semibold leading-tight tracking-tightest sm:text-[56px]">
         {input.days} {input.days === 1 ? 'day' : 'days'} from {city.name}.

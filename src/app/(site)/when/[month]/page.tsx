@@ -28,6 +28,7 @@ export default async function Page({ params }: { params: Promise<{ month: string
       h1={`Offbeat places to visit in ${L}.`}
       intro={`These spots are at their absolute best in ${L}. Least crowded first.`}
       items={getByMonth(m).sort((a, b) => a.crowd - b.crowd)}
+      end={{ text: `All ${L} picks, seen. Tell us where you’re leaving from and we’ll rank them by travel time.`, label: `Match me for ${L}`, href: `/plan?month=${m}` }}
     >
       <CrossLinks title="Other months">
         <LinkChips items={MONTHS.map((x, i) => ({ href: `/when/${x}`, label: monthLabel((i + 1) as never).slice(0, 3), active: i + 1 === m }))} />

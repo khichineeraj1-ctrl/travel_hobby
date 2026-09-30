@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { GuideEnd } from './GuideEnd';
 import { guide, guideQuiet } from '@/lib/guide';
 import { Breadcrumbs } from './Breadcrumbs';
 import { PlaceGrid } from './PlaceCard';
@@ -27,11 +28,13 @@ export function Listing(props: {
   items: Destination[];
   from?: string;
   children?: React.ReactNode;
+  end?: { text: string; label?: string; href?: string };
 }) {
   return (
     <div className="wrap">
       <JsonLd data={itemListLd(props.h1, props.items.map((d) => ({ name: d.name, path: `/places/${d.slug}` })))} />
       <PageHead crumbs={props.crumbs} kicker={props.kicker} h1={props.h1} intro={props.intro} />
+      <GuideEnd {...(props.end ?? { text: `Seen all ${props.items.length}? Tell us your dates and who’s coming — we’ll pick the one that fits.`, label: 'Pick for me', href: '/plan-my-trip' })} />
       <div className="mt-10" {...guide('Tap any place for real travel time, live weather, costs and the honest ick.', { label: 'Match me instead', href: '/plan-my-trip' })}>
         {props.items.length ? <PlaceGrid items={props.items} from={props.from} /> : <EmptyPicks />}
       </div>

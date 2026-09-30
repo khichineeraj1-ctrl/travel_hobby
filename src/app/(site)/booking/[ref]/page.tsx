@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation';
+import { GuideEnd } from '@/components/GuideEnd';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { guide } from '@/lib/guide';
@@ -28,6 +29,7 @@ export default async function BookingPage({ params, searchParams }: { params: Pr
 
   return (
     <div className="wrap-narrow py-14" {...guide(b.status === 'cancelled' ? 'Plans changed? No stress — we’ll help you find another trip.' : `You’re in ✓ We’ll confirm on WhatsApp soon. Quote ${b.id} if you message us.`, b.status === 'cancelled' ? { label: 'Find another', href: '/plan-my-trip' } : undefined)}>
+      <GuideEnd {...(place ? { text: `While we confirm — check out the best spots around ${place.name} so you’re ready.`, label: `Explore ${place.name}`, href: `/places/${place.slug}#spots` } : { text: 'While we confirm, peek at what’s happening this season.', label: 'Events', href: '/events' })} />
       <div className="card p-8 text-center sm:p-12">
         <p className="text-5xl">{b.status === 'cancelled' ? '✕' : '✓'}</p>
         <h1 className="mt-4 text-[36px] font-semibold tracking-tightest">

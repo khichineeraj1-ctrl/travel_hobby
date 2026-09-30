@@ -27,6 +27,7 @@ export default async function Page({ params }: { params: Promise<{ state: string
       h1={`Offbeat places in ${s.name}.`}
       intro={`The ${s.name} most people skip.`}
       items={getByState(s.slug).sort((a, b) => a.crowd - b.crowd)}
+      end={{ text: `That’s our ${s.name} list. Want us to string two or three of these into one trip?`, label: 'Plan a combo', href: `/book/custom` }}
     >
       <CrossLinks title="Other states">
         <LinkChips items={getStates().filter((x) => x.slug !== s.slug).map((x) => ({ href: `/state/${x.slug}`, label: x.name }))} />

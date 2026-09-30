@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { GuideEnd } from '@/components/GuideEnd';
 import { guide, guideQuiet } from '@/lib/guide';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -49,6 +50,7 @@ export default async function RoadTripPage({ params }: { params: Promise<{ slug:
 
   return (
     <article>
+      <GuideEnd text={`Driving ${t.title}? We’ll line up stays, permits and a backup plan for the bad-road days.`} label="Set it up" href="#enquire" />
       <JsonLd
         data={{
           '@context': 'https://schema.org',

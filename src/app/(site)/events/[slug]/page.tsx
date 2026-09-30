@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { GuideEnd } from '@/components/GuideEnd';
 import { guide, guideQuiet } from '@/lib/guide';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -50,6 +51,9 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
 
   return (
     <article>
+      <GuideEnd {...(p === 'past'
+        ? { text: `${e.name} is done for this year. Want a ping the moment next year’s dates drop?`, label: 'Alert me', href: '#alerts' }
+        : { text: `Going to ${e.name}? Stays near events sell out first — we’ll sort stays and transport.`, label: 'Plan my trip', href: planHref })} />
       <JsonLd
         data={{
           '@context': 'https://schema.org', '@type': 'Event', name: e.name, startDate: e.startDate, endDate: e.endDate, description: e.about,

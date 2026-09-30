@@ -1,4 +1,5 @@
 import { PageHead } from '@/components/Listing';
+import { GuideEnd } from '@/components/GuideEnd';
 import { guide, guideQuiet } from '@/lib/guide';
 import { LeadForm } from '@/components/LeadForm';
 import { getAllDestinations } from '@/lib/repo';
@@ -14,6 +15,7 @@ export default function PlanMyTrip() {
   const places = getAllDestinations().map((d) => ({ slug: d.slug, name: d.name })).sort((a, b) => a.name.localeCompare(b.name));
   return (
     <div className="wrap" {...guideQuiet}>
+      <GuideEnd text="" />
       <PageHead crumbs={[{ name: 'Plan my trip', path: '/plan-my-trip' }]} kicker="Free · reply within 24 hours" h1="Plan my trip." intro="Tell us roughly what you want. A real person replies on WhatsApp with 2–3 ideas, routes and costs." />
       <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_360px]">
         <LeadForm kind="enquiry" source="/plan-my-trip" places={places} />

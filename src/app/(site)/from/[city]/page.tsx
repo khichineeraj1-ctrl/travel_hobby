@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation';
+import { GuideEnd } from '@/components/GuideEnd';
 import Link from 'next/link';
 import { PageHead } from '@/components/Listing';
 import { PlaceCard } from '@/components/PlaceCard';
@@ -50,6 +51,7 @@ export default async function Page({ params }: { params: Promise<{ city: string 
         intro="Sorted by door-to-door travel time, not distance on a map. 200 km of mountain road isn’t 200 km of expressway."
       />
       <Link href={`/plan?from=${c.slug}`} className="btn mt-4">Personalise for my dates</Link>
+      <GuideEnd text={`That’s everything reachable from ${c.name}. Tell us your days and budget — we’ll pick the best escape.`} label="Personalise" href={`/plan?from=${c.slug}`} />
 
       {groups.map((g) =>
         g.items.length ? (

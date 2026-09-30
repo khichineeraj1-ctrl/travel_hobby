@@ -1,4 +1,5 @@
 import { PageHead } from '@/components/Listing';
+import { GuideEnd } from '@/components/GuideEnd';
 import { RoadTripCard } from '@/components/RoadTrip';
 import { readDb } from '@/lib/db';
 import { currentMonth, monthLabel } from '@/lib/months';
@@ -18,6 +19,7 @@ export default function RoadTrips() {
   const later = trips.filter((t) => !t.bestMonths.includes(m));
   return (
     <div className="wrap">
+      <GuideEnd text="Seen every route? Tell us your car, days and crew — we’ll suggest the drive." label="Plan my drive" href="/book/custom" />
       <JsonLd data={itemListLd('Offbeat road trips in India', trips.map((t) => ({ name: t.title, path: `/road-trips/${t.slug}` })))} />
       <PageHead crumbs={[{ name: 'Road trips', path: '/road-trips' }]} kicker="Self-drive · or we plan it" h1="Road trips." intro="Routes, real drive hours, fuel gaps and permits. Take the wheel, or let us sort the stays and the car." />
       {now.length > 0 && (

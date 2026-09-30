@@ -1,9 +1,11 @@
 import { Breadcrumbs } from './Breadcrumbs';
+import { GuideEnd } from './GuideEnd';
 import { guide, guideQuiet } from '@/lib/guide';
 
 export function BookShell({ crumbs, title, sub, children, aside }: { crumbs: { name: string; path: string }[]; title: string; sub?: string; children: React.ReactNode; aside: React.ReactNode }) {
   return (
     <div className="wrap pt-6" {...guideQuiet}>
+      <GuideEnd text="" />
       <Breadcrumbs items={crumbs} />
       <h1 className="mt-8 text-[36px] font-semibold leading-tight tracking-tightest sm:text-[48px]">{title}</h1>
       {sub && <p className="mt-2 text-xl text-mute">{sub}</p>}

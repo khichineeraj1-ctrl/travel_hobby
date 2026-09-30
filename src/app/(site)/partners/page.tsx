@@ -1,4 +1,5 @@
 import { PageHead } from '@/components/Listing';
+import { GuideEnd } from '@/components/GuideEnd';
 import { guide, guideQuiet } from '@/lib/guide';
 import { LeadForm } from '@/components/LeadForm';
 import { meta } from '@/lib/seo';
@@ -12,6 +13,7 @@ export const metadata = meta({
 export default function Partners() {
   return (
     <div className="wrap" {...guideQuiet}>
+      <GuideEnd text="" />
       <PageHead crumbs={[{ name: 'Partners', path: '/partners' }]} kicker="For hosts, guides & operators" h1="Host the curious ones." intro="We send respectful, small-group travellers to places that deserve them. No listing fee." />
       <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_360px]">
         <LeadForm kind="partner" source="/partners" />

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { GuideEnd } from '@/components/GuideEnd';
 import { guide, guideQuiet } from '@/lib/guide';
 import { assistantEnabled } from '@/lib/assistant';
 import { MicButton } from '@/components/AskBeyond';
@@ -31,6 +32,7 @@ export default function Home() {
 
   return (
     <>
+      <GuideEnd text="Scrolled the whole thing and still undecided? That’s what the dice are for — or tell us 4 things." label="Match me" href="/plan-my-trip" />
       {/* hero */}
       <section className="wrap grid gap-10 pb-6 pt-14 sm:pt-20 lg:grid-cols-2 lg:items-end" {...guide('Hey 👋 no idea where to go? Tell us 4 things and we’ll match you in 10 seconds.', { label: 'Match me', href: '#planner' })}>
         <h1 className="text-[64px] font-semibold leading-none tracking-tightest sm:text-[96px]">{s.hero.title}</h1>

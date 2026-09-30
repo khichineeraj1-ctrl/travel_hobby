@@ -24,7 +24,7 @@ export default async function Page({ params }: { params: Promise<{ crew: string 
   const c = (await params).crew;
   if (!isCrew(c)) notFound();
   return (
-    <Listing crumbs={[{ name: `For ${c}`, path: `/for/${c}` }]} kicker="Who’s coming" h1={CREW[c].h1} intro={CREW[c].intro} items={getByCrew(c)}>
+    <Listing crumbs={[{ name: `For ${c}`, path: `/for/${c}` }]} kicker="Who’s coming" h1={CREW[c].h1} intro={CREW[c].intro} items={getByCrew(c)} end={{ text: c === 'fam' ? 'Seen them all? Tell us who’s coming (grandparents too) and we’ll plan an easy one.' : c === 'solo' ? 'Going solo? We can pair you with a small group, or plan a safe solo route.' : 'Seen them all? Tell us your dates and we’ll match the best one for your crew.', label: c === 'solo' ? 'See group trips' : 'Plan it for us', href: c === 'solo' ? '/trips' : `/plan?crew=${c}` }}>
       <CrossLinks title="Going with someone else?">
         <LinkChips items={(Object.keys(CREW) as Crew[]).map((x) => ({ href: `/for/${x}`, label: x, active: x === c }))} />
       </CrossLinks>

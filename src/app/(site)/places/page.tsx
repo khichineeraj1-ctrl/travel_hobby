@@ -17,6 +17,7 @@ export default function Page() {
       h1="Every place we rate."
       intro="No sponsored listings. No “top 10 hill stations”. Just places we’d send a friend to."
       items={items}
+      end={{ text: 'You scrolled every place — respect. Let us narrow it to the 3 that fit your dates.', label: 'Narrow it down', href: '/plan-my-trip' }}
     />
   );
 }
