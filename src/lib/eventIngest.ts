@@ -41,9 +41,15 @@ export function normalizeIncoming(raw: Record<string, unknown>): { ok: true; eve
   };
 }
 
-/** add to db as suggestions; skips slugs that already exist. Mutates db. */
+/**
+ * Add incoming events; skips slugs that already exist. Mutates db.
+ * With settings.autoPublishEvents (default on) events that have a source link and haven't ended go
+ * live immediately; anything else (no source, already over) lands in Suggested for a human look.
+ */
 export function addSuggestions(db: Db, items: unknown[]) {
-  const added: string[] = [], skipped: string[] = [], errors: string[] = [];
+  const added: string[] = [], skipped: string[] = [], errors: string[] = [], published: string[] = [];
+  const auto = db.settings.autoPublishEvents !== false;
+  const today = new Date(Date.now() + 5.5 * 3600 * 1000).toISOString().slice(0, 10);
   for (const it of items.slice(0, 200)) {
     if (!it || typeof it !== 'object') { errors.push('item is not an object'); continue; }
     const r = normalizeIncoming(it as Record<string, unknown>);
@@ -52,8 +58,9 @@ export function addSuggestions(db: Db, items: unknown[]) {
     if (r.event.destSlug && !db.destinations.some((d) => d.slug === r.event.destSlug)) r.event.destSlug = undefined;
     if (r.event.roadTripSlug && !db.roadTrips.some((t) => t.slug === r.event.roadTripSlug)) r.event.roadTripSlug = undefined;
     if (db.events.some((e) => e.slug === r.event.slug)) { skipped.push(r.event.slug); continue; }
+    if (auto && r.event.sourceUrl && r.event.endDate >= today) { r.event.status = 'published'; published.push(r.event.slug); }
     db.events.push(r.event);
     added.push(r.event.slug);
   }
-  return { added, skipped, errors };
+  return { added, skipped, errors, published };
 }

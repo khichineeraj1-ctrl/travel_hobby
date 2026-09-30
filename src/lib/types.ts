@@ -80,6 +80,7 @@ export interface SiteSettings {
   featured: string[]; // destination slugs pinned to the top of the home rail
   pitch: { title: string; body: string }[];
   footerNote: string;
+  autoPublishEvents?: boolean; // scout/ingest events go live immediately (default true)
 }
 
 /* ---------- booking engine ---------- */

@@ -9,7 +9,8 @@ import { addSuggestions } from '@/lib/eventIngest';
  * Authorization: Bearer <EVENTS_INGEST_TOKEN>
  * Body: [{ name, startDate, endDate, town, state, lat, lng, category?, hook?, about?, tips?, sourceUrl?, dateStatus?, destSlug? }, …]
  *   or { events: [...] }
- * Events land in Admin → Events → Suggested for review. Nothing goes live automatically.
+ * With auto-publish on (Admin → Site content, default on) events with a source link go live at once;
+ * the rest land in Admin → Events → Suggested.
  */
 export async function POST(req: Request) {
   const token = process.env.EVENTS_INGEST_TOKEN;
@@ -24,8 +25,8 @@ export async function POST(req: Request) {
   const items = Array.isArray(body) ? body : Array.isArray((body as { events?: unknown[] })?.events) ? (body as { events: unknown[] }).events : null;
   if (!items) return NextResponse.json({ error: 'Send an array of events or { events: [...] }' }, { status: 400 });
 
-  let result = { added: [] as string[], skipped: [] as string[], errors: [] as string[] };
+  let result = { added: [] as string[], skipped: [] as string[], errors: [] as string[], published: [] as string[] };
   updateDb((db) => { result = addSuggestions(db, items); });
-  revalidatePath('/admin', 'layout');
+  revalidatePath('/', 'layout');
   return NextResponse.json(result, { status: result.added.length ? 201 : 200 });
 }

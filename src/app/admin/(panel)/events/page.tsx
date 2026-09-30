@@ -86,7 +86,7 @@ export default async function Events({ searchParams }: { searchParams: Promise<{
       <section className="mt-10 grid gap-6 lg:grid-cols-2">
         <div className="card p-6">
           <h2 className="text-lg font-semibold">Import events</h2>
-          <p className="mt-1 text-sm text-mute">Paste JSON from a research sheet or another tool. Everything lands in <b>Suggested</b> for you to approve.</p>
+          <p className="mt-1 text-sm text-mute">Paste JSON from a research sheet or another tool. With auto-publish on (Site content), events with a source go live; the rest land in <b>Suggested</b>.</p>
           <form action={importEvents} className="mt-4 space-y-3">
             <textarea name="json" rows={10} className="field font-mono text-xs" placeholder={SAMPLE} />
             <button className="btn btn-sm">Import as suggestions</button>
@@ -98,7 +98,7 @@ export default async function Events({ searchParams }: { searchParams: Promise<{
           <ol className="mt-4 list-decimal space-y-2 pl-5 text-mute">
             <li>Add <code className="rounded bg-paper px-1">EVENTS_INGEST_TOKEN=some-long-secret</code> to <code className="rounded bg-paper px-1">.env.local</code> and restart.</li>
             <li>POST JSON to <code className="rounded bg-paper px-1">/api/events/ingest</code> with header <code className="rounded bg-paper px-1">Authorization: Bearer &lt;token&gt;</code>.</li>
-            <li>Review under <b>Suggested</b>. Duplicates (same name + year) are skipped automatically.</li>
+            <li>Events with a source link go live automatically (toggle in Site content); others wait under <b>Suggested</b>. Duplicates (same name + year) are skipped.</li>
           </ol>
           <p className="mt-4 text-xs text-faint">Status: {process.env.EVENTS_INGEST_TOKEN ? <span className="text-good">enabled</span> : 'disabled (no token set)'}</p>
         </div>

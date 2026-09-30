@@ -29,5 +29,6 @@ export const defaultSettings: SiteSettings = {
     { title: 'The ick list.', body: 'Permits, bad roads, no ATMs, altitude. The honest stuff nobody else tells you.' },
     { title: 'A crowd meter.', body: 'From “basically empty” to “instagram found it”. We tell you before you go.' },
   ],
+  autoPublishEvents: true,
   footerNote: 'Travel times are estimates. Weather by open-meteo.com. Always check permits and road status before you go.',
 };

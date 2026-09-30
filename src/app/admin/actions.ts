@@ -288,6 +288,7 @@ export async function saveSettings(fd: FormData) {
       featured: fd.getAll('featured').map(String).filter((s) => db.destinations.some((d) => d.slug === s)),
       pitch,
       footerNote: str(fd, 'footerNote'),
+      autoPublishEvents: fd.get('autoPublishEvents') === 'on',
     };
   });
   refresh();
@@ -506,9 +507,10 @@ export async function importEvents(fd: FormData) {
   try { items = JSON.parse(str(fd, 'json') || '[]'); } catch { back('/admin/events?tab=suggested', 'That isn’t valid JSON.', 'err'); }
   const arr = Array.isArray(items) ? items : Array.isArray((items as { events?: unknown[] })?.events) ? (items as { events: unknown[] }).events : null;
   if (!arr) back('/admin/events?tab=suggested', 'Paste an array of events.', 'err');
-  let r = { added: [] as string[], skipped: [] as string[], errors: [] as string[] };
+  let r = { added: [] as string[], skipped: [] as string[], errors: [] as string[], published: [] as string[] };
   updateDb((db) => { r = addSuggestions(db, arr!); });
-  const msg = `Added ${r.added.length} suggestion(s)${r.skipped.length ? `, skipped ${r.skipped.length} duplicate(s)` : ''}${r.errors.length ? `. Problems: ${r.errors.slice(0, 3).join('; ')}` : ''}.`;
+  refresh();
+  const msg = `Added ${r.added.length} event(s), ${r.published.length} published live${r.skipped.length ? `, skipped ${r.skipped.length} duplicate(s)` : ''}${r.errors.length ? `. Problems: ${r.errors.slice(0, 3).join('; ')}` : ''}.`;
   back('/admin/events?tab=suggested', msg, r.errors.length && !r.added.length ? 'err' : 'ok');
 }
 

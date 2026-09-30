@@ -66,6 +66,10 @@ export default async function Settings({ searchParams }: { searchParams: Promise
           </div>
         </Panel>
 
+        <Panel title="Events" sub="From the weekly event scout, the ingest API and JSON import.">
+          <Check name="autoPublishEvents" label="Publish incoming events automatically (only ones with a source link that haven’t ended; others go to Suggested)" defaultChecked={s.autoPublishEvents !== false} />
+        </Panel>
+
         <Panel title="Footer">
           <Field label="Disclaimer"><Area name="footerNote" rows={2} defaultValue={s.footerNote} /></Field>
         </Panel>
