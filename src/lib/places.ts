@@ -12,6 +12,7 @@
  */
 import { readDb, updateDb } from './db';
 import type { Destination, SiteSettings, Spot, SpotSet } from './types';
+import { OVERPASS_MIRRORS, osmQuery } from './osmQuery';
 
 const STALE_MS = 25 * 24 * 3600 * 1000;
 const MAX_AGE_GOOGLE_MS = 30 * 24 * 3600 * 1000;
@@ -25,7 +26,7 @@ export function spotProvider(): 'google' | 'osm' | 'off' {
   return process.env.GOOGLE_MAPS_API_KEY ? 'google' : 'osm';
 }
 
-const rules = (s?: SiteSettings) => ({ ...SPOT_DEFAULTS, ...(s?.spots ?? {}) });
+export const rules = (s?: SiteSettings) => ({ ...SPOT_DEFAULTS, ...(s?.spots ?? {}) });
 
 function km(a: { lat: number; lng: number }, b: { lat: number; lng: number }) {
   const R = 6371, r = Math.PI / 180;
@@ -119,7 +120,7 @@ async function googleSpots(d: Destination, r: ReturnType<typeof rules>): Promise
 
 /* ---------------- OpenStreetMap (Overpass) ---------------- */
 
-type OsmEl = { type: string; id: number; lat?: number; lon?: number; center?: { lat: number; lon: number }; tags?: Record<string, string> };
+export type OsmEl = { type: string; id: number; lat?: number; lon?: number; center?: { lat: number; lon: number }; tags?: Record<string, string> };
 
 const OSM_KIND: [string, string, string][] = [
   ['natural', 'waterfall', 'Waterfall'], ['natural', 'peak', 'Peak'], ['natural', 'glacier', 'Glacier'],
@@ -130,33 +131,41 @@ const OSM_KIND: [string, string, string][] = [
   ['amenity', 'place_of_worship', 'Temple / shrine'], ['tourism', 'museum', 'Museum'], ['tourism', 'attraction', 'Attraction'],
 ];
 
-async function osmSpots(d: Destination, r: ReturnType<typeof rules>): Promise<Spot[]> {
-  // a bounding box is far faster on Overpass than around:… (which times out on lakes/park polygons)
-  const rk = Math.min(r.radiusKm, 40);
-  const dLat = rk / 111, dLng = rk / (111 * Math.cos((d.lat * Math.PI) / 180));
-  const bb = [d.lat - dLat, d.lng - dLng, d.lat + dLat, d.lng + dLng].map((n) => n.toFixed(4)).join(',');
-  const q = `[out:json][timeout:60][bbox:${bb}];(
-    nwr["tourism"~"^(viewpoint|attraction|museum)$"]["name"];
-    node["natural"~"^(peak|waterfall|glacier|hot_spring|cave_entrance|beach)$"]["name"];
-    nwr["water"="lake"]["name"];
-    nwr["historic"~"^(fort|castle|ruins|archaeological_site|monument)$"]["name"];
-    wr["leisure"="nature_reserve"]["name"];
-    wr["boundary"="national_park"]["name"];
-    nwr["amenity"="place_of_worship"]["name"]["wikidata"];
-  );out center tags 300;`;
-  const base = process.env.OVERPASS_URL ?? 'https://overpass-api.de/api/interpreter';
-  const res = await fetch(base, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'User-Agent': 'BeyondExplored/1.0 (nearby spots cache)' },
-    body: `data=${encodeURIComponent(q)}`,
-    cache: 'no-store',
-  });
-  const text = await res.text();
-  if (!res.ok || text.trimStart().startsWith('<')) throw new Error(`Overpass ${res.status === 200 ? 429 : res.status}`); // busy → HTML/XML error page
-  const j = JSON.parse(text);
-  if (j.remark && /error/i.test(j.remark)) throw new Error(`Overpass 504: ${j.remark}`);
-  const els = (j.elements ?? []) as OsmEl[];
+// public Overpass mirrors — shared cloud IPs often get rate-limited on one, so fall through to the next
+const MIRRORS = (process.env.OVERPASS_URL ? [process.env.OVERPASS_URL] : []).concat(OVERPASS_MIRRORS);
 
+async function overpass(q: string): Promise<{ elements?: OsmEl[] }> {
+  const errs: string[] = [];
+  for (const url of MIRRORS) {
+    try {
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'User-Agent': 'BeyondExplored/1.0 (nearby spots cache)' },
+        body: `data=${encodeURIComponent(q)}`,
+        cache: 'no-store',
+        signal: AbortSignal.timeout(70_000),
+      });
+      const text = await res.text();
+      if (!res.ok || text.trimStart().startsWith('<')) { errs.push(`${new URL(url).host} ${res.status === 200 ? 'busy' : res.status}`); continue; }
+      const j = JSON.parse(text);
+      if (j.remark && /error/i.test(j.remark)) { errs.push(`${new URL(url).host} timeout`); continue; }
+      return j;
+    } catch (e) {
+      errs.push(`${new URL(url).host} ${(e as Error).message}`);
+    }
+  }
+  throw new Error(`Overpass unavailable (${errs.join('; ')})`);
+}
+
+async function osmSpots(d: Destination, r: ReturnType<typeof rules>): Promise<Spot[]> {
+  const q = osmQuery(d, r.radiusKm);
+  const j = await overpass(q);
+  return rankOsm(d, (j.elements ?? []) as OsmEl[], r.radiusKm);
+}
+
+/** Pure ranking of raw Overpass elements (also used to build the bundled seed). */
+export function rankOsm(d: Pick<Destination, 'name' | 'state' | 'lat' | 'lng'>, els: OsmEl[], radiusKm: number): Spot[] {
+  const r = { radiusKm };
   const byName = new Map<string, Spot & { score: number }>();
   for (const el of els) {
     const t = el.tags ?? {};
@@ -179,7 +188,7 @@ async function osmSpots(d: Destination, r: ReturnType<typeof rules>): Promise<Sp
     if (prev && prev.score >= score) continue;
     byName.set(key, {
       id: `${el.type}/${el.id}`, name, lat, lng, kind, distKm: Math.round(dist * 10) / 10, src: 'osm', score,
-      mapsUrl: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${name}, ${d.state}`)}`,
+      mapsUrl: `https://www.google.com/maps/search/?api=1&query=${lat.toFixed(5)},${lng.toFixed(5)}`,
     });
   }
   return [...byName.values()]
@@ -205,7 +214,7 @@ function due(now = Date.now(), force: string[] = []) {
       const s = db.spots?.[d.slug];
       if (!s) return true;
       if (s.src !== prov && prov !== 'off') return true; // provider changed (e.g. key added) → upgrade
-      return now - new Date(s.at).getTime() > (s.error ? 24 * 3600 * 1000 : STALE_MS);
+      return now - new Date(s.at).getTime() > (s.error ? 2 * 3600 * 1000 : STALE_MS);
     })
     .sort((a, b) => Number(!!db.spots?.[a.slug]) - Number(!!db.spots?.[b.slug]));
 }
@@ -235,7 +244,8 @@ async function doRefresh(budgetMs: number, only: string[]): Promise<SpotRefresh>
     } catch (e) {
       error = (e as Error).message;
       const status = (e as { status?: number }).status;
-      if (status === 401 || status === 403 || /Overpass (429|504)/.test(error)) break; // bad key / rate-limited: stop
+      if (status === 401 || status === 403) break; // bad Google key: stop
+      if (/Overpass unavailable/.test(error)) await sleep(20_000); // all mirrors busy: back off
       updateDb((db) => {
         const prev = db.spots?.[d.slug];
         (db.spots ??= {})[d.slug] = { at: new Date().toISOString(), src: prov, spots: prev?.spots ?? [], error };

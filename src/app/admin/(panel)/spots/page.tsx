@@ -1,7 +1,8 @@
 import Link from 'next/link';
 import { readDb } from '@/lib/db';
 import { AdminHeader, Badge, Flash } from '@/components/admin/ui';
-import { spotProvider, spotsDueCount } from '@/lib/places';
+import { rules, spotProvider, spotsDueCount } from '@/lib/places';
+import { BrowserSpotFetch } from '@/components/admin/BrowserSpotFetch';
 import { refreshNearbySpots, toggleSpot } from '../../actions';
 
 export const dynamic = 'force-dynamic';
@@ -32,6 +33,12 @@ export default async function Spots({ searchParams }: { searchParams: Promise<{ 
         {meta?.lastRun ? ` · last run ${new Date(meta.lastRun).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })}` : ''}
         {meta?.lastError ? ` · last error: ${meta.lastError}` : ''}. Refreshes on start-up, daily for anything older than 25 days, and when you save a place. Hide anything that isn’t worth the detour.
       </p>
+      {prov !== 'google' && (
+        <BrowserSpotFetch
+          places={places.filter((d) => !db.spots?.[d.slug]?.spots.length).map((d) => ({ slug: d.slug, name: d.name, lat: d.lat, lng: d.lng }))}
+          radiusKm={rules(db.settings).radiusKm}
+        />
+      )}
       <div className="space-y-4">
         {places.map((d) => {
           const set = db.spots?.[d.slug];

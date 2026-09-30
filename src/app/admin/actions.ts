@@ -10,7 +10,7 @@ import { readDb, updateDb, UPLOAD_DIR } from '@/lib/db';
 import type { Crew, Destination, EventCategory, Hub, Month, OriginCity, RoadStop, Signal, Terrain, Vibe } from '@/lib/types';
 import { addSuggestions } from '@/lib/eventIngest';
 import { refreshRoutes, refreshRoutesInBackground } from '@/lib/routing';
-import { refreshSpots, refreshSpotsInBackground, SPOT_DEFAULTS } from '@/lib/places';
+import { rankOsm, refreshSpots, refreshSpotsInBackground, rules, SPOT_DEFAULTS, type OsmEl } from '@/lib/places';
 
 /* ---------- helpers ---------- */
 
@@ -622,4 +622,19 @@ export async function toggleSpot(fd: FormData) {
   });
   refresh();
   revalidatePath('/admin/spots');
+}
+
+/** Admin's browser fetched raw OpenStreetMap data (works even when the server's IP is rate-limited). */
+export async function saveBrowserSpots(slug: string, elements: OsmEl[]): Promise<{ ok: boolean; count: number; error?: string }> {
+  await requireAdmin();
+  const db = readDb();
+  const d = db.destinations.find((x) => x.slug === slug);
+  if (!d || !Array.isArray(elements)) return { ok: false, count: 0, error: 'unknown place' };
+  const els = elements.slice(0, 2000).filter((e) => e && typeof e === 'object' && e.tags && typeof e.tags === 'object');
+  const spots = rankOsm(d, els, rules(db.settings).radiusKm);
+  // don't downgrade a Google-ranked list to OSM
+  if (db.spots?.[slug]?.src === 'google' && db.spots[slug].spots.length && !db.spots[slug].error) return { ok: true, count: db.spots[slug].spots.length };
+  updateDb((x) => { (x.spots ??= {})[slug] = { at: new Date().toISOString(), src: 'osm', spots }; });
+  refresh();
+  return { ok: true, count: spots.length };
 }
