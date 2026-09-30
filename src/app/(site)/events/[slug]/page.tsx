@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { guide, guideQuiet } from '@/lib/guide';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { readDb } from '@/lib/db';
@@ -98,7 +99,7 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
 
       <div className="wrap mt-14 grid gap-12 lg:grid-cols-[1fr_340px]">
         <div className="space-y-14">
-          <section>
+          <section {...guide(p === 'past' ? 'This one’s done — but the place is still worth it. Want a plan anyway?' : 'Read the tips? We can sort stays and transport before they sell out.', { label: p === 'past' ? 'Alert me next year' : 'Plan my trip', href: p === 'past' ? '#alerts' : planHref })}>
             <p className="text-xl leading-relaxed">{e.about}</p>
             {e.tips.length > 0 && (
               <div className="card mt-6 p-7">
@@ -120,14 +121,14 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
           )}
 
           {rows.length > 0 && (
-            <section>
+            <section {...guide(`Getting to ${e.town} is half the story. Want us to book the route?`, { label: 'Plan my trip', href: planHref })}>
               <h2 className="text-[28px] font-semibold tracking-headline">How to reach {e.town}</h2>
               <p className="mb-5 mt-1 text-mute">Estimated door-to-door time from major cities.</p>
               <TravelTable rows={rows} />
             </section>
           )}
 
-          <section id="alerts" className="scroll-mt-20">
+          <section id="alerts" className="scroll-mt-20" {...guideQuiet}>
             <div className="card p-7 sm:p-8">
               <h2 className="text-2xl font-semibold tracking-headline">{p === 'past' ? 'Don’t miss the next one.' : 'Get a heads-up.'}</h2>
               <p className="mb-5 mt-1 text-mute">{p === 'past' ? 'We’ll message you when next year’s dates drop, with stays before they sell out.' : 'Date changes, stays that are still free, and group trips going — straight to WhatsApp.'}</p>
@@ -150,7 +151,7 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
       </div>
 
       {alsoSoon.length > 0 && (
-        <section className="wrap mt-24">
+        <section className="wrap mt-24" {...guide('Not this one? These are coming up next, nearest first.', { label: 'All events', href: '/events' })}>
           <h2 className="headline">Also coming up. <span>Nearest first.</span></h2>
           <div className="mt-8 grid gap-6 sm:grid-cols-3">{alsoSoon.map((x) => <EventCard key={x.slug} e={x} wide />)}</div>
         </section>

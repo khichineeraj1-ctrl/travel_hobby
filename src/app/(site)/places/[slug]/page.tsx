@@ -19,11 +19,13 @@ import { RoadTripCard } from '@/components/RoadTrip';
 import { eventsNear } from '@/lib/events';
 import { readDb } from '@/lib/db';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
+import { guide, guideQuiet } from '@/lib/guide';
+import { currentMonth } from '@/lib/months';
 import { JsonLd } from '@/lib/jsonld';
 import { abs, meta } from '@/lib/seo';
 import { estimateTravel } from '@/lib/travel';
-import { crowdLabel, inr, sentence, signalLabel } from '@/lib/format';
-import { monthLabel } from '@/lib/months';
+import { crowdLabel, hrs, inr, sentence, signalLabel } from '@/lib/format';
+import { monthLabel, monthName } from '@/lib/months';
 import type { Destination } from '@/lib/types';
 
 
@@ -52,6 +54,32 @@ export default async function PlacePage({ params }: { params: Promise<{ slug: st
     .sort((a, b) => a.t.fastest.hours - b.t.fastest.hours);
   const estimates = Object.fromEntries(rows.map((r) => [r.slug, { name: r.name, t: r.t }]));
 
+  // what the on-screen guide says in each section
+  const now = currentMonth();
+  const nowL = monthLabel(now);
+  const season = d.bestMonths.includes(now) ? 'best' : d.okMonths.includes(now) ? 'ok' : 'skip';
+  const skipWhy = d.skip.find((x) => x.months.includes(now))?.why;
+  const fastest = rows[0];
+  const G = {
+    hero: season === 'best'
+      ? guide(`Good timing — ${nowL} is peak season in ${d.name}. Want a free plan?`, { label: 'Plan it free', href: '#enquire' })
+      : season === 'ok'
+        ? guide(`${nowL} works for ${d.name}, with a few caveats. Here’s the honest picture ↓`, { label: 'Best time', href: '#best-time' })
+        : guide(`Heads up: ${nowL} isn’t great for ${d.name}${skipWhy ? ` (${skipWhy})` : ''}. Want places that peak now?`, { label: `Best in ${nowL}`, href: `/when/${monthName(now)}` }),
+    best: season === 'best'
+      ? guide(`You’re in the window. Stays near ${d.name} fill up around now.`, { label: 'Check stays', href: '#book' })
+      : guide(`Best months: ${bestRange(d)}. We can hold your spot and ping you before.`, { label: 'Remind me', href: '#enquire' }),
+    weather: guide('Sky looks sorted? Now see how long it takes from your city.', { label: 'Travel time', href: '#how-to-reach' }),
+    reach: guide(fastest ? `${hrs(fastest.t.fastest.hours)} from ${fastest.name}, the quickest start. Hate planning trains and cabs? We’ll do it.` : 'Trains, cabs, last-mile jeeps — we’ll sort the whole route.', { label: 'Free itinerary', href: '#enquire' }),
+    crew: guide('Going with a squad or the fam? Group quotes are cheaper per head.', { label: 'Get a group quote', href: `/book/custom?place=${d.slug}` }),
+    doThis: guide('We keep it honest — the ick is real. Still in? Let’s plan it.', { label: 'Plan it free', href: '#enquire' }),
+    spots: guide('Liking these? We’ll stitch them into a day-by-day plan.', { label: 'Get the plan', href: '#enquire' }),
+    events: guide('Time your trip with one of these — it changes the whole vibe.', { label: 'Plan around it', href: '#enquire' }),
+    roads: guide('Would rather drive? These routes pass right through.', { label: 'Custom road trip', href: `/book/custom?place=${d.slug}` }),
+    faq: guide('Still got a question? A real human replies on WhatsApp.', { label: 'Ask us', href: '#enquire' }),
+    nearby: guide(`Not feeling ${d.name}? These are close — or let the dice decide.`, { label: 'Surprise me', href: '/roll' }),
+  };
+
   const skipNote = d.skip.map((s) => `${s.months.map((m) => monthLabel(m)).join(', ')} (${s.why})`).join('; ');
   const faqs = [
     { q: `What is the best time to visit ${d.name}?`, a: `${bestRange(d)} are the best months to visit ${d.name}.${skipNote ? ` Avoid ${skipNote}.` : ''}` },
@@ -67,8 +95,8 @@ export default async function PlacePage({ params }: { params: Promise<{ slug: st
     },
   ];
 
-  const Section = ({ id, title, sub, children }: { id?: string; title: string; sub?: React.ReactNode; children: React.ReactNode }) => (
-    <section id={id} className="scroll-mt-16">
+  const Section = ({ id, title, sub, children, g }: { id?: string; title: string; sub?: React.ReactNode; children: React.ReactNode; g?: object }) => (
+    <section id={id} className="scroll-mt-16" {...g}>
       <h2 className="text-[28px] font-semibold tracking-headline sm:text-[32px]">{title}</h2>
       {sub && <p className="mt-1 text-[17px] text-mute">{sub}</p>}
       <div className="mt-5">{children}</div>
@@ -102,7 +130,7 @@ export default async function PlacePage({ params }: { params: Promise<{ slug: st
         <Breadcrumbs items={[{ name: 'Places', path: '/places' }, { name: d.state, path: `/state/${d.stateSlug}` }, { name: d.name, path: `/places/${d.slug}` }]} />
       </div>
 
-      <header className="wrap mt-8 grid gap-8 lg:grid-cols-[1.3fr_1fr] lg:items-center">
+      <header className="wrap mt-8 grid gap-8 lg:grid-cols-[1.3fr_1fr] lg:items-center" {...G.hero}>
         <PlaceArt d={d} priority className="aspect-[16/10] rounded-apple shadow-tile" />
         <div>
           <p className="kicker">{d.state} · {d.altitudeM.toLocaleString('en-IN')}m</p>
@@ -142,7 +170,7 @@ export default async function PlacePage({ params }: { params: Promise<{ slug: st
             </dl>
           </section>
 
-          <Section id="best-time" title={`Best time to visit ${d.name}`} sub={`${bestRange(d)}.`}>
+          <Section g={G.best} id="best-time" title={`Best time to visit ${d.name}`} sub={`${bestRange(d)}.`}>
             <div className="card p-7">
               <MonthStrip d={d} />
               {d.skip.length > 0 && (
@@ -155,11 +183,12 @@ export default async function PlacePage({ params }: { params: Promise<{ slug: st
             </div>
           </Section>
 
-          <Section id="weather" title={`${d.name} weather right now`}>
+          <Section g={G.weather} id="weather" title={`${d.name} weather right now`}>
             <WeatherWidget slug={d.slug} name={d.name} />
           </Section>
 
           <Section
+            g={G.reach}
             id="how-to-reach"
             title={`How to reach ${d.name}`}
             sub={<>{d.airport ? <>Nearest airport: <b className="text-ink">{d.airport.name}</b>. </> : 'No nearby airport. '}{d.railhead ? <>Nearest railhead: <b className="text-ink">{d.railhead.name}</b>.</> : 'No practical railhead — road it is.'}</>}
@@ -167,11 +196,11 @@ export default async function PlacePage({ params }: { params: Promise<{ slug: st
             <TravelTable rows={rows} />
           </Section>
 
-          <Section id="solo-or-family" title="Solo, squad or family?">
+          <Section g={G.crew} id="solo-or-family" title="Solo, squad or family?">
             <CrewMeter d={d} />
           </Section>
 
-          <section className="grid gap-5 sm:grid-cols-2">
+          <section className="grid gap-5 sm:grid-cols-2" {...G.doThis}>
             <div className="card p-7">
               <h2 className="text-2xl font-semibold tracking-headline">Do this.</h2>
               <ul className="mt-4 space-y-2.5 text-[15px]">{d.doThis.map((x) => <li key={x} className="flex gap-2"><span className="text-blue">●</span>{x}</li>)}</ul>
@@ -190,7 +219,7 @@ export default async function PlacePage({ params }: { params: Promise<{ slug: st
             return (
               <>
                 {spots.length > 0 && (
-                  <Section id="spots" title={`Best spots around ${d.name}`} sub={spots[0].src === 'google' ? 'The highest-rated places within a short drive, ranked by what travellers actually rate them.' : 'Viewpoints, waterfalls, lakes and sights within a short drive.'}>
+                  <Section g={G.spots} id="spots" title={`Best spots around ${d.name}`} sub={spots[0].src === 'google' ? 'The highest-rated places within a short drive, ranked by what travellers actually rate them.' : 'Viewpoints, waterfalls, lakes and sights within a short drive.'}>
                     <div className="grid gap-4 sm:grid-cols-2">{spots.slice(0, 8).map((s) => <SpotCard key={s.id} s={s} />)}</div>
                     {spots.length > 8 && (
                       <details className="mt-4">
@@ -202,12 +231,12 @@ export default async function PlacePage({ params }: { params: Promise<{ slug: st
                   </Section>
                 )}
                 {evs.length > 0 && (
-                  <Section id="events" title={`Happening in & around ${d.name}`} sub="Time your trip with one of these.">
+                  <Section g={G.events} id="events" title={`Happening in & around ${d.name}`} sub="Time your trip with one of these.">
                     <div className="grid gap-5 sm:grid-cols-2">{evs.map((e) => <EventCard key={e.slug} e={e} wide />)}</div>
                   </Section>
                 )}
                 {roads.length > 0 && (
-                  <Section id="road-trips" title={`Road trips through ${d.name}`}>
+                  <Section g={G.roads} id="road-trips" title={`Road trips through ${d.name}`}>
                     <div className="grid gap-5 sm:grid-cols-2">{roads.map((r) => <RoadTripCard key={r.slug} t={r} />)}</div>
                   </Section>
                 )}
@@ -215,13 +244,13 @@ export default async function PlacePage({ params }: { params: Promise<{ slug: st
             );
           })()}
 
-          <BookSection destSlug={d.slug} placeName={d.name} />
+          <div {...guideQuiet}><BookSection destSlug={d.slug} placeName={d.name} /></div>
 
-          <Section id="enquire" title={`Plan ${d.name} with us`} sub="Free itinerary on WhatsApp within 24 hours. No commitment.">
+          <Section g={guideQuiet} id="enquire" title={`Plan ${d.name} with us`} sub="Free itinerary on WhatsApp within 24 hours. No commitment.">
             <LeadForm kind="enquiry" source={`/places/${d.slug}`} places={[{ slug: d.slug, name: d.name }]} defaultPlace={d.name} />
           </Section>
 
-          <Section id="faq" title="Quick answers">
+          <Section g={G.faq} id="faq" title="Quick answers">
             <div className="card divide-y divide-line/70">
               {faqs.map((f) => (
                 <details key={f.q} className="group px-7 py-5">
@@ -256,7 +285,7 @@ export default async function PlacePage({ params }: { params: Promise<{ slug: st
         </aside>
       </div>
 
-      <section className="wrap mt-24">
+      <section className="wrap mt-24" {...G.nearby}>
         <h2 className="headline">Nearby detours. <span>Add one on.</span></h2>
         <div className="mt-8 grid gap-6 sm:grid-cols-3">
           {getNearby(d).map((n) => <PlaceCard key={n.slug} d={n} />)}

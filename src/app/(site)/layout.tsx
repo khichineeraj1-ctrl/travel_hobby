@@ -1,4 +1,6 @@
-import { GlobalNav, Banner, Footer, FloatingRoll } from '@/components/Chrome';
+import { GlobalNav, Banner, Footer } from '@/components/Chrome';
+import { Guide } from '@/components/Guide';
+import { TakeAway } from '@/components/TakeAway';
 import { JsonLd } from '@/lib/jsonld';
 import { SITE_NAME, SITE_URL } from '@/lib/seo';
 
@@ -24,8 +26,9 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
       <GlobalNav />
       <Banner />
       <main>{children}</main>
+      <TakeAway />
       <Footer />
-      <FloatingRoll />
+      <Guide />
     </>
   );
 }

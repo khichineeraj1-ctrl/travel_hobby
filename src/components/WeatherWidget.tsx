@@ -22,7 +22,7 @@ export function WeatherWidget({ slug, name }: { slug: string; name: string }) {
     return () => { alive = false; };
   }, [slug]);
 
-  if (err) return <div className="card p-7 text-mute">Live weather is unavailable right now. The month guide above shows what {name} is usually like.</div>;
+  if (err) return <div className="card p-7 text-mute">Live weather is unavailable right now. The <a href="#best-time" className="text-blue-link hover:underline">month guide above</a> shows what {name} is usually like — or <a href="#enquire" className="text-blue-link hover:underline">ask us</a> and we’ll check conditions for your dates.</div>;
   if (!w) return <div className="card h-48 animate-pulse p-7 text-faint">Checking the sky over {name}…</div>;
 
   return (

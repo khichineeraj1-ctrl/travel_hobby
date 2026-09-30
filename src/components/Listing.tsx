@@ -1,6 +1,9 @@
 import Link from 'next/link';
+import { guide, guideQuiet } from '@/lib/guide';
 import { Breadcrumbs } from './Breadcrumbs';
 import { PlaceGrid } from './PlaceCard';
+import { getByMonth } from '@/lib/repo';
+import { currentMonth, monthLabel } from '@/lib/months';
 import { JsonLd } from '@/lib/jsonld';
 import { itemListLd } from '@/lib/seo';
 import type { Destination } from '@/lib/types';
@@ -29,10 +32,10 @@ export function Listing(props: {
     <div className="wrap">
       <JsonLd data={itemListLd(props.h1, props.items.map((d) => ({ name: d.name, path: `/places/${d.slug}` })))} />
       <PageHead crumbs={props.crumbs} kicker={props.kicker} h1={props.h1} intro={props.intro} />
-      <div className="mt-10">
-        {props.items.length ? <PlaceGrid items={props.items} from={props.from} /> : <p className="card p-8 text-mute">Nothing here yet — we’re scouting.</p>}
+      <div className="mt-10" {...guide('Tap any place for real travel time, live weather, costs and the honest ick.', { label: 'Match me instead', href: '/plan-my-trip' })}>
+        {props.items.length ? <PlaceGrid items={props.items} from={props.from} /> : <EmptyPicks />}
       </div>
-      {props.children && <div className="mt-20 space-y-12">{props.children}</div>}
+      {props.children && <div className="mt-20 space-y-12" {...guide('Nothing clicking? Try a different angle — or let the dice decide.', { label: 'Surprise me', href: '/roll' })}>{props.children}</div>}
     </div>
   );
 }
@@ -57,6 +60,20 @@ export function IndexTiles({ items }: { items: { href: string; title: string; su
           {i.sub && <p className="mt-1 text-[15px] text-mute">{i.sub}</p>}
         </Link>
       ))}
+    </div>
+  );
+}
+
+/** Empty listing → still hand them something: what's peaking this month + a human. */
+function EmptyPicks() {
+  const m = currentMonth();
+  return (
+    <div>
+      <div className="card flex flex-wrap items-center justify-between gap-4 p-6">
+        <p className="text-[17px]"><b>Still scouting this one.</b> <span className="text-mute">Tell us what you’re after and we’ll find it — or try these, peaking in {monthLabel(m)}.</span></p>
+        <Link href="/book/custom" className="btn-secondary btn-sm">Ask a human</Link>
+      </div>
+      <div className="mt-6"><PlaceGrid items={getByMonth(m).slice(0, 6)} /></div>
     </div>
   );
 }

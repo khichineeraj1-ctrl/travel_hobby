@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { guide, guideQuiet } from '@/lib/guide';
 import { Planner } from '@/components/Planner';
 import { Tile } from '@/components/PlaceCard';
 import { Rail } from '@/components/Rail';
@@ -29,7 +30,7 @@ export default function Home() {
   return (
     <>
       {/* hero */}
-      <section className="wrap grid gap-10 pb-6 pt-14 sm:pt-20 lg:grid-cols-2 lg:items-end">
+      <section className="wrap grid gap-10 pb-6 pt-14 sm:pt-20 lg:grid-cols-2 lg:items-end" {...guide('Hey 👋 no idea where to go? Tell us 4 things and we’ll match you in 10 seconds.', { label: 'Match me', href: '#planner' })}>
         <h1 className="text-[64px] font-semibold leading-none tracking-tightest sm:text-[96px]">{s.hero.title}</h1>
         <div className="lg:text-right">
           <p className="text-[28px] font-semibold leading-tight tracking-headline sm:text-[32px] lg:ml-auto lg:max-w-md">{s.hero.tagline}</p>
@@ -42,7 +43,7 @@ export default function Home() {
       </section>
 
       {/* vibe rail — like the store's category nav */}
-      <section aria-label="Browse by vibe" className="mt-8">
+      <section aria-label="Browse by vibe" className="mt-8" {...guide('Pick a mood, not a destination. Tap any vibe.', { label: 'Or let the dice pick', href: '/roll' })}>
         <Rail label="Vibes">
           {vibes.map((v) => (
             <Link key={v.id} href={`/vibe/${v.id}`} className="group flex w-[128px] shrink-0 snap-start flex-col items-center text-center">
@@ -60,7 +61,7 @@ export default function Home() {
       </section>
 
       {/* the latest → peaking now */}
-      <section className="mt-16">
+      <section className="mt-16" {...guide(`These are at their best right now. Swipe → and tap one that looks like you.`, { label: 'See all', href: '/places' })}>
         <h2 className="wrap headline">
           {s.rail.title} <span>{s.rail.subtitle.replace('this month', `in ${monthLabel(m)}`)}</span>
         </h2>
@@ -78,7 +79,7 @@ export default function Home() {
         const missed = recentPastEvents(db, 30);
         if (!soon.length && !missed.length) return null;
         return (
-          <section className="mt-16">
+          <section className="mt-16" {...guide(soon[0] ? `${soon[0].name} is coming up. Trips around events sell out first.` : 'Missed one? Get alerts before the next edition.', { label: soon[0] ? 'Plan around it' : 'All events', href: soon[0] ? `/events/${soon[0].slug}` : '/events' })}>
             <div className="wrap flex flex-wrap items-end justify-between gap-4">
               <h2 className="headline">Happening soon. <span>Events worth the journey.</span></h2>
               <Link href="/events" className="link-arrow text-[17px]">All events</Link>
@@ -111,7 +112,7 @@ export default function Home() {
         const m = currentMonth();
         trips.sort((a, b) => Number(b.bestMonths.includes(m)) - Number(a.bestMonths.includes(m)));
         return (
-          <section className="mt-16">
+          <section className="mt-16" {...guide('Want the journey to be the trip? Real drive hours, fuel gaps and permits here.', { label: 'All road trips', href: '/road-trips' })}>
             <div className="wrap flex flex-wrap items-end justify-between gap-4">
               <h2 className="headline">Road trips. <span>Routes, drive hours, fuel gaps.</span></h2>
               <Link href="/road-trips" className="link-arrow text-[17px]">All road trips</Link>
@@ -127,7 +128,7 @@ export default function Home() {
         const trips = upcomingDepartures(db).slice(0, 6);
         if (!trips.length) return null;
         return (
-          <section className="mt-16">
+          <section className="mt-16" {...guide('Don’t want to plan at all? Join a small group — nothing to pay today.', { label: 'See trips', href: '/trips' })}>
             <div className="wrap flex flex-wrap items-end justify-between gap-4">
               <h2 className="headline">Upcoming trips. <span>Small groups. Reserve now, pay later.</span></h2>
               <Link href="/trips" className="link-arrow text-[17px]">See all trips</Link>
@@ -144,7 +145,7 @@ export default function Home() {
       })()}
 
       {/* planner */}
-      <section id="planner" className="mt-16 scroll-mt-16">
+      <section id="planner" className="mt-16 scroll-mt-16" {...guideQuiet}>
         <div className="wrap">
           <h2 className="headline">{s.planner.title} <span>{s.planner.subtitle}</span></h2>
           <div className="mt-8">
@@ -159,7 +160,7 @@ export default function Home() {
       </section>
 
       {/* leaving from */}
-      <section className="mt-20">
+      <section className="mt-20" {...guide('Pick your city — every place shows real door-to-door travel time from there.', { label: 'All cities', href: '/from' })}>
         <h2 className="wrap headline">Leaving from. <span>Sorted by how fast you can actually get there.</span></h2>
         <Rail label="Starting cities">
           {cities.map((c) => (
@@ -175,7 +176,7 @@ export default function Home() {
       </section>
 
       {/* enquiry band */}
-      <section className="wrap mt-16">
+      <section className="wrap mt-16" {...guideQuiet}>
         <div className="card flex flex-wrap items-center justify-between gap-6 bg-ink p-8 text-white sm:p-12">
           <div className="max-w-xl">
             <p className="text-[28px] font-semibold leading-tight tracking-headline sm:text-[36px]">Rather talk to a human?</p>
@@ -189,7 +190,7 @@ export default function Home() {
       </section>
 
       {/* who's coming */}
-      <section className="wrap mt-16">
+      <section className="wrap mt-16" {...guide('Solo, couple, squad or fam — every place is rated for your crew.', { label: 'Get a custom plan', href: '/book/custom' })}>
         <h2 className="headline">Who’s coming. <span>Every place is rated for your crew.</span></h2>
         <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {[
@@ -208,7 +209,7 @@ export default function Home() {
       </section>
 
       {/* why */}
-      <section className="wrap mt-16">
+      <section className="wrap mt-16" {...guide('No ads, no paid rankings. Just places worth the detour.', { label: 'Start exploring', href: '/places' })}>
         <h2 className="headline">Why Beyond Explored. <span>Not another booking site.</span></h2>
         <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {s.pitch.map((p) => (

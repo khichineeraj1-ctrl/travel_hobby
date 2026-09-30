@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { guide, guideQuiet } from '@/lib/guide';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { readDb } from '@/lib/db';
@@ -82,7 +83,7 @@ export default async function RoadTripPage({ params }: { params: Promise<{ slug:
         <div className="space-y-14">
           <p className="text-xl leading-relaxed">{t.about}</p>
 
-          <section>
+          <section {...guide('Hotels, fuel stops, permits — we can set the whole route up for you.', { label: 'Set it up', href: '#enquire' })}>
             <h2 className="text-[28px] font-semibold tracking-headline sm:text-[32px]">The route, day by day</h2>
             <ol className="mt-6 space-y-0">
               {plan.map(({ s, leg, label }, i) => (
@@ -104,7 +105,7 @@ export default async function RoadTripPage({ params }: { params: Promise<{ slug:
             <p className="mt-6 text-xs text-faint">{L.some((l) => l.routed) ? 'Distances from OpenStreetMap road routing; hours adjusted for mountain driving.' : 'Distances and hours are estimates for planning.'} Mountain roads change with weather and roadworks.</p>
           </section>
 
-          <section>
+          <section {...guide('Got your dates? Tell us and we’ll check roads and stays for them.', { label: 'Check my dates', href: '#enquire' })}>
             <h2 className="text-[28px] font-semibold tracking-headline">When to go</h2>
             <div className="card mt-5 p-6">
               <div className="grid grid-cols-6 gap-2 sm:grid-cols-12">
@@ -128,7 +129,7 @@ export default async function RoadTripPage({ params }: { params: Promise<{ slug:
             </section>
           )}
 
-          <section id="enquire">
+          <section id="enquire" {...guideQuiet}>
             <h2 className="text-[28px] font-semibold tracking-headline">Want us to set it up?</h2>
             <p className="mb-5 mt-1 text-mute">Car + driver or self-drive, stays on every stop, permits sorted. Free plan on WhatsApp.</p>
             <LeadForm kind="enquiry" source={`/road-trips/${t.slug}`} places={[{ slug: t.slug, name: `Road trip: ${t.title}` }]} defaultPlace={`Road trip: ${t.title}`} />
@@ -151,7 +152,7 @@ export default async function RoadTripPage({ params }: { params: Promise<{ slug:
       </div>
 
       {others.length > 0 && (
-        <section className="wrap mt-24">
+        <section className="wrap mt-24" {...guide('Not this route? Keep scrolling — or let the dice pick your next drive.', { label: 'Surprise me', href: '/roll' })}>
           <h2 className="headline">More road trips. <span>Keep driving.</span></h2>
           <div className="mt-8 grid gap-6 sm:grid-cols-3">{others.map((o) => <RoadTripCard key={o.slug} t={o} />)}</div>
         </section>

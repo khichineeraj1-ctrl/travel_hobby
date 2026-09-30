@@ -1,4 +1,5 @@
 import { PageHead } from '@/components/Listing';
+import { guide, guideQuiet } from '@/lib/guide';
 import { EventCard } from '@/components/EventCard';
 import { readDb } from '@/lib/db';
 import { recentPastEvents, upcomingEvents } from '@/lib/events';
@@ -22,7 +23,7 @@ export default function Events() {
     byMonth.set(k, [...(byMonth.get(k) ?? []), e]);
   });
   return (
-    <div className="wrap">
+    <div className="wrap" {...guide('Spot one you like? Tap it — we’ll show how to get there and plan around it.', { label: 'Plan my trip', href: '/plan-my-trip' })}>
       <JsonLd
         data={upcoming.map((e) => ({
           '@context': 'https://schema.org', '@type': 'Event', name: e.name, startDate: e.startDate, endDate: e.endDate,

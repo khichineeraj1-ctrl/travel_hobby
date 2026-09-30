@@ -1,4 +1,5 @@
 import { PageHead } from '@/components/Listing';
+import { guide, guideQuiet } from '@/lib/guide';
 import { TripCard } from '@/components/BookSection';
 import { readDb } from '@/lib/db';
 import { seatsLeft, upcomingDepartures, toDate } from '@/lib/booking';
@@ -23,7 +24,7 @@ export default function Trips() {
   const name = (slug: string) => db.destinations.find((d) => d.slug === slug)?.name;
 
   return (
-    <div className="wrap">
+    <div className="wrap" {...guide('Dates don’t work? We’ll build a trip around yours instead.', { label: 'Custom trip', href: '/book/custom' })}>
       <JsonLd
         data={trips.map((t) => ({
           '@context': 'https://schema.org',

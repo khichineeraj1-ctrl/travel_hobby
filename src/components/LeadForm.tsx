@@ -18,6 +18,13 @@ export function LeadForm({ kind, source, places = [], defaultPlace, compact = fa
       <div className={`${kind === 'newsletter' ? '' : 'card p-8'} text-center`} role="status">
         <p className="text-3xl">✓</p>
         <p className="mt-2 text-xl font-semibold">{state.message}</p>
+        <p className="mt-3 text-sm text-mute">While you wait:</p>
+        <div className="mt-2 flex flex-wrap justify-center gap-2">
+          <a href="/spots" className="chip !py-1.5 !text-sm">★ Top spots</a>
+          <a href="/events" className="chip !py-1.5 !text-sm">🎉 Events coming up</a>
+          <a href="/road-trips" className="chip !py-1.5 !text-sm">🛣️ Road trips</a>
+          <a href="/roll" className="chip !py-1.5 !text-sm">🎲 Surprise me</a>
+        </div>
       </div>
     );
   }

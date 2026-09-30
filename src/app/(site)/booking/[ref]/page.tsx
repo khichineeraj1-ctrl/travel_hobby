@@ -1,6 +1,11 @@
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { guide } from '@/lib/guide';
+import { spotsFor } from '@/lib/places';
+import { eventsNear } from '@/lib/events';
+import { SpotCard } from '@/components/SpotList';
+import { EventCard } from '@/components/EventCard';
 import { readDb } from '@/lib/db';
 import { fmtRange, KIND_LABEL, nights, STATUS_LABEL } from '@/lib/booking';
 import { inr } from '@/lib/format';
@@ -22,7 +27,7 @@ export default async function BookingPage({ params, searchParams }: { params: Pr
   const tone = { pending: 'bg-[#fff4e5] text-eyebrow', confirmed: 'bg-blue-soft text-blue-link', paid: 'bg-[#e9f7ee] text-good', cancelled: 'bg-paper text-mute' }[b.status];
 
   return (
-    <div className="wrap-narrow py-14">
+    <div className="wrap-narrow py-14" {...guide(b.status === 'cancelled' ? 'Plans changed? No stress — we’ll help you find another trip.' : `You’re in ✓ We’ll confirm on WhatsApp soon. Quote ${b.id} if you message us.`, b.status === 'cancelled' ? { label: 'Find another', href: '/plan-my-trip' } : undefined)}>
       <div className="card p-8 text-center sm:p-12">
         <p className="text-5xl">{b.status === 'cancelled' ? '✕' : '✓'}</p>
         <h1 className="mt-4 text-[36px] font-semibold tracking-tightest">
@@ -49,6 +54,18 @@ export default async function BookingPage({ params, searchParams }: { params: Pr
         </dl>
         <p className="mt-6 border-t border-line pt-5 text-sm text-mute">Bookmark this page — it’s your private link to check status. Quote <b className="text-ink">{b.id}</b> if you message us.</p>
       </div>
+      {place && (() => {
+        const spots = spotsFor(place.slug).slice(0, 4);
+        const evs = eventsNear(readDb(), place).slice(0, 2);
+        if (!spots.length && !evs.length) return null;
+        return (
+          <div className="mt-10 text-left">
+            <h2 className="text-2xl font-semibold tracking-headline">While we confirm — start dreaming.</h2>
+            {spots.length > 0 && <div className="mt-5 grid gap-4 sm:grid-cols-2">{spots.map((sp) => <SpotCard key={sp.id} s={sp} />)}</div>}
+            {evs.length > 0 && <div className="mt-5 grid gap-5 sm:grid-cols-2">{evs.map((e) => <EventCard key={e.slug} e={e} />)}</div>}
+          </div>
+        );
+      })()}
       <div className="mt-8 flex flex-wrap justify-center gap-3">
         {place && <Link href={`/places/${place.slug}`} className="btn-secondary">Read up on {place.name}</Link>}
         <Link href="/" className="btn">Back to exploring</Link>

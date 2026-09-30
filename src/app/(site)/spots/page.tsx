@@ -1,5 +1,8 @@
 import Link from 'next/link';
+import { guide, guideQuiet } from '@/lib/guide';
 import { PageHead } from '@/components/Listing';
+import { PlaceGrid } from '@/components/PlaceCard';
+import { getByMonth } from '@/lib/repo';
 import { SpotAttribution, SpotCard } from '@/components/SpotList';
 import { readDb } from '@/lib/db';
 import { spotsFor } from '@/lib/places';
@@ -38,7 +41,7 @@ export default async function Spots({ searchParams }: { searchParams: Promise<{ 
   const href = (t: string, sn = season) => `/spots?${new URLSearchParams({ ...(t !== 'all' ? { type: t } : {}), ...(sn ? { season: sn } : {}) })}`;
 
   return (
-    <div className="wrap">
+    <div className="wrap" {...guide('Found a spot you love? Open its place page — we’ll plan the trip around it.', { label: 'Free itinerary', href: '/plan-my-trip' })}>
       <PageHead crumbs={[{ name: 'Top spots', path: '/spots' }]} kicker="More choices" h1="Top spots." intro="The best-rated waterfalls, viewpoints, lakes, treks and ruins around every place on here. Pick a base, then pick your detours." />
       <div className="mt-8 flex flex-wrap gap-2">
         {FILTERS.map((x) => (
@@ -55,7 +58,11 @@ export default async function Spots({ searchParams }: { searchParams: Promise<{ 
           <SpotAttribution spots={all.map((x) => x.s)} />
         </>
       ) : (
-        <p className="mt-10 text-lg text-mute">Nothing here yet — spots are still being fetched. Check back in a few minutes.</p>
+        <div className="mt-10">
+          <p className="text-lg text-mute">{type !== 'all' || season ? 'No spots match that filter yet.' : 'We’re still mapping the spots around each place.'} Meanwhile, these places are at their best in {monthLabel(m)}:</p>
+          <div className="mt-6"><PlaceGrid items={getByMonth(m).slice(0, 6)} /></div>
+          {(type !== 'all' || season) && <Link href="/spots" className="link-arrow mt-6 inline-block text-[17px]">Clear filters</Link>}
+        </div>
       )}
     </div>
   );

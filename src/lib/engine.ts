@@ -133,3 +133,26 @@ export function roll(input: PlanInput, seed = Math.random()): Suggestion | null 
   }
   return pool[0];
 }
+
+/**
+ * No exact matches? Never leave them empty-handed: relax one constraint at a time
+ * (crowd filter, +days, vibes, budget) and return the first few that produce results.
+ */
+export function nearMisses(input: PlanInput): { label: string; input: PlanInput; results: Suggestion[] }[] {
+  const tries: { label: string; input: PlanInput }[] = [];
+  if (input.maxCrowd) tries.push({ label: 'if you’re OK with a few more people around', input: { ...input, maxCrowd: undefined } });
+  tries.push({ label: `with ${input.days + 2} days instead of ${input.days}`, input: { ...input, days: input.days + 2 } });
+  if (input.vibes.length) tries.push({ label: 'with any vibe', input: { ...input, vibes: [] } });
+  tries.push({ label: `with ~${inr(Math.round(input.budget * 1.5 / 100) * 100)}/day`, input: { ...input, budget: Math.round(input.budget * 1.5 / 100) * 100 } });
+  tries.push({ label: 'with everything relaxed a little', input: { ...input, maxCrowd: undefined, vibes: [], days: input.days + 2 } });
+  const out: { label: string; input: PlanInput; results: Suggestion[] }[] = [];
+  const seen = new Set<string>();
+  for (const t of tries) {
+    const r = suggest(t.input, 3).filter((x) => !seen.has(x.destination.slug));
+    if (!r.length) continue;
+    r.forEach((x) => seen.add(x.destination.slug));
+    out.push({ ...t, results: r });
+    if (out.length >= 2) break;
+  }
+  return out;
+}

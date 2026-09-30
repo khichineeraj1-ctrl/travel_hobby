@@ -74,7 +74,7 @@ export function Footer() {
   return (
     <footer className="mt-24 bg-paper text-xs text-mute">
       <div className="wrap-narrow border-t border-line py-5">
-        <div className="grid gap-6 border-b border-line pb-8 pt-4 sm:grid-cols-[1fr_1.4fr] sm:items-center">
+        <div id="newsletter" className="grid scroll-mt-24 gap-6 border-b border-line pb-8 pt-4 sm:grid-cols-[1fr_1.4fr] sm:items-center" data-guide="" data-guide-quiet="1">
           <div>
             <p className="text-xl font-semibold tracking-headline text-ink">Hidden spots, monthly.</p>
             <p className="mt-1 text-sm">New places and trip drops before anyone else.</p>

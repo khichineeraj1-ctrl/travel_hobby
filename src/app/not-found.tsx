@@ -1,5 +1,7 @@
 import Link from 'next/link';
 import { GlobalNav, Footer } from '@/components/Chrome';
+import { TakeAway } from '@/components/TakeAway';
+import { Guide } from '@/components/Guide';
 
 export default function NotFound() {
   return (
@@ -14,7 +16,9 @@ export default function NotFound() {
           <Link href="/roll" className="btn-secondary" prefetch={false}>Surprise me</Link>
         </div>
       </div>
+      <TakeAway />
       <Footer />
+      <Guide />
     </>
   );
 }
