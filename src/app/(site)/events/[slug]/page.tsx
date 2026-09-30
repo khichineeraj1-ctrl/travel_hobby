@@ -142,7 +142,7 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
           {e.sourceUrl && (
             <div className="card p-6 text-sm">
               <p className="text-mute">Dates source</p>
-              <a href={e.sourceUrl} target="_blank" rel="noopener nofollow" className="link-arrow mt-1 break-all">{new URL(e.sourceUrl).hostname.replace('www.', '')}</a>
+              <a href={e.sourceUrl} target="_blank" rel="noopener nofollow" className="link-arrow mt-1 break-all">{(() => { try { return new URL(e.sourceUrl!).hostname.replace('www.', ''); } catch { return 'source'; } })()}</a>
               <p className="mt-2 text-xs text-faint">Always double-check with organisers before booking travel.</p>
             </div>
           )}
