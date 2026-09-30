@@ -110,6 +110,15 @@ Admin → Overview shows how much of the cache is filled and has a "Fetch missin
 
 Routers assume empty roads at the speed limit, so times are adjusted: ×1.15 for traffic, extra time for hill roads (`roadFactor`), plus breaks. Flights and trains are still modelled, because there is no free, reliable API for them.
 
+## Best spots nearby (Google Maps / OpenStreetMap)
+
+Every place page gets a **Best spots around …** section, and `/spots` lists them all with filters (hidden gems, water, views, nature, heritage, in season now).
+
+- **Google Maps (recommended):** set `GOOGLE_MAPS_API_KEY` in Railway (Google Cloud → enable *Places API (New)* → create an API key, restrict it to that API). Spots are ranked by rating × review count; defaults: rating ≥ 4.2, ≥ 30 reviews, within 35 km (change in *Site content → Best spots nearby*). "Hidden gem" = 4.5★+ with under 1,500 reviews. Two calls per place per refresh ≈ 64 calls/month for 32 places — well inside Google's free monthly usage.
+- **Without a key:** free OpenStreetMap data (named viewpoints, waterfalls, lakes, forts, peaks), ranked by notability. No ratings.
+- Refreshes on start-up, daily for anything older than 25 days (Google allows caching up to 30), and when you save a place. *Admin → Nearby spots* shows everything, lets you hide a spot, or re-fetch a place.
+- `PLACES_PROVIDER=off|osm` to disable or force OSM.
+
 ## Road trips & events
 
 **Road trips** (`/road-trips`, `/road-trips/<slug>`) are multi-stop routes. Each page has:

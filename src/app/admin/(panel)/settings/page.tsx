@@ -70,6 +70,17 @@ export default async function Settings({ searchParams }: { searchParams: Promise
           <Check name="autoPublishEvents" label="Publish incoming events automatically (only ones with a source link that haven’t ended; others go to Suggested)" defaultChecked={s.autoPublishEvents !== false} />
         </Panel>
 
+        <Panel title="Best spots nearby" sub="Filters for spots discovered around each place. Ratings/reviews apply to Google Maps data only.">
+          <div className="grid gap-4 sm:grid-cols-3">
+            <label className="block text-sm"><span className="text-mute">Minimum rating</span>
+              <input name="spotMinRating" type="number" step="0.1" min="3" max="5" defaultValue={s.spots?.minRating ?? 4.2} className="field mt-1" /></label>
+            <label className="block text-sm"><span className="text-mute">Minimum reviews</span>
+              <input name="spotMinReviews" type="number" min="0" defaultValue={s.spots?.minReviews ?? 30} className="field mt-1" /></label>
+            <label className="block text-sm"><span className="text-mute">Search radius (km)</span>
+              <input name="spotRadiusKm" type="number" min="5" max="50" defaultValue={s.spots?.radiusKm ?? 35} className="field mt-1" /></label>
+          </div>
+        </Panel>
+
         <Panel title="Footer">
           <Field label="Disclaimer"><Area name="footerNote" rows={2} defaultValue={s.footerNote} /></Field>
         </Panel>

@@ -7,6 +7,9 @@ export async function register() {
   const run = () =>
     import('./lib/routing')
       .then((m) => m.refreshRoutesInBackground())
+      .catch(() => {})
+      .then(() => import('./lib/places'))
+      .then((m) => m.refreshSpotsInBackground())
       .catch(() => {});
   setTimeout(run, 20_000); // let the server settle / healthcheck pass first
   setInterval(run, 24 * 3600 * 1000).unref?.();

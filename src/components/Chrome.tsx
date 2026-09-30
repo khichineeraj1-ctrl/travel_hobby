@@ -7,6 +7,7 @@ import { SITE_NAME } from '@/lib/seo';
 
 const NAV = [
   { href: '/places', label: 'Explore' },
+  { href: '/spots', label: 'Top spots' },
   { href: '/events', label: 'Events' },
   { href: '/road-trips', label: 'Road trips' },
   { href: '/trips', label: 'Group trips' },
@@ -65,7 +66,7 @@ export function Banner() {
 export function Footer() {
   const { footerNote } = getSettings();
   const cols = [
-    { h: 'Explore', l: [['All places', '/places'], ['Events', '/events'], ['Road trips', '/road-trips'], ['By vibe', '/vibe'], ['By month', '/when'], ['By state', '/state']] },
+    { h: 'Explore', l: [['All places', '/places'], ['Top spots', '/spots'], ['Events', '/events'], ['Road trips', '/road-trips'], ['By vibe', '/vibe'], ['By month', '/when'], ['By state', '/state']] },
     { h: 'Start from', l: [['Delhi', '/from/delhi'], ['Mumbai', '/from/mumbai'], ['Bengaluru', '/from/bengaluru'], ['All cities', '/from']] },
     { h: 'Who’s going', l: [['Solo', '/for/solo'], ['Couple', '/for/duo'], ['Squad', '/for/squad'], ['Family', '/for/fam']] },
     { h: 'Book', l: [['Upcoming trips', '/trips'], ['Custom trip', '/book/custom'], ['Plan my trip', '/plan-my-trip'], ['Surprise me', '/roll'], ['List your property', '/partners']] },

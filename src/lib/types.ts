@@ -81,6 +81,7 @@ export interface SiteSettings {
   pitch: { title: string; body: string }[];
   footerNote: string;
   autoPublishEvents?: boolean; // scout/ingest events go live immediately (default true)
+  spots?: { minRating: number; minReviews: number; radiusKm: number };
 }
 
 /* ---------- booking engine ---------- */
@@ -240,7 +241,27 @@ export interface Db {
   events: TravelEvent[];
   routeCache?: Record<string, CachedRoute>; // real road distances/times from a routing API
   routeMeta?: { lastRun?: string; lastError?: string; provider?: string; fetched?: number };
+  spots?: Record<string, SpotSet>; // destSlug → best-rated spots nearby (Google Places / OpenStreetMap)
+  spotMeta?: { lastRun?: string; lastError?: string; provider?: string; fetched?: number };
+  hiddenSpots?: string[]; // spot ids the admin has hidden
 }
+
+/** A real, mappable point of interest near a destination. */
+export interface Spot {
+  id: string; // google place id or osm "node/123"
+  name: string;
+  lat: number;
+  lng: number;
+  kind: string; // "Viewpoint", "Waterfall", "Hiking area"…
+  rating?: number; // Google only
+  reviews?: number; // Google only
+  mapsUrl: string;
+  distKm: number; // straight-line from the destination
+  gem?: boolean; // highly rated but not yet over-reviewed
+  src: 'google' | 'osm';
+}
+
+export interface SpotSet { at: string; src: 'google' | 'osm'; spots: Spot[]; error?: string }
 
 /** One origin→destination road route, from OSRM / OpenRouteService. min = free-flow minutes. */
 export interface CachedRoute { km: number; min: number; at: string; src: string; none?: boolean }

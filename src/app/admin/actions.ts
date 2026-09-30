@@ -10,6 +10,7 @@ import { readDb, updateDb, UPLOAD_DIR } from '@/lib/db';
 import type { Crew, Destination, EventCategory, Hub, Month, OriginCity, RoadStop, Signal, Terrain, Vibe } from '@/lib/types';
 import { addSuggestions } from '@/lib/eventIngest';
 import { refreshRoutes, refreshRoutesInBackground } from '@/lib/routing';
+import { refreshSpots, refreshSpotsInBackground, SPOT_DEFAULTS } from '@/lib/places';
 
 /* ---------- helpers ---------- */
 
@@ -147,6 +148,7 @@ export async function saveDestination(fd: FormData) {
   });
   refresh();
   refreshRoutesInBackground();
+  refreshSpotsInBackground([d.slug]);
   back(`/admin/destinations/${d.slug}`, existing ? 'Saved. The live site is updated.' : 'Place created.');
 }
 
@@ -289,6 +291,11 @@ export async function saveSettings(fd: FormData) {
       pitch,
       footerNote: str(fd, 'footerNote'),
       autoPublishEvents: fd.get('autoPublishEvents') === 'on',
+      spots: {
+        minRating: clamp(num(fd, 'spotMinRating', SPOT_DEFAULTS.minRating), 3, 5),
+        minReviews: clamp(Math.round(num(fd, 'spotMinReviews', SPOT_DEFAULTS.minReviews)), 0, 100000),
+        radiusKm: clamp(Math.round(num(fd, 'spotRadiusKm', SPOT_DEFAULTS.radiusKm)), 5, 50),
+      },
     };
   });
   refresh();
@@ -589,4 +596,30 @@ export async function refreshRoadTimes() {
   if (r.provider === 'off') back('/admin', 'Road routing is turned off (ROUTING_PROVIDER=off).', 'err');
   if (r.error) back('/admin', `Routing stopped: ${r.error}. Fetched ${r.fetched}; ${r.remaining} still missing — try again in a minute.`, 'err');
   back('/admin', r.requested === 0 ? 'All road times are already up to date.' : `Fetched ${r.fetched} road routes. ${r.remaining ? `${r.remaining} left — click again to continue.` : 'All done.'}`);
+}
+
+/* ---------- nearby spots (Google Places / OpenStreetMap) ---------- */
+
+export async function refreshNearbySpots(fd: FormData) {
+  await requireAdmin();
+  const only = str(fd, 'slug');
+  const r = await refreshSpots({ budgetMs: 50_000, only: only ? [only] : [] });
+  refresh();
+  const to = '/admin/spots';
+  if (r.provider === 'off') back(to, 'Spot discovery is turned off (PLACES_PROVIDER=off).', 'err');
+  if (r.error) back(to, `Stopped: ${r.error}. Updated ${r.fetched} place(s); ${r.remaining} still due.`, 'err');
+  back(to, r.requested === 0 ? 'Every place already has fresh spots.' : `Updated spots for ${r.fetched} place(s).${r.remaining ? ` ${r.remaining} left — click again to continue.` : ''}`);
+}
+
+export async function toggleSpot(fd: FormData) {
+  await requireAdmin();
+  const id = str(fd, 'id');
+  if (!id) return;
+  updateDb((db) => {
+    const h = new Set(db.hiddenSpots ?? []);
+    if (h.has(id)) h.delete(id); else h.add(id);
+    db.hiddenSpots = [...h];
+  });
+  refresh();
+  revalidatePath('/admin/spots');
 }

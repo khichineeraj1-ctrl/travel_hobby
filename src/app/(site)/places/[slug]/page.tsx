@@ -12,6 +12,8 @@ import { FromBanner } from '@/components/FromBanner';
 import { BookSection } from '@/components/BookSection';
 import { LeadForm } from '@/components/LeadForm';
 import { EventCard } from '@/components/EventCard';
+import { SpotAttribution, SpotCard } from '@/components/SpotList';
+import { spotsFor } from '@/lib/places';
 import { RoadTripCard } from '@/components/RoadTrip';
 import { eventsNear } from '@/lib/events';
 import { readDb } from '@/lib/db';
@@ -178,8 +180,21 @@ export default async function PlacePage({ params }: { params: Promise<{ slug: st
             const db = readDb();
             const evs = eventsNear(db, d);
             const roads = db.roadTrips.filter((r) => r.published && r.stops.some((s) => s.destSlug === d.slug));
+            const spots = spotsFor(d.slug);
             return (
               <>
+                {spots.length > 0 && (
+                  <Section id="spots" title={`Best spots around ${d.name}`} sub={spots[0].src === 'google' ? 'The highest-rated places within a short drive, ranked by what travellers actually rate them.' : 'Viewpoints, waterfalls, lakes and sights within a short drive.'}>
+                    <div className="grid gap-4 sm:grid-cols-2">{spots.slice(0, 8).map((s) => <SpotCard key={s.id} s={s} />)}</div>
+                    {spots.length > 8 && (
+                      <details className="mt-4">
+                        <summary className="link-arrow cursor-pointer list-none text-[15px]">{spots.length - 8} more spots</summary>
+                        <div className="mt-4 grid gap-4 sm:grid-cols-2">{spots.slice(8).map((s) => <SpotCard key={s.id} s={s} />)}</div>
+                      </details>
+                    )}
+                    <SpotAttribution spots={spots} />
+                  </Section>
+                )}
                 {evs.length > 0 && (
                   <Section id="events" title={`Happening in & around ${d.name}`} sub="Time your trip with one of these.">
                     <div className="grid gap-5 sm:grid-cols-2">{evs.map((e) => <EventCard key={e.slug} e={e} wide />)}</div>
