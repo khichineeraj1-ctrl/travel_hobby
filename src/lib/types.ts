@@ -249,6 +249,8 @@ export interface Db {
   hiddenSpots?: string[]; // spot ids the admin has hidden
   stayRates?: Record<string, StayRates>; // destSlug → live hotel prices (LiteAPI)
   rateMeta?: { lastRun?: string; lastError?: string; fetched?: number };
+  assistantUsage?: { day: string; count: number }; // voice assistant requests today (cost guard)
+  assistantLog?: { at: string; q: string }[]; // last questions asked (no personal data) — shown in admin
 }
 
 /** Live nightly room prices near a destination (1 room, 2 adults, taxes incl., INR). */

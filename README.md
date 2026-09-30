@@ -132,6 +132,25 @@ Budgets come from real hotel rates, not scraping. [LiteAPI](https://liteapi.trav
 - Places with fewer than 3 priced stays (remote treks) keep the hand-written budget, shown as "estimate".
 - Refreshes weekly per place, retries failures every 6 h, and re-fetches when you save a place. See *Admin → Stay prices*.
 
+## Ask Beyond — voice assistant
+
+A mic ("Ask") button sits in the nav, in the on-screen guide and in the home hero. Visitors speak or type, for example *"somewhere cold and quiet in December, 3 days from Delhi"*. It answers out loud in 1–3 sentences and shows tappable cards for places, events and road trips, plus "See all matches".
+
+- **Voice:** the browser's built-in speech recognition (en-IN) and speech output, free. Works in Chrome, Edge and Safari. Other browsers get text only.
+- **Brain:** Claude, via `ANTHROPIC_API_KEY` in Railway. It uses the Messages API with tools that read **only our database**:
+  - `search_places`, the same engine as the planner
+  - `get_place`: facts, live prices, spots and events
+  - `find_events`
+  - `road_trips`
+  - `save_lead`: a WhatsApp enquiry, saved only when the visitor gives their number and agrees
+- **Model:** default `claude-haiku-4-5`, which is fast and cheap (roughly ₹0.5–1 a question). Set `ASSISTANT_MODEL` to change it.
+- **Cost guards:**
+  - 25 questions per visitor per 10 minutes
+  - `ASSISTANT_DAILY_LIMIT` a day in total (default 400); after that it points to the planner
+  - `ASSISTANT=off` disables it
+- **Admin → Overview:** shows questions asked today and the latest questions (no personal data). Leads land in Leads marked "voice assistant".
+- **Hidden:** with no key, the mic button doesn't appear anywhere.
+
 ## Road trips & events
 
 **Road trips** (`/road-trips`, `/road-trips/<slug>`) are multi-stop routes. Each page has:

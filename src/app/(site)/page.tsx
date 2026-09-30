@@ -1,5 +1,7 @@
 import Link from 'next/link';
 import { guide, guideQuiet } from '@/lib/guide';
+import { assistantEnabled } from '@/lib/assistant';
+import { MicButton } from '@/components/AskBeyond';
 import { Planner } from '@/components/Planner';
 import { Tile } from '@/components/PlaceCard';
 import { Rail } from '@/components/Rail';
@@ -38,6 +40,7 @@ export default function Home() {
           <div className="mt-5 flex flex-col gap-2 text-[17px] lg:items-end">
             <Link href="#planner" className="text-blue-link hover:underline">{s.hero.primaryCta} ↗</Link>
             <Link href="/roll" prefetch={false} className="text-blue-link hover:underline">{s.hero.secondaryCta} ↗</Link>
+            {assistantEnabled() && <MicButton className="inline-flex items-center gap-1.5 text-blue-link hover:underline lg:justify-end" label="Or just ask out loud" />}
           </div>
         </div>
       </section>

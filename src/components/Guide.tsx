@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
+import { openAsk } from './AskBeyond';
 
 type Msg = { text: string; label?: string; href?: string; quiet?: boolean };
 
@@ -22,7 +23,7 @@ function current(): Msg | null {
 }
 
 /** Floating guide that changes what it says based on what's on screen. Collapses to the 🎲 when dismissed. */
-export function Guide() {
+export function Guide({ ask = false }: { ask?: boolean }) {
   const path = usePathname();
   const [msg, setMsg] = useState<Msg | null>(null);
   const [ready, setReady] = useState(false);
@@ -62,7 +63,7 @@ export function Guide() {
   return (
     <>
       <div
-        className={`fixed inset-x-3 bottom-3 z-40 mx-auto max-w-[640px] transition duration-300 sm:bottom-5 ${show ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-6 opacity-0'}`}
+        className={`guide-bar fixed inset-x-3 bottom-3 z-40 mx-auto max-w-[640px] transition duration-300 sm:bottom-5 ${show ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-6 opacity-0'}`}
         role="status" aria-live="polite"
       >
         <div className="flex items-center gap-3 rounded-[22px] bg-ink/95 py-2.5 pl-3 pr-2 text-white shadow-tilehover backdrop-blur">
@@ -73,6 +74,7 @@ export function Guide() {
               ? <a href={m.href} className="shrink-0 rounded-full bg-white px-3.5 py-1.5 text-[13px] font-semibold text-ink hover:bg-white/90 sm:text-sm">{m.label}</a>
               : <Link href={m.href} prefetch={false} className="shrink-0 rounded-full bg-white px-3.5 py-1.5 text-[13px] font-semibold text-ink hover:bg-white/90 sm:text-sm">{m.label}</Link>
           )}
+          {ask && <button onClick={() => openAsk()} title="Ask by voice" aria-label="Ask Beyond by voice" className="flex h-8 shrink-0 items-center gap-1 rounded-full bg-white/10 px-2.5 text-[13px] hover:bg-white/20">🎙️<span className="hidden sm:inline">Ask</span></button>}
           <Link href="/roll" prefetch={false} title="Surprise me" aria-label="Surprise me with a destination" className="hidden h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/10 text-lg hover:bg-white/20 sm:flex">🎲</Link>
           <button onClick={dismiss} aria-label="Hide tips" className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-white/60 hover:bg-white/10 hover:text-white">×</button>
         </div>

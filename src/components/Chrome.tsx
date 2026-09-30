@@ -4,6 +4,8 @@ import { currentMonth, monthLabel, monthName } from '@/lib/months';
 import { LeadForm } from './LeadForm';
 import { Wordmark } from './Wordmark';
 import { SITE_NAME } from '@/lib/seo';
+import { assistantEnabled } from '@/lib/assistant';
+import { MicButton } from './AskBeyond';
 
 const NAV = [
   { href: '/places', label: 'Explore' },
@@ -31,6 +33,7 @@ export function GlobalNav() {
           ))}
         </ul>
         <div className="flex items-center gap-5">
+          {assistantEnabled() && <MicButton className="flex items-center gap-1.5 rounded-full bg-ink px-3 py-1 text-[12px] font-medium text-white hover:bg-ink/85" label="Ask" />}
           <Link href="/places" aria-label="Search places" className="hover:text-ink">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
           </Link>

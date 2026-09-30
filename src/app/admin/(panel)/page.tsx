@@ -1,4 +1,6 @@
 import Link from 'next/link';
+import { assistantEnabled } from '@/lib/assistant';
+import { todayIST } from '@/lib/booking';
 import { readDb } from '@/lib/db';
 import { AdminHeader, Badge } from '@/components/admin/ui';
 import { currentMonth, monthLabel } from '@/lib/months';
@@ -100,6 +102,29 @@ export default async function Overview({ searchParams }: { searchParams: Promise
           </section>
         );
       })()}
+
+      <section className="card mt-6 p-6">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <h2 className="text-lg font-semibold">Ask Beyond (voice assistant)</h2>
+            <p className="text-sm text-mute">
+              {assistantEnabled()
+                ? `On · ${db.assistantUsage?.day === todayIST() ? db.assistantUsage.count : 0} questions today (daily cap ${process.env.ASSISTANT_DAILY_LIMIT || 400}). Leads it captures appear in Leads, marked "voice assistant".`
+                : 'Off — add ANTHROPIC_API_KEY in Railway to switch on the mic button.'}
+            </p>
+          </div>
+        </div>
+        {!!db.assistantLog?.length && (
+          <>
+            <p className="mt-4 text-xs font-semibold uppercase tracking-wide text-faint">What people are asking</p>
+            <ul className="mt-2 divide-y divide-line/70 text-[15px]">
+              {db.assistantLog.slice(0, 12).map((l, i) => (
+                <li key={i} className="flex justify-between gap-4 py-2"><span className="min-w-0 truncate">{l.q}</span><span className="shrink-0 text-xs text-faint">{new Date(l.at).toLocaleString('en-IN', { dateStyle: 'short', timeStyle: 'short' })}</span></li>
+              ))}
+            </ul>
+          </>
+        )}
+      </section>
 
       {recent.length > 0 && (
         <section className="card mt-6 p-6">
