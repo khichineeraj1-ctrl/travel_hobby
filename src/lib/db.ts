@@ -13,7 +13,7 @@ import { seedDepartures, seedStays } from '@/data/seed-booking';
 import { seedRoadTrips } from '@/data/seed-roadtrips';
 import { seedEvents } from '@/data/seed-events';
 
-export const DATA_DIR = process.env.BHATKO_DATA_DIR ?? path.join(process.cwd(), 'data');
+export const DATA_DIR = process.env.BHATKO_DATA_DIR ?? path.join(/* turbopackIgnore: true */ process.cwd(), 'data');
 export const UPLOAD_DIR = path.join(DATA_DIR, 'uploads');
 const DB_FILE = path.join(DATA_DIR, 'db.json');
 
