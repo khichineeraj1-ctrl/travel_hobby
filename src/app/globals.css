@@ -3,6 +3,9 @@
 @tailwind utilities;
 
 html { background: #f5f5f7; color: #1d1d1f; }
+/* safety net: nothing may push the page sideways on phones (clip, not hidden, so sticky nav keeps working) */
+html, body { overflow-x: clip; max-width: 100%; }
+@supports not (overflow-x: clip) { html, body { overflow-x: hidden; } }
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   font-size: 17px;

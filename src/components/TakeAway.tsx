@@ -25,7 +25,7 @@ export function TakeAway() {
         </div>
         <div className="mt-6 grid gap-4 sm:grid-cols-3">
           {picks.map((d) => (
-            <Link key={d.slug} href={`/places/${d.slug}`} className="group flex items-center gap-4 rounded-2xl p-2 transition hover:bg-paper">
+            <Link key={d.slug} href={`/places/${d.slug}`} className="group flex min-w-0 items-center gap-4 rounded-2xl p-2 transition hover:bg-paper">
               <PlaceArt d={d} className="h-16 w-20 shrink-0 rounded-xl" />
               <span className="min-w-0">
                 <span className="block truncate font-semibold group-hover:text-blue-link">{d.name}</span>

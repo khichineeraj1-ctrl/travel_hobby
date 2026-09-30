@@ -66,17 +66,23 @@ export function Guide({ ask = false }: { ask?: boolean }) {
         className={`guide-bar fixed inset-x-3 bottom-3 z-40 mx-auto max-w-[640px] transition duration-300 sm:bottom-5 ${show ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-6 opacity-0'}`}
         role="status" aria-live="polite"
       >
-        <div className="flex items-center gap-3 rounded-[22px] bg-ink/95 py-2.5 pl-3 pr-2 text-white shadow-tilehover backdrop-blur">
-          <span aria-hidden className="brand-dot h-8 w-8 shrink-0 rounded-full" />
-          <p key={m.text} className="guide-in min-w-0 flex-1 text-[14px] leading-snug sm:text-[15px]">{m.text}</p>
-          {m.label && m.href && (
-            m.href.startsWith('#')
-              ? <a href={m.href} className="shrink-0 rounded-full bg-white px-3.5 py-1.5 text-[13px] font-semibold text-ink hover:bg-white/90 sm:text-sm">{m.label}</a>
-              : <Link href={m.href} prefetch={false} className="shrink-0 rounded-full bg-white px-3.5 py-1.5 text-[13px] font-semibold text-ink hover:bg-white/90 sm:text-sm">{m.label}</Link>
-          )}
-          {ask && <button onClick={() => openAsk()} title="Ask by voice" aria-label="Ask Beyond by voice" className="flex h-8 shrink-0 items-center gap-1 rounded-full bg-white/10 px-2.5 text-[13px] hover:bg-white/20">🎙️<span className="hidden sm:inline">Ask</span></button>}
-          <Link href="/roll" prefetch={false} title="Surprise me" aria-label="Surprise me with a destination" className="hidden h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/10 text-lg hover:bg-white/20 sm:flex">🎲</Link>
-          <button onClick={dismiss} aria-label="Hide tips" className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-white/60 hover:bg-white/10 hover:text-white">×</button>
+        <div className="rounded-[22px] bg-ink/95 p-3 text-white shadow-tilehover backdrop-blur sm:flex sm:items-center sm:gap-3 sm:py-2.5 sm:pl-3 sm:pr-2">
+          {/* phones: message row on top, actions underneath; desktop: one row */}
+          <div className="flex min-w-0 flex-1 items-start gap-3 sm:items-center">
+            <span aria-hidden className="brand-dot mt-0.5 h-7 w-7 shrink-0 rounded-full sm:mt-0 sm:h-8 sm:w-8" />
+            <p key={m.text} className="guide-in min-w-0 flex-1 text-[14px] leading-snug sm:text-[15px]">{m.text}</p>
+            <button onClick={dismiss} aria-label="Hide tips" className="-mr-1 -mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-white/60 hover:bg-white/10 hover:text-white sm:hidden">×</button>
+          </div>
+          <div className="mt-2.5 flex items-center justify-end gap-2 sm:mt-0 sm:shrink-0">
+            {ask && <button onClick={() => openAsk()} title="Ask by voice" aria-label="Ask Beyond by voice" className="flex h-8 shrink-0 items-center gap-1 rounded-full bg-white/10 px-3 text-[13px] hover:bg-white/20">🎙️ Ask</button>}
+            <Link href="/roll" prefetch={false} title="Surprise me" aria-label="Surprise me with a destination" className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/10 text-base hover:bg-white/20">🎲</Link>
+            {m.label && m.href && (
+              m.href.startsWith('#')
+                ? <a href={m.href} className="shrink-0 rounded-full bg-white px-3.5 py-1.5 text-[13px] font-semibold text-ink hover:bg-white/90 sm:text-sm">{m.label}</a>
+                : <Link href={m.href} prefetch={false} className="shrink-0 rounded-full bg-white px-3.5 py-1.5 text-[13px] font-semibold text-ink hover:bg-white/90 sm:text-sm">{m.label}</Link>
+            )}
+            <button onClick={dismiss} aria-label="Hide tips" className="hidden h-8 w-8 shrink-0 items-center justify-center rounded-full text-white/60 hover:bg-white/10 hover:text-white sm:flex">×</button>
+          </div>
         </div>
       </div>
       {/* when the guide isn't talking: just the dice (plus a way to bring the guide back if dismissed) */}
