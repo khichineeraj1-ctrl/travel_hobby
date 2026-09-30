@@ -7,5 +7,5 @@ next-env.d.ts
 # secrets & local data (content + leads live on the Railway volume, never in git)
 .env*.local
 railway-variables.env
-data/
+/data/
 *.zip
