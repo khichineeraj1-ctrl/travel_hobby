@@ -6,7 +6,7 @@ export const SITE_URL = (
   process.env.NEXT_PUBLIC_SITE_URL ||
   (process.env.RAILWAY_PUBLIC_DOMAIN ? `https://${process.env.RAILWAY_PUBLIC_DOMAIN}` : 'http://localhost:3030')
 ).replace(/\/$/, '');
-export const SITE_NAME = 'bhatko';
+export const SITE_NAME = 'Beyond Explored';
 export const TAGLINE = 'get lost, on purpose';
 
 export const abs = (path: string) => `${SITE_URL}${path.startsWith('/') ? path : '/' + path}`;

@@ -3,8 +3,8 @@ import { LeadForm } from '@/components/LeadForm';
 import { meta } from '@/lib/seo';
 
 export const metadata = meta({
-  title: 'List your homestay, camp or guide service — partner with bhatko',
-  description: 'Run a homestay, camp or guiding service in a less-travelled corner of India? Apply to be a bhatko partner.',
+  title: 'List your homestay, camp or guide service — partner with Beyond Explored',
+  description: 'Run a homestay, camp or guiding service in a less-travelled corner of India? Apply to be a Beyond Explored partner.',
   path: '/partners',
 });
 

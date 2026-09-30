@@ -32,7 +32,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ type: s
   return new Response('﻿' + csv(rows), {
     headers: {
       'Content-Type': 'text/csv; charset=utf-8',
-      'Content-Disposition': `attachment; filename="bhatko-${type}-${new Date().toISOString().slice(0, 10)}.csv"`,
+      'Content-Disposition': `attachment; filename="beyond-explored-${type}-${new Date().toISOString().slice(0, 10)}.csv"`,
     },
   });
 }

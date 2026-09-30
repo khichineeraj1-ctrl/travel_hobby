@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { requireAdmin } from '@/lib/auth';
 import { logout } from '../actions';
 import { readDb } from '@/lib/db';
+import { Wordmark } from '@/components/Wordmark';
 
 const NAV = [
   { href: '/admin', label: 'Overview', icon: '◎' },
@@ -29,7 +30,7 @@ export default async function Panel({ children }: { children: React.ReactNode })
     <div className="lg:grid lg:min-h-screen lg:grid-cols-[240px_1fr]">
       <aside className="border-b border-line bg-white/80 backdrop-blur lg:sticky lg:top-0 lg:h-screen lg:border-b-0 lg:border-r">
         <div className="flex items-center justify-between px-6 py-5 lg:block">
-          <Link href="/admin" className="text-xl font-semibold tracking-tight">bhatko <span className="text-sm font-normal text-faint">admin</span></Link>
+          <Link href="/admin" className="text-lg"><Wordmark /> <span className="text-sm font-normal text-faint">admin</span></Link>
         </div>
         <nav className="no-scrollbar flex gap-1 overflow-x-auto px-3 pb-3 lg:flex-col lg:pb-0">
           {NAV.map((n) => (

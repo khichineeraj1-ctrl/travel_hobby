@@ -209,7 +209,7 @@ export default function Home() {
 
       {/* why */}
       <section className="wrap mt-16">
-        <h2 className="headline">Why bhatko. <span>Not another booking site.</span></h2>
+        <h2 className="headline">Why Beyond Explored. <span>Not another booking site.</span></h2>
         <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {s.pitch.map((p) => (
             <div key={p.title} className="card p-7">

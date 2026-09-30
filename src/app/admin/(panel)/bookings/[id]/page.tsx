@@ -20,7 +20,7 @@ export default async function BookingDetail({ params, searchParams }: { params: 
   const title = dep?.title ?? stay?.name ?? `Custom trip${place ? ` · ${place.name}` : ''}`;
   const firstName = b.contact.name.split(' ')[0];
   const wa = b.status === 'pending'
-    ? `Hi ${firstName}! This is bhatko about your ${KIND_LABEL[b.kind].toLowerCase()} request ${b.id} (${title}${b.checkIn && b.checkOut ? `, ${fmtRange(b.checkIn, b.checkOut)}` : ''}). `
+    ? `Hi ${firstName}! This is Beyond Explored about your ${KIND_LABEL[b.kind].toLowerCase()} request ${b.id} (${title}${b.checkIn && b.checkOut ? `, ${fmtRange(b.checkIn, b.checkOut)}` : ''}). `
     : `Hi ${firstName}, following up on booking ${b.id} (${title}). `;
 
   const rows: [string, React.ReactNode][] = [

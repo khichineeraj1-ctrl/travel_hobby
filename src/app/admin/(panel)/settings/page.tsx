@@ -55,7 +55,7 @@ export default async function Settings({ searchParams }: { searchParams: Promise
           </div>
         </Panel>
 
-        <Panel title="“Why bhatko” tiles" sub="Leave a title empty to hide that tile.">
+        <Panel title="“Why Beyond Explored” tiles" sub="Leave a title empty to hide that tile.">
           <div className="grid gap-5 sm:grid-cols-2">
             {pitch.map((p, i) => (
               <div key={i} className="space-y-2 rounded-2xl bg-paper p-4">

@@ -18,10 +18,10 @@ export default async function LeadDetail({ params, searchParams }: { params: Pro
   if (!l) notFound();
   const first = (l.name ?? '').split(' ')[0] || 'there';
   const msg = l.kind === 'dropoff'
-    ? `Hi ${first}! Saw you were checking out ${l.data.itemName ?? 'a trip'} on bhatko — can I help you finish the booking or answer anything?`
-    : l.kind === 'event' ? `Hi${l.name ? ' ' + first : ''}! You asked about ${l.data.eventName ?? 'an event'} on bhatko. `
-    : l.kind === 'partner' ? `Hi ${first}, thanks for applying to list ${l.data.business ?? 'your place'} on bhatko! `
-    : `Hi ${first}! Thanks for reaching out to bhatko${l.data.place ? ` about ${l.data.place}` : ''}. `;
+    ? `Hi ${first}! Saw you were checking out ${l.data.itemName ?? 'a trip'} on Beyond Explored — can I help you finish the booking or answer anything?`
+    : l.kind === 'event' ? `Hi${l.name ? ' ' + first : ''}! You asked about ${l.data.eventName ?? 'an event'} on Beyond Explored. `
+    : l.kind === 'partner' ? `Hi ${first}, thanks for applying to list ${l.data.business ?? 'your place'} on Beyond Explored! `
+    : `Hi ${first}! Thanks for reaching out to Beyond Explored${l.data.place ? ` about ${l.data.place}` : ''}. `;
 
   return (
     <>

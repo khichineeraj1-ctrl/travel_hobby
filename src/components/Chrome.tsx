@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { getSettings } from '@/lib/repo';
 import { LeadForm } from './LeadForm';
+import { Wordmark } from './Wordmark';
 import { SITE_NAME } from '@/lib/seo';
 
 const NAV = [
@@ -17,10 +18,10 @@ export function GlobalNav() {
   return (
     <header className="sticky top-0 z-40 bg-[rgba(245,245,247,0.8)] backdrop-blur-xl backdrop-saturate-150">
       <nav className="mx-auto flex h-11 max-w-[1024px] items-center justify-between px-5 text-xs text-ink/80">
-        <Link href="/" className="text-[17px] font-semibold tracking-tight text-ink" aria-label={`${SITE_NAME} home`}>
-          {SITE_NAME}
+        <Link href="/" className="shrink-0 text-[17px]" aria-label={`${SITE_NAME} home`}>
+          <Wordmark />
         </Link>
-        <ul className="hidden items-center gap-8 md:flex">
+        <ul className="hidden items-center gap-7 lg:flex">
           {NAV.map((n) => (
             <li key={n.href}>
               <Link href={n.href} className="transition-colors hover:text-ink">{n.label}</Link>
@@ -88,7 +89,7 @@ export function Footer() {
             </div>
           ))}
         </div>
-        <p className="border-t border-line pt-4">Copyright © {new Date().getFullYear()} {SITE_NAME}. Get lost, on purpose.</p>
+        <p className="border-t border-line pt-4">Copyright © {new Date().getFullYear()} <Wordmark className="!font-medium" />. Get lost, on purpose.</p>
       </div>
     </footer>
   );

@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation';
 import { login } from '../actions';
+import { Wordmark } from '@/components/Wordmark';
 import { DEV_PASSWORD, isAdmin, usingDevPassword } from '@/lib/auth';
 
 export default async function Login({ searchParams }: { searchParams: Promise<{ err?: string }> }) {
@@ -8,7 +9,7 @@ export default async function Login({ searchParams }: { searchParams: Promise<{ 
   return (
     <div className="flex min-h-screen items-center justify-center px-5">
       <form action={login} className="card w-full max-w-sm p-10 text-center">
-        <p className="text-[28px] font-semibold tracking-tightest">bhatko</p>
+        <p className="text-[28px]"><Wordmark /></p>
         <p className="mt-1 text-mute">Sign in to manage the site.</p>
         <input
           type="password"
