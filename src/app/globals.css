@@ -1,0 +1,58 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html { background: #f5f5f7; color: #1d1d1f; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 17px;
+  line-height: 1.47;
+  letter-spacing: -0.022em;
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3, .display {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  letter-spacing: -0.015em;
+}
+
+@layer components {
+  .wrap { @apply mx-auto w-full max-w-[1260px] px-5 sm:px-10; }
+  .wrap-narrow { @apply mx-auto w-full max-w-[980px] px-5 sm:px-10; }
+
+  /* Apple-style CTAs */
+  .btn { @apply inline-flex items-center justify-center gap-1.5 rounded-full bg-blue px-[22px] py-[11px] text-[17px] font-normal text-white transition-colors hover:bg-blue-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue; }
+  .btn-sm { @apply px-4 py-2 text-sm; }
+  .btn-secondary { @apply inline-flex items-center justify-center gap-1.5 rounded-full border border-blue px-[22px] py-[10px] text-[17px] text-blue transition-colors hover:bg-blue hover:text-white; }
+  .btn-dark { @apply inline-flex items-center justify-center rounded-full bg-ink px-[22px] py-[11px] text-[17px] text-white hover:bg-black; }
+  .link { @apply text-blue-link hover:underline; }
+  .link-arrow { @apply inline-flex items-center gap-0.5 text-blue-link hover:underline; }
+  .link-arrow::after { content: '›'; @apply ml-0.5 text-[1.1em] leading-none; }
+  .link-out::after { content: ' ↗'; }
+
+  /* surfaces */
+  .card { @apply rounded-apple bg-white shadow-tile; }
+  .card-hover { @apply transition duration-300 hover:scale-[1.01] hover:shadow-tilehover; }
+
+  /* type */
+  .eyebrow { @apply text-xs font-semibold uppercase tracking-wide text-eyebrow; }
+  .kicker { @apply text-sm font-semibold text-eyebrow; }
+  .label { @apply mb-2 block text-xs font-semibold uppercase tracking-wide text-faint; }
+  .headline { @apply text-[28px] font-semibold leading-tight tracking-headline sm:text-[40px]; }
+  .headline > span { @apply text-mute; }
+
+  /* selectable pills (Apple config-style) */
+  .chip { @apply inline-flex items-center gap-1.5 rounded-full border border-line bg-white px-4 py-2 text-[15px] text-ink transition hover:border-faint; }
+  .chip[aria-pressed='true'], .chip-on { @apply border-blue bg-blue-soft text-ink ring-1 ring-blue; }
+  .pill { @apply inline-flex items-center rounded-full bg-paper px-2.5 py-0.5 text-xs text-mute; }
+
+  /* forms */
+  .field { @apply w-full rounded-xl border border-line bg-white px-3.5 py-2.5 text-[15px] outline-none transition focus:border-blue focus:ring-4 focus:ring-blue/15; }
+}
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { scrollbar-width: none; }
+input[type='range'] { accent-color: #0071e3; }
+
+/* rails align with page content and snap without eating the gutter */
+.rail-pad { padding-inline: 20px; scroll-padding-inline: 20px; }
+@media (min-width: 640px) { .rail-pad { padding-inline: max(40px, calc((100vw - 1180px) / 2)); scroll-padding-inline: max(40px, calc((100vw - 1180px) / 2)); } }

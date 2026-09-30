@@ -1,0 +1,32 @@
+{
+  "name": "bhatko",
+  "version": "0.1.0",
+  "private": true,
+  "description": "bhatko \u2014 get lost, on purpose. Offbeat India discovery + impromptu trip engine.",
+  "scripts": {
+    "dev": "next dev -p 3030",
+    "build": "next build",
+    "start": "next start -H 0.0.0.0 -p ${PORT:-3030}",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit",
+    "test:engine": "tsx scripts/engine-smoke.ts"
+  },
+  "dependencies": {
+    "next": "15.5.4",
+    "react": "19.1.1",
+    "react-dom": "19.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "22.18.6",
+    "@types/react": "19.1.13",
+    "@types/react-dom": "19.1.9",
+    "autoprefixer": "10.4.21",
+    "postcss": "8.5.6",
+    "tailwindcss": "3.4.17",
+    "tsx": "4.20.6",
+    "typescript": "5.9.2"
+  },
+  "engines": {
+    "node": ">=20.9.0"
+  }
+}
