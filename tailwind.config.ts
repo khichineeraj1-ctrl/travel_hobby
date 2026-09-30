@@ -8,7 +8,7 @@ export default {
       colors: {
         ink: '#1d1d1f',
         mute: '#6e6e73',
-        faint: '#86868b',
+        faint: '#707075', // ≥4.5:1 on #f5f5f7 (WCAG AA)
         paper: '#f5f5f7',
         line: '#d2d2d7',
         blue: { DEFAULT: '#0071e3', hover: '#0077ed', link: '#0066cc', soft: '#e8f2fd' },

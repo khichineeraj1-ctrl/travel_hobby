@@ -6,6 +6,7 @@ import { Wordmark } from './Wordmark';
 import { SITE_NAME } from '@/lib/seo';
 import { assistantEnabled } from '@/lib/assistant';
 import { MicButton } from './AskBeyond';
+import { MobileMenu } from './MobileMenu';
 
 const NAV = [
   { href: '/places', label: 'Explore' },
@@ -21,7 +22,7 @@ const NAV = [
 export function GlobalNav() {
   return (
     <header className="sticky top-0 z-40 bg-[rgba(245,245,247,0.8)] backdrop-blur-xl backdrop-saturate-150">
-      <nav className="mx-auto flex h-11 max-w-[1024px] items-center justify-between px-5 text-xs text-ink/80">
+      <nav aria-label="Primary" className="mx-auto flex h-11 max-w-[1024px] items-center justify-between px-5 text-xs text-ink/80">
         <Link href="/" className="shrink-0 text-[17px]" aria-label={`${SITE_NAME} home`}>
           <Wordmark />
         </Link>
@@ -40,6 +41,7 @@ export function GlobalNav() {
           <Link href="/roll" prefetch={false} aria-label="Surprise me" className="hover:text-ink">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="3" y="3" width="18" height="18" rx="4" /><circle cx="8.5" cy="8.5" r="1.2" fill="currentColor" /><circle cx="15.5" cy="15.5" r="1.2" fill="currentColor" /><circle cx="12" cy="12" r="1.2" fill="currentColor" /></svg>
           </Link>
+          <MobileMenu items={NAV} />
         </div>
       </nav>
     </header>
@@ -53,7 +55,7 @@ export function Banner() {
   const fill = (s: string) =>
     s.replaceAll('{month}', monthLabel(m)).replaceAll('{monthSlug}', monthName(m)).replaceAll('{peakCount}', String(getByMonth(m).length));
   return (
-    <div className="bg-white">
+    <aside aria-label="Announcement" className="bg-white">
       <p className="wrap-narrow py-4 text-center text-sm text-ink">
         {fill(banner.text)}{' '}
         {banner.linkLabel && (
@@ -62,7 +64,7 @@ export function Banner() {
           </Link>
         )}
       </p>
-    </div>
+    </aside>
   );
 }
 
@@ -89,9 +91,9 @@ export function Footer() {
           {cols.map((c) => (
             <div key={c.h}>
               <p className="mb-2 font-semibold text-ink">{c.h}</p>
-              <ul className="space-y-1.5">
+              <ul className="space-y-0.5">
                 {c.l.map(([t, h]) => (
-                  <li key={h}><Link href={h} prefetch={false} className="hover:text-ink hover:underline">{t}</Link></li>
+                  <li key={h}><Link href={h} prefetch={false} className="inline-block py-1 hover:text-ink hover:underline">{t}</Link></li>
                 ))}
               </ul>
             </div>

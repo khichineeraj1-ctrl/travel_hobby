@@ -11,7 +11,7 @@ export async function generateMetadata({ params }: { params: Promise<{ month: st
   if (!m) return {};
   const L = monthLabel(m);
   return meta({
-    title: `Offbeat places to visit in ${L} in India`,
+    title: `Best Offbeat Places to Visit in ${L} in India`,
     description: `Less-crowded destinations in India that are at their best in ${L} — weather, travel time and honest tips.`,
     path: `/when/${MONTHS[m - 1]}`,
   });

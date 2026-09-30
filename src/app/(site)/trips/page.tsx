@@ -9,7 +9,7 @@ import { abs, meta } from '@/lib/seo';
 import Link from 'next/link';
 
 export const metadata = meta({
-  title: 'Upcoming offbeat group trips in India — small groups, hidden places',
+  title: 'Offbeat Small-Group Trips in India',
   description: 'Small-group trips to less-travelled places in India. Fixed dates, limited seats, reserve now and pay later.',
   path: '/trips',
 });

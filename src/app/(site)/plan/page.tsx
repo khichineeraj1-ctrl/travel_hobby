@@ -37,6 +37,7 @@ export default async function PlanPage({ searchParams }: { searchParams: Promise
 
       <div className="mt-10 grid gap-8 lg:grid-cols-[1fr_380px]" {...(results.length ? guide(`Top pick: ${results[0].destination.name}. Want us to turn it into a day-by-day plan?`, { label: 'Plan it free', href: `/places/${results[0].destination.slug}#enquire` }) : {})}>
         <div className="space-y-6">
+          <h2 className="sr-only">Your matches</h2>
           {results.length ? (
             results.map((r, i) => <SuggestionCard key={r.destination.slug} s={r} from={input.from} rank={i + 1} />)
           ) : (

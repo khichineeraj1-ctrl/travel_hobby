@@ -164,7 +164,7 @@ export function Guide({ ask = false }: { ask?: boolean }) {
   };
 
   return (
-    <>
+    <aside aria-label="Trip tips">
       <div
         className={`guide-bar fixed inset-x-3 bottom-3 z-40 mx-auto max-w-[640px] transition duration-300 sm:bottom-5 ${show ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-6 opacity-0'}`}
         role="status" aria-live="polite"
@@ -194,6 +194,6 @@ export function Guide({ ask = false }: { ask?: boolean }) {
         {off && <button onClick={reopen} className="rounded-full bg-white px-3 py-2 text-xs text-mute shadow-tile ring-1 ring-black/5 hover:text-ink">tips</button>}
         <Link href="/roll" prefetch={false} aria-label="Surprise me with a destination" className="flex h-14 w-14 items-center justify-center rounded-full bg-white text-2xl shadow-tilehover ring-1 ring-black/5 transition hover:scale-105">🎲</Link>
       </div>
-    </>
+    </aside>
   );
 }

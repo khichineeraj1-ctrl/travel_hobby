@@ -4,9 +4,9 @@ import { SITE_NAME, SITE_URL, TAGLINE } from '@/lib/seo';
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: { default: `${SITE_NAME} — ${TAGLINE}. Offbeat India, zero itinerary`, template: `%s · ${SITE_NAME}` },
+  title: { default: `${SITE_NAME}: Offbeat India Places & Trip Planner`, template: `%s · ${SITE_NAME}` },
   description:
-    'Discover offbeat, less-travelled places in India. Tell us your days, budget, crew and vibe — get hidden spots with real travel time, live weather and the best time to go.',
+    'Find offbeat, uncrowded places in India. Real travel times from your city, live weather, honest costs and the best month to go — solo, squad or family.',
   applicationName: SITE_NAME,
 };
 

@@ -12,7 +12,7 @@ import { meta } from '@/lib/seo';
 import type { Spot } from '@/lib/types';
 
 export const metadata = meta({
-  title: 'Best-rated hidden spots in offbeat India — waterfalls, viewpoints, lakes & treks',
+  title: 'Hidden Waterfalls, Viewpoints & Treks in India',
   description: 'Top-rated viewpoints, waterfalls, lakes, treks and heritage spots around India’s least-crowded destinations, ranked by real traveller ratings, with distance from town and a map link.',
   path: '/spots',
 });

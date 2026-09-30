@@ -17,12 +17,12 @@ export function WeatherWidget({ slug, name }: { slug: string; name: string }) {
     let alive = true;
     fetch(`/api/weather/${slug}`)
       .then((r) => (r.ok ? r.json() : Promise.reject()))
-      .then((j) => alive && setW(j))
+      .then((j) => { if (!alive) return; if (j?.unavailable) setErr(true); else setW(j); })
       .catch(() => alive && setErr(true));
     return () => { alive = false; };
   }, [slug]);
 
-  if (err) return <div className="card p-7 text-mute">Live weather is unavailable right now. The <a href="#best-time" className="text-blue-link hover:underline">month guide above</a> shows what {name} is usually like — or <a href="#enquire" className="text-blue-link hover:underline">ask us</a> and we’ll check conditions for your dates.</div>;
+  if (err) return <div className="card p-7 text-mute">Live weather is unavailable right now. The <a href="#best-time" className="text-blue-link underline">month guide above</a> shows what {name} is usually like — or <a href="#enquire" className="text-blue-link underline">ask us</a> and we’ll check conditions for your dates.</div>;
   if (!w) return <div className="card h-48 animate-pulse p-7 text-faint">Checking the sky over {name}…</div>;
 
   return (

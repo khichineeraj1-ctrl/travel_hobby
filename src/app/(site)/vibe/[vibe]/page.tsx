@@ -8,7 +8,7 @@ import { meta } from '@/lib/seo';
 export async function generateMetadata({ params }: { params: Promise<{ vibe: string }> }) {
   const v = vibeById((await params).vibe);
   if (!v) return {};
-  return meta({ title: `${v.seoTitle} (${v.label})`, description: `${v.blurb} Handpicked less-travelled places in India for a ${v.label.toLowerCase()} trip.`, path: `/vibe/${v.id}` });
+  return meta({ title: v.seoTitle.length > 44 ? v.seoTitle : `${v.seoTitle} (${v.label})`, description: `${v.blurb} Handpicked less-travelled places in India for a ${v.label.toLowerCase()} trip.`, path: `/vibe/${v.id}` });
 }
 
 export default async function Page({ params }: { params: Promise<{ vibe: string }> }) {

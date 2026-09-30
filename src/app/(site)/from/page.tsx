@@ -3,7 +3,7 @@ import { getCities } from '@/lib/repo';
 import { meta } from '@/lib/seo';
 
 export const metadata = meta({
-  title: 'Offbeat getaways from your city — sorted by travel time',
+  title: 'Offbeat Getaways From Your City',
   description: 'Pick your starting city and see hidden destinations sorted by how long it actually takes to get there.',
   path: '/from',
 });

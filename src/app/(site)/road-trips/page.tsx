@@ -7,7 +7,7 @@ import { JsonLd } from '@/lib/jsonld';
 import { itemListLd, meta } from '@/lib/seo';
 
 export const metadata = meta({
-  title: 'Offbeat road trips in India — routes, drive times & best season',
+  title: 'Offbeat Road Trips in India: Routes & Drive Times',
   description: 'Epic Indian road trips with day-by-day routes, drive hours, fuel stops, permits and the best months to go — Manali–Leh, Spiti, Zanskar, Konkan, Tawang, Kutch and more.',
   path: '/road-trips',
 });

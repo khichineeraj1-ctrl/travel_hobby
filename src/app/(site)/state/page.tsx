@@ -3,8 +3,8 @@ import { getByState, getStates } from '@/lib/repo';
 import { meta } from '@/lib/seo';
 
 export const metadata = meta({
-  title: 'Offbeat places by state — hidden destinations across India',
-  description: 'Browse less-travelled destinations in every Indian state.',
+  title: 'Offbeat Places in India, State by State',
+  description: 'Browse offbeat, less-travelled destinations in every Indian state — with the best time to go, travel time from your city and honest costs.',
   path: '/state',
 });
 

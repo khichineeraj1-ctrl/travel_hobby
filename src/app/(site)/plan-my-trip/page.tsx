@@ -6,7 +6,7 @@ import { getAllDestinations } from '@/lib/repo';
 import { meta } from '@/lib/seo';
 
 export const metadata = meta({
-  title: 'Plan my offbeat trip — free itinerary from locals',
+  title: 'Plan My Offbeat Trip — Free Itinerary',
   description: 'Tell us your dates, crew and budget. Get a free, personalised offbeat India itinerary on WhatsApp within 24 hours.',
   path: '/plan-my-trip',
 });

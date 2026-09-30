@@ -7,6 +7,7 @@ export default function NotFound() {
   return (
     <>
       <GlobalNav />
+      <main>
       <div className="wrap-narrow py-32 text-center">
         <p className="kicker">404</p>
         <h1 className="mt-2 text-5xl font-semibold tracking-tightest">You got a little too lost.</h1>
@@ -17,6 +18,7 @@ export default function NotFound() {
         </div>
       </div>
       <TakeAway />
+      </main>
       <Footer />
       <Guide />
     </>

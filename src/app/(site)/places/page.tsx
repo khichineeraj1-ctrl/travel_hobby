@@ -3,7 +3,7 @@ import { getAllDestinations } from '@/lib/repo';
 import { meta } from '@/lib/seo';
 
 export const metadata = meta({
-  title: 'All offbeat places in India — hidden destinations list',
+  title: 'All Offbeat Places in India',
   description: 'Every less-travelled destination on Beyond Explored: hidden valleys, empty beaches, forgotten ruins and dark-sky villages across India.',
   path: '/places',
 });

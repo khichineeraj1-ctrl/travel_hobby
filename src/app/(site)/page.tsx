@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { meta } from '@/lib/seo';
 import { GuideEnd } from '@/components/GuideEnd';
 import { guide, guideQuiet } from '@/lib/guide';
 import { assistantEnabled } from '@/lib/assistant';
@@ -17,6 +18,12 @@ import { EventCard } from '@/components/EventCard';
 import { RoadTripCard } from '@/components/RoadTrip';
 import { countdown, recentPastEvents, upcomingEvents } from '@/lib/events';
 
+
+export const metadata = meta({
+  title: 'Beyond Explored: Offbeat India Places & Trip Planner',
+  description: 'Find offbeat, uncrowded places in India. Real travel times from your city, live weather, honest costs and the best month to go — solo, squad or family.',
+  path: '/',
+});
 
 export default function Home() {
   const s = getSettings();

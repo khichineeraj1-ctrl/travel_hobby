@@ -10,7 +10,7 @@ export async function generateMetadata({ params }: { params: Promise<{ state: st
   const s = getStates().find((x) => x.slug === slug);
   if (!s) return {};
   return meta({
-    title: `Offbeat places in ${s.name} — hidden, less-travelled spots`,
+    title: `Offbeat Places in ${s.name}: Hidden, Less-Travelled`,
     description: `Hidden gems in ${s.name}: best time to visit, travel time from your city, and honest tips.`,
     path: `/state/${s.slug}`,
   });

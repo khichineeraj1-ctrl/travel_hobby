@@ -4,7 +4,7 @@ import { allMonths, monthLabel, monthName } from '@/lib/months';
 import { meta } from '@/lib/seo';
 
 export const metadata = meta({
-  title: 'Offbeat places to visit in India, month by month',
+  title: 'Offbeat Places in India, Month by Month',
   description: 'Where to go in India each month — less-travelled destinations at their seasonal best.',
   path: '/when',
 });

@@ -25,9 +25,10 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const e = get(slug);
   if (!e) return {};
   return meta({
-    title: `${e.name} ${e.startDate.slice(0, 4)} — dates, how to reach ${e.town} & where to stay`,
+    title: `${e.name.replace(/\s*\d{4}$/, '')} ${e.startDate.slice(0, 4)}: Dates, How to Reach & Stays`,
     description: `${e.name}, ${e.town} (${e.state}): ${fmtEventDates(e)}. ${e.hook} Travel time from your city, tips and trips around it.`,
     path: `/events/${e.slug}`,
+    image: `/og/event/${e.slug}`,
   });
 }
 
@@ -59,7 +60,8 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
           '@context': 'https://schema.org', '@type': 'Event', name: e.name, startDate: e.startDate, endDate: e.endDate, description: e.about,
           eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode', eventStatus: 'https://schema.org/EventScheduled',
           location: { '@type': 'Place', name: e.town, geo: { '@type': 'GeoCoordinates', latitude: e.lat, longitude: e.lng }, address: { '@type': 'PostalAddress', addressLocality: e.town, addressRegion: e.state, addressCountry: 'IN' } },
-          url: abs(`/events/${e.slug}`), ...(e.image ? { image: abs(e.image) } : {}),
+          url: abs(`/events/${e.slug}`), image: [e.image ? abs(e.image) : abs(`/og/event/${e.slug}`)],
+          organizer: { '@type': 'Organization', name: e.name, ...(e.sourceUrl ? { url: e.sourceUrl } : {}) },
         }}
       />
       <div className="wrap pt-6"><Breadcrumbs items={[{ name: 'Events', path: '/events' }, { name: e.name, path: `/events/${e.slug}` }]} /></div>

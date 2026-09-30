@@ -37,11 +37,11 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   if (!d) return {};
   return {
     ...meta({
-      title: `${d.name}, ${d.state} — best time to visit, how to reach & honest guide`,
+      title: `${d.name}, ${d.state}: Best Time, How to Reach & Cost`,
       description: `${d.name}: ${d.hook} Best months: ${d.bestMonths.slice(0, 4).map((m) => monthLabel(m)).join(', ')}. Travel time from your city, live weather, solo vs family fit, budget from ${inr(d.budgetPerDay[0])}/day.`,
       path: `/places/${d.slug}`,
+      image: `/og/place/${d.slug}`,
     }),
-    ...(d.image ? { openGraph: { images: [abs(d.image)] } } : {}),
   };
 }
 
@@ -114,7 +114,7 @@ export default async function PlacePage({ params }: { params: Promise<{ slug: st
             name: d.name,
             description: d.about,
             url: abs(`/places/${d.slug}`),
-            ...(d.image ? { image: abs(d.image) } : {}),
+            image: d.image ? abs(d.image) : abs(`/og/place/${d.slug}`),
             geo: { '@type': 'GeoCoordinates', latitude: d.lat, longitude: d.lng, elevation: d.altitudeM },
             containedInPlace: { '@type': 'AdministrativeArea', name: d.state },
             touristType: d.vibes.map((v) => vibeById(v)?.label).filter(Boolean),

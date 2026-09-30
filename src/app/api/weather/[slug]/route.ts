@@ -25,6 +25,6 @@ export async function GET(_req: Request, { params }: { params: Promise<{ slug: s
     const w = process.env.WEATHER_MOCK === '1' ? mock() : await fetchWeather(d.lat, d.lng);
     return NextResponse.json({ ...w, verdict: weatherVerdict(w), source: process.env.WEATHER_MOCK === '1' ? 'mock' : 'open-meteo' });
   } catch {
-    return NextResponse.json({ error: 'weather unavailable' }, { status: 502 });
+    return NextResponse.json({ unavailable: true }, { headers: { 'Cache-Control': 'no-store' } }); // 200: the page shows a friendly fallback
   }
 }

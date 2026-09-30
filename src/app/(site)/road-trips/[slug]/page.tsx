@@ -22,9 +22,10 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   if (!t) return {};
   const x = totals(t);
   return meta({
-    title: `${t.title} road trip — ${x.days}-day route, drive times & best time`,
+    title: `${t.title} Road Trip: ${x.days}-Day Route`,
     description: `${t.hook} ${x.km.toLocaleString('en-IN')} km over ${x.days} days: day-by-day route, drive hours, fuel stops, permits and best months (${t.bestMonths.map((m) => monthLabel(m)).join(', ')}).`,
     path: `/road-trips/${t.slug}`,
+    image: `/og/road-trip/${t.slug}`,
   });
 }
 

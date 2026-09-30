@@ -34,7 +34,7 @@ export function SuggestionCard({ s, from, rank }: { s: Suggestion; from: string;
           {s.reasons.map((r) => <li key={r} className="flex gap-2"><span className="text-good">✓</span>{r}</li>)}
           {s.warnings.map((w) => <li key={w} className="flex gap-2 text-warn"><span>!</span>{w}</li>)}
         </ul>
-        <Link href={href} className="link-arrow mt-4 text-[15px]">Learn more</Link>
+        <Link href={href} className="link-arrow mt-4 text-[15px]">More about {d.name}</Link>
       </div>
     </article>
   );

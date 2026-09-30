@@ -11,15 +11,27 @@ export const TAGLINE = 'get lost, on purpose';
 
 export const abs = (path: string) => `${SITE_URL}${path.startsWith('/') ? path : '/' + path}`;
 
-export function meta(opts: { title: string; description: string; path: string; noindex?: boolean }): Metadata {
+/** Google shows ~60 title chars and ~155 description chars on mobile — stay inside that. */
+export const fitDescription = (d: string, max = 158) => {
+  const s = d.replace(/\s+/g, ' ').trim();
+  if (s.length <= max) return s;
+  const cut = s.slice(0, max - 1);
+  return cut.slice(0, Math.max(cut.lastIndexOf(' '), max - 20)).replace(/[\s,.;:—–-]+$/, '') + '…';
+};
+
+export function meta(opts: { title: string; description: string; path: string; noindex?: boolean; image?: string }): Metadata {
   const url = abs(opts.path);
+  const suffix = ` · ${SITE_NAME}`;
+  const description = fitDescription(opts.description);
   return {
-    title: opts.title,
-    description: opts.description,
+    // add the brand only when it still fits in ~60 chars
+    title: opts.title.length + suffix.length <= 62 ? opts.title : { absolute: opts.title },
+    description,
     alternates: { canonical: url },
     robots: opts.noindex ? { index: false, follow: true } : undefined,
-    openGraph: { title: opts.title, description: opts.description, url, siteName: SITE_NAME, type: 'website', locale: 'en_IN' },
-    twitter: { card: 'summary_large_image', title: opts.title, description: opts.description },
+    // default share card (place/event/road-trip pages override it with their own generated image)
+    openGraph: { images: [{ url: abs(opts.image ?? '/opengraph-image'), width: 1200, height: 630 }], title: opts.title, description, url, siteName: SITE_NAME, type: 'website', locale: 'en_IN' },
+    twitter: { card: 'summary_large_image', title: opts.title, description, images: [abs(opts.image ?? '/opengraph-image')] },
   };
 }
 

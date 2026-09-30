@@ -5,6 +5,8 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
+import { headers } from 'next/headers';
+import { rateLimited } from '@/lib/booking';
 import { checkPassword, endSession, requireAdmin, startSession } from '@/lib/auth';
 import { readDb, updateDb, UPLOAD_DIR } from '@/lib/db';
 import type { Crew, Destination, EventCategory, Hub, Month, OriginCity, RoadStop, Signal, Terrain, Vibe } from '@/lib/types';
@@ -60,6 +62,10 @@ const back = (to: string, msg: string, kind: 'ok' | 'err' = 'ok') =>
 /* ---------- auth ---------- */
 
 export async function login(fd: FormData) {
+  // slow down password guessing: 8 attempts per 15 min per IP
+  const h = await headers();
+  const ip = (h.get('x-forwarded-for')?.split(',')[0] || 'local').trim();
+  if (rateLimited(`login:${ip}`, 8, 15 * 60 * 1000)) redirect('/admin/login?err=locked');
   if (!checkPassword(str(fd, 'password'))) redirect('/admin/login?err=1');
   await startSession();
   redirect('/admin');

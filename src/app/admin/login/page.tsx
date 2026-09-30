@@ -21,7 +21,7 @@ export default async function Login({ searchParams }: { searchParams: Promise<{ 
           className="field mt-8 text-center"
           aria-label="Admin password"
         />
-        {err && <p className="mt-3 text-sm text-[#d70015]">That password didn’t work.</p>}
+        {err && <p className="mt-3 text-sm text-[#d70015]">{err === 'locked' ? 'Too many attempts — try again in 15 minutes.' : 'That password didn’t work.'}</p>}
         <button className="btn mt-5 w-full">Sign in</button>
         {usingDevPassword() && (
           <p className="mt-6 rounded-xl bg-[#fff4e5] p-3 text-left text-xs text-eyebrow">

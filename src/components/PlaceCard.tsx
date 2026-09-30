@@ -61,9 +61,12 @@ export function PlaceCard({ d, from, extra }: { d: Destination; from?: string; e
 
 export function PlaceGrid({ items, from }: { items: Destination[]; from?: string }) {
   return (
+    <>
+    <h2 className="sr-only">Places</h2>
     <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {items.map((d) => <PlaceCard key={d.slug} d={d} from={from} />)}
     </div>
+    </>
   );
 }
 

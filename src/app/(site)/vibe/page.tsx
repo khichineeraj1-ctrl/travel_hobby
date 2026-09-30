@@ -3,7 +3,7 @@ import { getByVibe, getVibes } from '@/lib/repo';
 import { meta } from '@/lib/seo';
 
 export const metadata = meta({
-  title: 'Travel by vibe — offbeat India trips by mood',
+  title: 'Travel by Vibe: Offbeat India Trips by Mood',
   description: 'Digital detox, stargazing, budget, adventure, slow travel — find offbeat Indian destinations by the vibe you want.',
   path: '/vibe',
 });

@@ -9,7 +9,7 @@ import { JsonLd } from '@/lib/jsonld';
 import { abs, meta } from '@/lib/seo';
 
 export const metadata = meta({
-  title: 'Festivals & events in India worth travelling for (2026–27)',
+  title: 'Festivals & Events in India Worth Travelling For',
   description: 'Upcoming festivals, music events and seasonal spectacles across India — Hornbill, Rann Utsav, Pushkar, Ladakh monastery festivals and more — with dates, how to reach and where to stay.',
   path: '/events',
 });

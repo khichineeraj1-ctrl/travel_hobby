@@ -15,7 +15,7 @@ export async function generateMetadata({ params }: { params: Promise<{ city: str
   const c = cityBySlug((await params).city);
   if (!c) return {};
   return meta({
-    title: `Offbeat weekend getaways from ${c.name} — hidden places by travel time`,
+    title: `Offbeat Getaways From ${c.name}, by Travel Time`,
     description: `Less-travelled places near ${c.name} for a weekend or long leave, sorted by real door-to-door travel time by road, train or flight.`,
     path: `/from/${c.slug}`,
   });
