@@ -2,8 +2,12 @@ import Link from 'next/link';
 import { readDb } from '@/lib/db';
 import { AdminHeader, Badge } from '@/components/admin/ui';
 import { currentMonth, monthLabel } from '@/lib/months';
+import { Flash } from '@/components/admin/ui';
+import { missingPairs, neededPairs, provider } from '@/lib/routing';
+import { refreshRoadTimes } from '../actions';
 
-export default function Overview() {
+export default async function Overview({ searchParams }: { searchParams: Promise<{ ok?: string; err?: string }> }) {
+  const { ok, err } = await searchParams;
   const db = readDb();
   const live = db.destinations.filter((d) => d.published !== false);
   const drafts = db.destinations.filter((d) => d.published === false);
@@ -34,6 +38,7 @@ export default function Overview() {
         sub="Everything you change here goes live on the site immediately."
         action={<Link href="/admin/destinations/new" className="btn">Add a place</Link>}
       />
+      <Flash ok={ok} err={err} />
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         {stats.map((s) => (
           <Link key={s.l} href={s.href} className="card card-hover p-6">
@@ -66,6 +71,35 @@ export default function Overview() {
           <Link href="/admin/settings#featured" className="link-arrow mt-4 text-sm">Edit featured places</Link>
         </section>
       </div>
+
+      {(() => {
+        const need = neededPairs(db).length;
+        const miss = missingPairs(db).length;
+        const prov = provider();
+        const pct = need ? Math.round(((need - miss) / need) * 100) : 100;
+        const meta = db.routeMeta;
+        return (
+          <section className="card mt-6 p-6">
+            <div className="flex flex-wrap items-start justify-between gap-4">
+              <div>
+                <h2 className="text-lg font-semibold">Road travel times</h2>
+                <p className="text-sm text-mute">
+                  {prov === 'off' ? 'Routing is off — using the estimate model.' : `Real road distances & times via ${prov === 'ors' ? 'OpenRouteService' : 'OpenStreetMap (OSRM)'}; anything not fetched yet uses the estimate model.`}
+                </p>
+              </div>
+              {prov !== 'off' && miss > 0 && (
+                <form action={refreshRoadTimes}><button className="btn btn-sm">Fetch {miss} missing</button></form>
+              )}
+            </div>
+            <div className="mt-4 h-2 overflow-hidden rounded-full bg-paper"><div className="h-full rounded-full bg-blue" style={{ width: `${pct}%` }} /></div>
+            <p className="mt-2 text-xs text-faint">
+              {need - miss}/{need} routes cached ({pct}%).
+              {meta?.lastRun ? ` Last run ${new Date(meta.lastRun).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })}.` : ''}
+              {meta?.lastError ? ` Last error: ${meta.lastError}.` : ''} Refreshes automatically on start-up, daily, and when you save a place, city, event or road trip.
+            </p>
+          </section>
+        );
+      })()}
 
       {recent.length > 0 && (
         <section className="card mt-6 p-6">

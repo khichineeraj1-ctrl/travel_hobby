@@ -7,6 +7,7 @@
  * Swap `roadHours` for OSRM / Google Distance Matrix later if you want precision.
  */
 import type { Destination, Hub, Leg, OriginCity, TravelEstimate } from './types';
+import { cachedRoute, realisticHours } from './routing';
 
 const R = 6371;
 export function km(a: { lat: number; lng: number }, b: { lat: number; lng: number }) {
@@ -37,6 +38,13 @@ function roadHours(distKm: number, slow = 1) {
   return h + breaks;
 }
 
+/** Road time a→b: real road-network routing when cached, else the estimate model. */
+function roadLeg(a: { lat: number; lng: number }, b: { lat: number; lng: number }, slow = 1) {
+  const c = cachedRoute(a, b);
+  if (c) return { hours: realisticHours(c, slow), routed: true, km: c.km };
+  return { hours: roadHours(km(a, b), slow), routed: false, km: Math.round(km(a, b) * ROAD_DETOUR) };
+}
+
 const TRAIN_KMPH = 70;
 const round = (h: number) => Math.round(h * 4) / 4;
 
@@ -51,31 +59,35 @@ export function estimateTravel(origin: OriginCity, d: Destination, opts: { allow
   const options: Leg[] = [];
 
   // 1) Road — always an option
-  options.push({ mode: 'road', hours: round(roadHours(straight, d.roadFactor)), note: 'self-drive / cab / bus' });
+  const road = roadLeg(origin, d, d.roadFactor);
+  options.push({ mode: 'road', hours: round(road.hours), note: `${road.km.toLocaleString('en-IN')} km · self-drive / cab / bus`, routed: road.routed });
 
   // 2) Train + last mile (only worth it for longer trips)
   if (d.railhead) {
     const toRail = km(origin, d.railhead);
     if (toRail > 180) {
-      const lastLeg = roadHours(km(d.railhead, d), d.roadFactor);
+      const last = roadLeg(d.railhead, d, d.roadFactor);
+      const lastLeg = last.hours;
       const h = (toRail * 1.2) / TRAIN_KMPH + 0.75 + lastLeg;
-      options.push({ mode: 'train', hours: round(h), note: `train to ${d.railhead.name}, then ${Math.round(lastLeg * 2) / 2}h by road` });
+      options.push({ mode: 'train', hours: round(h), note: `train to ${d.railhead.name}, then ${Math.round(lastLeg * 2) / 2}h by road`, routed: last.routed });
     }
   }
 
   // 3) Flight + last mile
   if (d.airport && allowFlights) {
     const from = nearestAirportCity(origin, opts.cities ?? []);
-    const toAirportCity = from.slug === origin.slug ? 0 : roadHours(km(origin, from));
+    const toAirportCity = from.slug === origin.slug ? 0 : roadLeg(origin, from).hours;
     const air = km(from, d.airport as Hub);
     if (air > 450) {
       const layover = air > 1200 ? 1.5 : 0; // long hops to small regional airports usually mean a connection
-      const lastLeg = roadHours(km(d.airport, d), d.roadFactor);
+      const last = roadLeg(d.airport, d, d.roadFactor);
+      const lastLeg = last.hours;
       const h = toAirportCity + 2.5 + air / 650 + layover + lastLeg;
       options.push({
         mode: 'flight',
         hours: round(h),
         note: `fly ${from.name} → ${d.airport.name.split(',')[0]}${layover ? ' (likely 1 stop)' : ''}, then ${Math.round(lastLeg * 2) / 2}h by road`,
+        routed: last.routed,
       });
     }
   }

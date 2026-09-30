@@ -101,7 +101,7 @@ export default async function RoadTripPage({ params }: { params: Promise<{ slug:
                 </li>
               ))}
             </ol>
-            <p className="mt-6 text-xs text-faint">Distances and hours are estimates for planning. Mountain roads change with weather and roadworks.</p>
+            <p className="mt-6 text-xs text-faint">{L.some((l) => l.routed) ? 'Distances from OpenStreetMap road routing; hours adjusted for mountain driving.' : 'Distances and hours are estimates for planning.'} Mountain roads change with weather and roadworks.</p>
           </section>
 
           <section>

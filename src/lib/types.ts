@@ -237,7 +237,12 @@ export interface Db {
   leads: Lead[];
   roadTrips: RoadTrip[];
   events: TravelEvent[];
+  routeCache?: Record<string, CachedRoute>; // real road distances/times from a routing API
+  routeMeta?: { lastRun?: string; lastError?: string; provider?: string; fetched?: number };
 }
+
+/** One origin→destination road route, from OSRM / OpenRouteService. min = free-flow minutes. */
+export interface CachedRoute { km: number; min: number; at: string; src: string; none?: boolean }
 
 export type ModeId = 'road' | 'train' | 'flight';
 
@@ -245,6 +250,7 @@ export interface Leg {
   mode: ModeId;
   hours: number;
   note: string;
+  routed?: boolean; // road time comes from real road-network routing (not the estimate model)
 }
 
 export interface TravelEstimate {

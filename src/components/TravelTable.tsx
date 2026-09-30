@@ -27,7 +27,11 @@ export function TravelTable({ rows }: { rows: { slug: string; name: string; t: T
           </tbody>
         </table>
       </div>
-      <p className="mt-3 text-xs text-faint">Door-to-door estimates incl. airport time and last-mile roads. Not a booking quote.</p>
+      <p className="mt-3 text-xs text-faint">
+        {rows.some((r) => r.t.options.some((o) => o.routed))
+          ? 'Road legs use real road distances from OpenStreetMap routing, adjusted for Indian traffic and hills. Flights and trains are estimated. Not a booking quote.'
+          : 'Door-to-door estimates incl. airport time and last-mile roads. Not a booking quote.'}
+      </p>
     </div>
   );
 }

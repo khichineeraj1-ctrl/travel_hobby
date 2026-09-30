@@ -1,8 +1,9 @@
 /** Road-trip maths: legs, totals, map projection and a Google Maps directions link. */
 import type { RoadTrip } from './types';
 import { km } from './travel';
+import { cachedRoute, realisticHours } from './routing';
 
-export interface Leg { from: string; to: string; km: number; hours: number }
+export interface Leg { from: string; to: string; km: number; hours: number; routed?: boolean }
 
 /** Mountain roads wind: straight-line → road distance grows with terrain (Manali–Leh is ~2.2×). */
 const detour = (f: number) => 1.2 + (f - 1) * 1.0;
@@ -12,6 +13,12 @@ export function legs(t: RoadTrip): Leg[] {
   return t.stops.slice(1).map((s, i) => {
     const a = t.stops[i];
     const f = s.legFactor ?? t.roadFactor;
+    const routed = cachedRoute(a, s);
+    if (routed) {
+      // real road distance; mountain routes are slow the whole way, so apply terrain to the full leg
+      const h = (routed.min / 60) * 1.15 * Math.max(1, 1 + (f - 1) * 0.35) + Math.floor(routed.min / 60 / 4) * 0.4;
+      return { from: a.name, to: s.name, km: Math.round(routed.km / 5) * 5, hours: Math.round(h * 2) / 2, routed: true };
+    }
     const roadKm = km(a, s) * detour(f);
     const drive = roadKm / speed(f);
     return { from: a.name, to: s.name, km: Math.round(roadKm / 5) * 5, hours: Math.round((drive + Math.floor(drive / 4) * 0.4) * 2) / 2 };

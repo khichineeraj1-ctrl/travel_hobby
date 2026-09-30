@@ -33,6 +33,7 @@ function migrate(db: Partial<Db>): Db {
   if (!db.leads) db.leads = [];
   if (!db.roadTrips) db.roadTrips = structuredClone(seedRoadTrips);
   if (!db.events) db.events = structuredClone(seedEvents);
+  if (!db.routeCache) db.routeCache = {};
   return db as Db;
 }
 

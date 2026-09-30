@@ -96,6 +96,20 @@ Booking works on a **reserve now, pay later** basis. Nothing is charged online: 
 - The sidebar shows badges for pending bookings and new leads.
 - To take payments later: add a Razorpay order in `createBooking` (`src/app/actions/public.ts`) and a webhook that flips the booking status to `paid`.
 
+## Real road travel times
+
+Road distances and times come from real road routing, cached in the DB:
+
+- By default the site uses **OpenStreetMap routing** (the public OSRM server), which needs no key.
+- If you set `ORS_API_KEY`, it uses **OpenRouteService** instead (free key at openrouteservice.org).
+- `ROUTING_PROVIDER=off` turns routing off and falls back to the estimate model.
+
+Pages never call the routing API. They read from the cache. The cache fills in the background: on server start, once a day, and whenever you save a place, city, event or road trip.
+
+Admin → Overview shows how much of the cache is filled and has a "Fetch missing" button. There are about 800 routes, fetched in around 6 batched calls.
+
+Routers assume empty roads at the speed limit, so times are adjusted: ×1.15 for traffic, extra time for hill roads (`roadFactor`), plus breaks. Flights and trains are still modelled, because there is no free, reliable API for them.
+
 ## Road trips & events
 
 **Road trips** (`/road-trips`, `/road-trips/<slug>`) are multi-stop routes. Each page has:

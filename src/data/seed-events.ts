@@ -67,13 +67,13 @@ export const seedEvents: TravelEvent[] = [
   },
   {
     slug: 'pushkar-camel-fair-2026', name: 'Pushkar Camel Fair', category: 'festival',
-    startDate: '2026-11-17', endDate: '2026-11-25', dateStatus: 'expected',
+    startDate: '2026-11-17', endDate: '2026-11-24', dateStatus: 'expected',
     town: 'Pushkar', state: 'Rajasthan', lat: 26.4897, lng: 74.5511,
     hook: 'thousands of camels, a desert fair and a lake full of diyas on kartik purnima.',
     about: 'One of the world’s largest livestock fairs, with camel trading, races and folk performances, ending on Kartik Purnima.',
     tips: ['The first days are the real camel fair; the last days are the pilgrimage crowd', 'Book desert camps outside town for calmer nights'],
     recurring: 'annual', nextEdition: 'Follows Kartik Purnima (Nov)',
-    sourceUrl: 'https://www.trivenicabs.in/pushkar-mela-2026-by-car', status: 'published',
+    sourceUrl: 'https://hindutone.com/festivals/pushkar-fair-2026/', status: 'published',
   },
   {
     slug: 'sangai-festival-2026', name: 'Manipur Sangai Festival', category: 'culture',
@@ -87,12 +87,13 @@ export const seedEvents: TravelEvent[] = [
   },
   {
     slug: 'majuli-raas-mahotsav-2026', name: 'Majuli Raas Mahotsav', category: 'religious',
-    startDate: '2026-11-22', endDate: '2026-11-25', dateStatus: 'expected',
+    startDate: '2026-11-23', endDate: '2026-11-26', dateStatus: 'expected',
     town: 'Majuli', state: 'Assam', lat: 26.9535, lng: 94.1683, destSlug: 'majuli-assam',
     hook: 'all-night theatre of krishna’s life performed in the island’s monasteries.',
     about: 'Around Kartik Purnima, Majuli’s satras stage the Raas Leela — elaborate masked theatre that runs through the night.',
     tips: ['Performances start late and go till dawn', 'Ferry timings shift during the festival'],
-    recurring: 'annual', nextEdition: 'Around Kartik Purnima (Nov)', status: 'published',
+    recurring: 'annual', nextEdition: 'Starts the eve of Raas/Kartik Purnima (Nov)',
+    sourceUrl: 'https://www.thestatesman.com/entertainment/majuli-island-prepares-for-rasotsav-2025-where-every-performance-honours-zubeen-garg-1503507279.html', status: 'published',
   },
   {
     slug: 'dev-deepawali-varanasi-2026', name: 'Dev Deepawali', category: 'religious',

@@ -9,6 +9,7 @@ import { checkPassword, endSession, requireAdmin, startSession } from '@/lib/aut
 import { readDb, updateDb, UPLOAD_DIR } from '@/lib/db';
 import type { Crew, Destination, EventCategory, Hub, Month, OriginCity, RoadStop, Signal, Terrain, Vibe } from '@/lib/types';
 import { addSuggestions } from '@/lib/eventIngest';
+import { refreshRoutes, refreshRoutesInBackground } from '@/lib/routing';
 
 /* ---------- helpers ---------- */
 
@@ -145,6 +146,7 @@ export async function saveDestination(fd: FormData) {
     else db.destinations[i] = d;
   });
   refresh();
+  refreshRoutesInBackground();
   back(`/admin/destinations/${d.slug}`, existing ? 'Saved. The live site is updated.' : 'Place created.');
 }
 
@@ -256,6 +258,7 @@ export async function saveCity(fd: FormData) {
     else db.cities[i] = c;
   });
   refresh();
+  refreshRoutesInBackground();
   back('/admin/cities', `Saved ${name}.`);
 }
 
@@ -465,6 +468,7 @@ export async function saveEvent(fd: FormData) {
     if (i === -1) db.events.push(ev); else db.events[i] = ev;
   });
   refresh();
+  refreshRoutesInBackground();
   back(`/admin/events/${s}`, original ? 'Event saved.' : 'Event created.');
 }
 
@@ -556,6 +560,7 @@ export async function saveRoadTrip(fd: FormData) {
     if (i === -1) db.roadTrips.push(t); else db.roadTrips[i] = t;
   });
   refresh();
+  refreshRoutesInBackground();
   back(`/admin/roadtrips/${s}`, original ? 'Road trip saved.' : 'Road trip created.');
 }
 
@@ -571,4 +576,15 @@ export async function deleteRoadTrip(fd: FormData) {
   });
   refresh();
   back('/admin/roadtrips', 'Road trip deleted.');
+}
+
+/* ---------- road-time routing ---------- */
+
+export async function refreshRoadTimes() {
+  await requireAdmin();
+  const r = await refreshRoutes({ budgetMs: 50_000 });
+  refresh();
+  if (r.provider === 'off') back('/admin', 'Road routing is turned off (ROUTING_PROVIDER=off).', 'err');
+  if (r.error) back('/admin', `Routing stopped: ${r.error}. Fetched ${r.fetched}; ${r.remaining} still missing — try again in a minute.`, 'err');
+  back('/admin', r.requested === 0 ? 'All road times are already up to date.' : `Fetched ${r.fetched} road routes. ${r.remaining ? `${r.remaining} left — click again to continue.` : 'All done.'}`);
 }
