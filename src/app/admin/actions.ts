@@ -10,6 +10,7 @@ import { readDb, updateDb, UPLOAD_DIR } from '@/lib/db';
 import type { Crew, Destination, EventCategory, Hub, Month, OriginCity, RoadStop, Signal, Terrain, Vibe } from '@/lib/types';
 import { addSuggestions } from '@/lib/eventIngest';
 import { refreshRoutes, refreshRoutesInBackground } from '@/lib/routing';
+import { refreshRates, refreshRatesInBackground, ON_GROUND_DEFAULT } from '@/lib/rates';
 import { rankOsm, refreshSpots, refreshSpotsInBackground, rules, SPOT_DEFAULTS, type OsmEl } from '@/lib/places';
 
 /* ---------- helpers ---------- */
@@ -149,6 +150,7 @@ export async function saveDestination(fd: FormData) {
   refresh();
   refreshRoutesInBackground();
   refreshSpotsInBackground([d.slug]);
+  refreshRatesInBackground([d.slug]);
   back(`/admin/destinations/${d.slug}`, existing ? 'Saved. The live site is updated.' : 'Place created.');
 }
 
@@ -295,6 +297,10 @@ export async function saveSettings(fd: FormData) {
         minRating: clamp(num(fd, 'spotMinRating', SPOT_DEFAULTS.minRating), 3, 5),
         minReviews: clamp(Math.round(num(fd, 'spotMinReviews', SPOT_DEFAULTS.minReviews)), 0, 100000),
         radiusKm: clamp(Math.round(num(fd, 'spotRadiusKm', SPOT_DEFAULTS.radiusKm)), 5, 50),
+      },
+      rates: {
+        onGroundLo: clamp(Math.round(num(fd, 'onGroundLo', ON_GROUND_DEFAULT.onGroundLo)), 0, 50000),
+        onGroundHi: clamp(Math.round(num(fd, 'onGroundHi', ON_GROUND_DEFAULT.onGroundHi)), 0, 50000),
       },
     };
   });
@@ -637,4 +643,17 @@ export async function saveBrowserSpots(slug: string, elements: OsmEl[]): Promise
   updateDb((x) => { (x.spots ??= {})[slug] = { at: new Date().toISOString(), src: 'osm', spots }; });
   refresh();
   return { ok: true, count: spots.length };
+}
+
+/* ---------- live stay prices (LiteAPI) ---------- */
+
+export async function refreshStayRates(fd: FormData) {
+  await requireAdmin();
+  const only = str(fd, 'slug');
+  const r = await refreshRates({ budgetMs: 50_000, only: only ? [only] : [] });
+  refresh();
+  const to = '/admin/rates';
+  if (!r.enabled) back(to, 'Add LITEAPI_KEY in Railway to turn on live stay prices.', 'err');
+  if (r.error) back(to, `Stopped: ${r.error}. Updated ${r.fetched} place(s); ${r.remaining} still due.`, 'err');
+  back(to, r.requested === 0 ? 'All prices are fresh (under 7 days old).' : `Updated prices for ${r.fetched} place(s).${r.remaining ? ` ${r.remaining} left — click again to continue.` : ''}`);
 }

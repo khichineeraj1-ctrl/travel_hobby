@@ -107,7 +107,7 @@ export default async function EditDestination({ params, searchParams }: { params
             </Field>
             <Field label="Min days"><Text type="number" name="minDays" min={1} max={30} defaultValue={d.minDays} /></Field>
             <Field label="Ideal days"><Text type="number" name="idealDays" min={1} max={30} defaultValue={d.idealDays} /></Field>
-            <Field label="Budget from (₹/day)"><Text type="number" name="budgetLo" min={0} step={100} defaultValue={d.budgetPerDay[0]} /></Field>
+            <Field label="Budget from (₹/day)" hint="Fallback — replaced by live stay prices when available"><Text type="number" name="budgetLo" min={0} step={100} defaultValue={d.budgetPerDay[0]} /></Field>
             <Field label="Budget to (₹/day)"><Text type="number" name="budgetHi" min={0} step={100} defaultValue={d.budgetPerDay[1]} /></Field>
           </div>
           <div>

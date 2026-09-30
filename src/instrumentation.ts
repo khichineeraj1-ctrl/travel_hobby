@@ -8,7 +8,10 @@ export async function register() {
   // spots: only places that are missing/stale get fetched, so checking every 2h is cheap and retries failures
   const spots = () => import('./lib/places').then((m) => m.refreshSpotsInBackground()).catch(() => {});
   setTimeout(routes, 20_000); // let the server settle / healthcheck pass first
+  const rates = () => import('./lib/rates').then((m) => m.refreshRatesInBackground()).catch(() => {});
   setTimeout(spots, 30_000);
+  setTimeout(rates, 45_000);
+  setInterval(rates, 6 * 3600 * 1000).unref?.(); // only places older than 7 days (or failed) are re-fetched
   setInterval(routes, 24 * 3600 * 1000).unref?.();
   setInterval(spots, 2 * 3600 * 1000).unref?.();
 }

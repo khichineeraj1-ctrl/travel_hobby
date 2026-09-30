@@ -4,12 +4,18 @@
  */
 import { readDb } from './db';
 import type { Crew, Destination, Month, VibeId } from './types';
+import { withLiveBudget } from './rates';
 
-const pub = () => readDb().destinations.filter((d) => d.published !== false);
+/** budgetPerDay comes from live hotel rates when we have them (see rates.ts) */
+const live = (list: Destination[]) => {
+  const s = readDb().settings;
+  return list.map((d) => withLiveBudget(d, s));
+};
+const pub = () => live(readDb().destinations.filter((d) => d.published !== false));
 
 export const getSettings = () => readDb().settings;
 export const getAllDestinations = (opts: { includeDrafts?: boolean } = {}): Destination[] =>
-  opts.includeDrafts ? readDb().destinations : pub();
+  opts.includeDrafts ? live(readDb().destinations) : pub();
 export const getDestination = (slug: string, opts: { includeDrafts?: boolean } = {}) =>
   getAllDestinations(opts).find((d) => d.slug === slug);
 export const getByVibe = (v: VibeId) => pub().filter((d) => d.vibes.includes(v));

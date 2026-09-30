@@ -14,6 +14,7 @@ import { LeadForm } from '@/components/LeadForm';
 import { EventCard } from '@/components/EventCard';
 import { SpotAttribution, SpotCard } from '@/components/SpotList';
 import { spotsFor } from '@/lib/places';
+import { StayPrices } from '@/components/StayPrices';
 import { RoadTripCard } from '@/components/RoadTrip';
 import { eventsNear } from '@/lib/events';
 import { readDb } from '@/lib/db';
@@ -58,7 +59,12 @@ export default async function PlacePage({ params }: { params: Promise<{ slug: st
     { q: `Is ${d.name} good for solo travellers?`, a: `Solo fit ${d.crewFit.solo}/5, family fit ${d.crewFit.fam}/5. ${d.theIck[0] ?? ''}` },
     { q: `How many days do I need for ${d.name}?`, a: `Minimum ${d.minDays} days, ideally ${d.idealDays} including travel from the nearest hub.` },
     { q: `Is there mobile network in ${d.name}?`, a: `Expect ${signalLabel[d.signal]}. Download offline maps before you go.` },
-    { q: `How much does a trip to ${d.name} cost?`, a: `Roughly ${inr(d.budgetPerDay[0])}–${inr(d.budgetPerDay[1])} per person per day on the ground, excluding travel to get there.` },
+    {
+      q: `How much does a trip to ${d.name} cost?`,
+      a: d.live
+        ? `About ${inr(d.budgetPerDay[0])}–${inr(d.budgetPerDay[1])} per person per day, excluding travel to get there. Rooms near ${d.name} currently go for ${inr(d.live.stay.p25)}–${inr(d.live.stay.p75)} a night for two (typical ${inr(d.live.stay.median)}, cheapest ${inr(d.live.stay.min)}, across ${d.live.stay.count} stays), plus roughly ${inr(d.live.onGround[0])}–${inr(d.live.onGround[1])} per person for food and local transport.`
+        : `Roughly ${inr(d.budgetPerDay[0])}–${inr(d.budgetPerDay[1])} per person per day on the ground, excluding travel to get there.`,
+    },
   ];
 
   const Section = ({ id, title, sub, children }: { id?: string; title: string; sub?: React.ReactNode; children: React.ReactNode }) => (
@@ -124,7 +130,7 @@ export default async function PlacePage({ params }: { params: Promise<{ slug: st
               {[
                 ['Crowd', sentence(crowdLabel(d.crowd)), `${d.crowd}/5`],
                 ['Network', sentence(signalLabel[d.signal]), ''],
-                ['Budget / day', `${inr(d.budgetPerDay[0])}–${inr(d.budgetPerDay[1])}`, 'per person'],
+                ['Budget / day', `${inr(d.budgetPerDay[0])}–${inr(d.budgetPerDay[1])}`, d.live ? 'per person · live stay prices' : 'per person · estimate'],
                 ['Ideal trip', `${d.idealDays} days`, `min ${d.minDays}`],
               ].map(([k, v, sub]) => (
                 <div key={k} className="card p-5">
@@ -237,6 +243,7 @@ export default async function PlacePage({ params }: { params: Promise<{ slug: st
           <div className="card p-6">
             <p className="text-sm text-mute">Where to stay</p>
             <div className="mt-3 flex flex-wrap gap-2">{d.stayTypes.map((s) => <span key={s} className="pill !text-sm !text-ink">{s}</span>)}</div>
+            {d.live && <StayPrices r={d.live.stay} onGround={d.live.onGround} />}
           </div>
           <div className="card p-6">
             <p className="text-sm text-mute">Ready to go?</p>

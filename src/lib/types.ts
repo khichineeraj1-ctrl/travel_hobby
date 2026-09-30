@@ -53,6 +53,8 @@ export interface Destination {
   imageCredit?: string;
   published?: boolean; // default true; drafts are hidden from the public site
   updatedAt?: string;
+  /** runtime only (not stored): set when budgetPerDay was derived from live hotel rates */
+  live?: { stay: StayRates; onGround: [number, number] };
 }
 
 export interface OriginCity {
@@ -82,6 +84,7 @@ export interface SiteSettings {
   footerNote: string;
   autoPublishEvents?: boolean; // scout/ingest events go live immediately (default true)
   spots?: { minRating: number; minReviews: number; radiusKm: number };
+  rates?: { onGroundLo: number; onGroundHi: number }; // food + local transport per person per day, added to live stay prices
 }
 
 /* ---------- booking engine ---------- */
@@ -244,6 +247,23 @@ export interface Db {
   spots?: Record<string, SpotSet>; // destSlug → best-rated spots nearby (Google Places / OpenStreetMap)
   spotMeta?: { lastRun?: string; lastError?: string; provider?: string; fetched?: number };
   hiddenSpots?: string[]; // spot ids the admin has hidden
+  stayRates?: Record<string, StayRates>; // destSlug → live hotel prices (LiteAPI)
+  rateMeta?: { lastRun?: string; lastError?: string; fetched?: number };
+}
+
+/** Live nightly room prices near a destination (1 room, 2 adults, taxes incl., INR). */
+export interface StayRates {
+  at: string;
+  src: 'liteapi';
+  sandbox?: boolean; // test key → never shown publicly
+  dates: string[]; // check-in dates sampled (1 night each)
+  count: number; // hotels with a price
+  min: number;
+  p25: number;
+  median: number;
+  p75: number;
+  hotels: { id: string; name: string; stars?: number; rating?: number; price: number; distKm?: number }[];
+  error?: string;
 }
 
 /** A real, mappable point of interest near a destination. */

@@ -119,6 +119,19 @@ Every place page gets a **Best spots around …** section, and `/spots` lists th
 - Refreshes on start-up, daily for anything older than 25 days (Google allows caching up to 30), and when you save a place. *Admin → Nearby spots* shows everything, lets you hide a spot, or re-fetch a place.
 - `PLACES_PROVIDER=off|osm` to disable or force OSM.
 
+## Live stay prices & budget per day (LiteAPI)
+
+Budgets come from real hotel rates, not scraping. [LiteAPI](https://liteapi.travel) (Nuitee) is a licensed hotel-rates API. Search and rate calls are free under a reasonable look-to-book ratio.
+
+1. Sign up at liteapi.travel → dashboard → copy your **production** API key.
+2. Railway → Variables → `LITEAPI_KEY=<key>`. A `sand_…` key works but its prices stay admin-only.
+
+- For each place: 1-night rates (1 room, 2 adults, INR, taxes incl.) for stays within 25 km, on a weekday and a Saturday about 3 weeks out. Each property's cheapest room is kept, then min / 25th / median / 75th percentile.
+- **Budget/day per person** = p25 room ÷ 2 + food & local travel low … p75 room ÷ 2 + food & local travel high. The food & local travel allowance is set in *Site content → Budget per day* (default ₹600–₹1,500) and is labelled an estimate on the site.
+- It feeds every place card, place page (sidebar price box + FAQ), and the trip planner's budget matching.
+- Places with fewer than 3 priced stays (remote treks) keep the hand-written budget, shown as "estimate".
+- Refreshes weekly per place, retries failures every 6 h, and re-fetches when you save a place. See *Admin → Stay prices*.
+
 ## Road trips & events
 
 **Road trips** (`/road-trips`, `/road-trips/<slug>`) are multi-stop routes. Each page has:

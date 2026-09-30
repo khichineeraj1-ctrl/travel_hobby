@@ -81,6 +81,15 @@ export default async function Settings({ searchParams }: { searchParams: Promise
           </div>
         </Panel>
 
+        <Panel title="Budget per day" sub="With live stay prices on, budget/day = room price ÷ 2 + this food & local-transport allowance per person (shown as an estimate on the site).">
+          <div className="grid gap-4 sm:grid-cols-2">
+            <label className="block text-sm"><span className="text-mute">Food & local travel — low (₹/person/day)</span>
+              <input name="onGroundLo" type="number" min="0" step="50" defaultValue={s.rates?.onGroundLo ?? 600} className="field mt-1" /></label>
+            <label className="block text-sm"><span className="text-mute">Food & local travel — high (₹/person/day)</span>
+              <input name="onGroundHi" type="number" min="0" step="50" defaultValue={s.rates?.onGroundHi ?? 1500} className="field mt-1" /></label>
+          </div>
+        </Panel>
+
         <Panel title="Footer">
           <Field label="Disclaimer"><Area name="footerNote" rows={2} defaultValue={s.footerNote} /></Field>
         </Panel>

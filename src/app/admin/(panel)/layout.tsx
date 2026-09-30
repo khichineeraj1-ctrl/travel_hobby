@@ -14,6 +14,7 @@ const NAV = [
   { href: '/admin/stays', label: 'Stays', icon: '⌂' },
   { href: '/admin/destinations', label: 'Places', icon: '⛰' },
   { href: '/admin/spots', label: 'Nearby spots', icon: '★' },
+  { href: '/admin/rates', label: 'Stay prices', icon: '₹' },
   { href: '/admin/vibes', label: 'Vibes', icon: '✦' },
   { href: '/admin/cities', label: 'Starting cities', icon: '◌' },
   { href: '/admin/settings', label: 'Site content', icon: '✎' },
