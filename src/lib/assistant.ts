@@ -12,6 +12,8 @@ import { eventsNear, fmtEventDates, liveEvents, phase } from './events';
 import { leadId, normalizePhone, todayIST, validEmail } from './booking';
 import { currentMonth, monthLabel, MONTHS } from './months';
 import { planToQuery } from './plan';
+import { INDIA_STATES, gemsFor } from './gems';
+import { SPOT_FILTERS } from './spotFilters';
 import { hrs, inr } from './format';
 import type { Crew, Destination, Lead, Month, PlanInput } from './types';
 
@@ -67,6 +69,11 @@ const TOOLS = [
     name: 'find_events',
     description: 'Upcoming festivals/events in India from our calendar. Optional month (1–12) or state/place text.',
     input_schema: { type: 'object', properties: { month: { type: 'integer' }, where: { type: 'string' } } },
+  },
+  {
+    name: 'find_gems',
+    description: 'Highly rated but uncrowded spots (waterfalls, treks, forts, villages…) in any Indian state or UT, from Google ratings. Use when they ask about a state we have no full guide for, or want "hidden gems" in a state.',
+    input_schema: { type: 'object', properties: { state: { type: 'string', description: 'state or UT name' }, type: { type: 'string', enum: ['all', 'water', 'views', 'wild', 'heritage', 'gems'] } }, required: ['state'] },
   },
   {
     name: 'road_trips',
@@ -154,6 +161,16 @@ function runTool(name: string, input: Record<string, unknown>, ctx: ToolCtx): un
     return list.map((e) => ({ name: e.name, dates: fmtEventDates(e), confirmed: e.dateStatus === 'confirmed', where: `${e.town}, ${e.state}`, hook: e.hook, tips: e.tips.slice(0, 2) }));
   }
 
+  if (name === 'find_gems') {
+    const q = String(input.state ?? '').toLowerCase().replace(/&/g, 'and');
+    const st = INDIA_STATES.find((s) => s.slug === q || s.name.toLowerCase().replace(/&/g, 'and') === q || q.includes(s.name.toLowerCase().replace(/&/g, 'and')));
+    if (!st) return { error: 'unknown state', states: INDIA_STATES.map((s) => s.name) };
+    const f = SPOT_FILTERS.find((x) => x.id === input.type) ?? SPOT_FILTERS[0];
+    const gems = gemsFor(st.slug).filter(f.test).slice(0, 6);
+    ctx.cards.set(`g:${st.slug}`, { kind: 'place', title: `Hidden gems in ${st.name}`, sub: `${gemsFor(st.slug).length} top-rated, uncrowded spots`, href: `/hidden-gems/${st.slug}` });
+    return gems.length ? gems.map((g) => ({ name: g.name, type: g.kind, area: g.area, rating: g.rating, reviews: g.reviews })) : { note: `no gems mapped for ${st.name} yet` };
+  }
+
   if (name === 'road_trips') {
     const m = monthOf(input.month);
     const list = readDb().roadTrips.filter((t) => t.published && (!m || t.bestMonths.includes(m))).slice(0, 6);
@@ -189,7 +206,7 @@ Talk like a well-travelled friend texting a Gen-Z traveller: warm, casual, confi
 - Suggest at most 2–3 places per answer, and say why in a few words each.
 - Always end with ONE easy next step or question (e.g. how many days, which city they're leaving from, or "want me to have our team send a free plan on WhatsApp?").
 Facts: ONLY use what the tools return. Never invent places, prices, dates or events. If we don't cover something, say so and suggest the closest thing we do cover.
-Call search_places for "where should I go" questions (fill what you know, assume sensible defaults and mention them briefly). Call get_place for questions about a specific place.
+Use find_gems for hidden spots in any state (we have ratings-backed gems for all states, even where we have no full guide). Call search_places for "where should I go" questions (fill what you know, assume sensible defaults and mention them briefly). Call get_place for questions about a specific place.
 Budgets are per person per day on the ground, excluding travel to get there.
 Leads: only if the visitor wants a plan, ask for their WhatsApp number. Call save_lead only after they give it and agree; then confirm a human will reach out. Never ask for anything else sensitive.
 Stay on travel in India. Politely decline unrelated requests.

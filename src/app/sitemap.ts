@@ -3,6 +3,7 @@ import { getAllDestinations, getCities, getStates, getVibes } from '@/lib/repo';
 import { MONTHS } from '@/lib/months';
 import { abs } from '@/lib/seo';
 import { readDb } from '@/lib/db';
+import { INDIA_STATES, gemsFor } from '@/lib/gems';
 
 export const dynamic = 'force-dynamic';
 
@@ -15,6 +16,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     u('/', 1, 'daily'),
     u('/places', 0.8),
     u('/spots', 0.8),
+    u('/hidden-gems', 0.9),
+    ...INDIA_STATES.filter((s) => gemsFor(s.slug).length).map((s) => u(`/hidden-gems/${s.slug}`, 0.8)),
     u('/trips', 0.9, 'daily'),
     u('/events', 0.9, 'daily'),
     u('/road-trips', 0.9),

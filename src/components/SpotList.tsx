@@ -7,7 +7,7 @@ const ICON: Record<string, string> = {
 };
 const icon = (k: string) => ICON[k] ?? (/temple|monaster|gompa|church|mosque|shrine/i.test(k) ? '🛕' : /trek|hik|trail/i.test(k) ? '🥾' : '📍');
 
-export function SpotCard({ s, place }: { s: Spot; place?: { name: string; href: string } }) {
+export function SpotCard({ s, place }: { s: Spot & { area?: string }; place?: { name: string; href: string } }) {
   return (
     <a href={s.mapsUrl} target="_blank" rel="noreferrer" className="card card-hover flex gap-4 p-5">
       <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-paper text-xl" aria-hidden>{icon(s.kind)}</span>
@@ -17,7 +17,7 @@ export function SpotCard({ s, place }: { s: Spot; place?: { name: string; href: 
           {s.gem && <span className="pill shrink-0 !py-0.5 !text-[11px]">hidden gem</span>}
         </span>
         <span className="mt-1 block text-sm text-mute">
-          {s.kind} · {s.distKm < 1 ? 'in town' : `${s.distKm} km away`}
+          {s.kind} · {s.area ? s.area : s.distKm < 1 ? 'in town' : `${s.distKm} km away`}
           {place ? <> · near {place.name}</> : null}
         </span>
         {s.rating ? (
@@ -35,7 +35,7 @@ export function SpotAttribution({ spots }: { spots: Spot[] }) {
     <p className="mt-4 text-xs text-faint">
       {g && 'Ratings and places from Google Maps. '}
       {o && <>Places from <a className="underline" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">© OpenStreetMap contributors</a>. </>}
-      Distances are straight-line from the town; check the road on Maps before you go.
+      {spots.some((s) => !(s as { area?: string }).area) && 'Distances are straight-line from the town; check the road on Maps before you go.'}
     </p>
   );
 }

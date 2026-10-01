@@ -28,14 +28,14 @@ export function spotProvider(): 'google' | 'osm' | 'off' {
 
 export const rules = (s?: SiteSettings) => ({ ...SPOT_DEFAULTS, ...(s?.spots ?? {}) });
 
-function km(a: { lat: number; lng: number }, b: { lat: number; lng: number }) {
+export function km(a: { lat: number; lng: number }, b: { lat: number; lng: number }) {
   const R = 6371, r = Math.PI / 180;
   const dLat = (b.lat - a.lat) * r, dLng = (b.lng - a.lng) * r;
   const h = Math.sin(dLat / 2) ** 2 + Math.cos(a.lat * r) * Math.cos(b.lat * r) * Math.sin(dLng / 2) ** 2;
   return 2 * R * Math.asin(Math.sqrt(h));
 }
 
-const NOT_A_SPOT = /\b(hotel|resort|homestay|home stay|guest ?house|hostel|lodge|restaurant|dhaba|cafe|café|bar|atm|petrol|fuel|bank|hospital|school|office|shop|store|mart|parking|bus stand|taxi|travels|tours?|agency|camp(s|ing)? ?site)\b/i;
+export const NOT_A_SPOT = /\b(hotel|resort|homestay|home stay|guest ?house|hostel|lodge|restaurant|dhaba|cafe|café|bar|atm|petrol|fuel|bank|hospital|school|office|shop|store|mart|parking|bus stand|taxi|travels|tours?|agency|camp(s|ing)? ?site)\b/i;
 
 /** Spots to show for a destination (hidden ones removed, expired Google data dropped). */
 export function spotsFor(slug: string): Spot[] {
@@ -52,15 +52,46 @@ export function spotsFor(slug: string): Spot[] {
 const FIELD_MASK = [
   'places.id', 'places.displayName', 'places.location', 'places.rating', 'places.userRatingCount',
   'places.primaryTypeDisplayName', 'places.googleMapsUri', 'places.businessStatus', 'places.types',
+  'places.shortFormattedAddress', 'places.formattedAddress',
 ].join(',');
 
-type GPlace = {
+export type GPlace = {
   id: string; displayName?: { text: string }; location?: { latitude: number; longitude: number };
   rating?: number; userRatingCount?: number; primaryTypeDisplayName?: { text: string };
   googleMapsUri?: string; businessStatus?: string; types?: string[];
+  shortFormattedAddress?: string; formattedAddress?: string;
 };
 
-async function gPost(path: string, body: unknown): Promise<GPlace[]> {
+/** Skip hotels, food, shops, closed places — we only want things worth the detour. */
+export const notWorthIt = (p: GPlace) =>
+  !p.location || !p.displayName?.text ||
+  (!!p.businessStatus && p.businessStatus !== 'OPERATIONAL') ||
+  !!p.types?.some((t) => /lodging|restaurant|store|travel_agency|hotel|food|real_estate|school|hospital/.test(t)) ||
+  NOT_A_SPOT.test(p.displayName.text);
+
+/** Rough family of a place, so one type (e.g. temples) can't fill a whole list. */
+export function family(kind: string, name: string) {
+  const t = `${kind} ${name}`.toLowerCase();
+  if (/temple|mandir|gompa|monaster|church|mosque|masjid|dargah|gurudwara|shrine|math\b/.test(t)) return 'sacred';
+  if (/fall|lake|tal\b|river|beach|dam|spring|kund|sarovar/.test(t)) return 'water';
+  if (/view|point|peak|top|pass|hill/.test(t)) return 'views';
+  if (/trek|hik|trail|park|forest|sanctuary|reserve|valley|cave|meadow|bugyal/.test(t)) return 'wild';
+  if (/fort|palace|ruin|museum|monument|heritage|historic|archae|step ?well|baori/.test(t)) return 'heritage';
+  return 'other';
+}
+
+/** Best first, but at most `perFamily` of each family until the list is full. */
+export function diversify<T extends { kind: string; name: string }>(sorted: T[], keep: number, perFamily = 3): T[] {
+  const out: T[] = [], count: Record<string, number> = {}, spill: T[] = [];
+  for (const s of sorted) {
+    const f = family(s.kind, s.name);
+    if ((count[f] ?? 0) < perFamily) { out.push(s); count[f] = (count[f] ?? 0) + 1; } else spill.push(s);
+    if (out.length >= keep) return out;
+  }
+  return [...out, ...spill].slice(0, keep);
+}
+
+export async function gPost(path: string, body: unknown): Promise<GPlace[]> {
   const res = await fetch(`${process.env.GOOGLE_PLACES_BASE ?? 'https://places.googleapis.com/v1'}/${path}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'X-Goog-Api-Key': process.env.GOOGLE_MAPS_API_KEY!, 'X-Goog-FieldMask': FIELD_MASK },
@@ -115,7 +146,7 @@ async function googleSpots(d: Destination, r: ReturnType<typeof rules>): Promise
   }
   // Bayesian quality: pull low-review ratings toward 4.0 so 5★ with 12 reviews doesn't beat 4.7★ with 3,000
   const q = (s: Spot) => ((s.reviews ?? 0) * (s.rating ?? 0) + 150 * 4.0) / ((s.reviews ?? 0) + 150);
-  return [...seen.values()].sort((x, y) => q(y) - q(x)).slice(0, KEEP);
+  return diversify([...seen.values()].sort((x, y) => q(y) - q(x)), KEEP, 4);
 }
 
 /* ---------------- OpenStreetMap (Overpass) ---------------- */

@@ -15,6 +15,7 @@ export function GET() {
     return NextResponse.json({
       ok: true, places: db.destinations.length, dataDir: DATA_DIR,
       spots: { places: spots.filter((s) => s.spots.length).length, total: spots.reduce((n, s) => n + s.spots.length, 0), provider: spotProvider(), last: db.spotMeta ?? null },
+      gems: { states: Object.values(db.gems ?? {}).filter((g) => g.gems.length).length, total: Object.values(db.gems ?? {}).reduce((n, g) => n + g.gems.length, 0), last: db.gemsMeta ?? null },
       stayRates: { enabled: ratesEnabled(), sandbox: ratesEnabled() ? isSandbox() : undefined, places: Object.values(db.stayRates ?? {}).filter((r) => r.count > 0).length, last: db.rateMeta ?? null },
     });
   } catch (e) {

@@ -119,6 +119,20 @@ Every place page gets a **Best spots around …** section, and `/spots` lists th
 - Refreshes on start-up, daily for anything older than 25 days (Google allows caching up to 30), and when you save a place. *Admin → Nearby spots* shows everything, lets you hide a spot, or re-fetch a place.
 - `PLACES_PROVIDER=off|osm` to disable or force OSM.
 
+## All-India hidden gems (Google Places)
+
+`/hidden-gems` and `/hidden-gems/<state>` cover all 36 states and UTs, not just our 32 places. The best 6 also show on each `/state/<state>` page, and the voice assistant can answer "hidden waterfalls in Kerala" from them.
+
+- **Search:** each state gets 4 themed Google Text Searches: waterfalls & lakes; viewpoints, valleys & treks; forts & heritage; nature spots & villages.
+- **What's kept:** places that are
+  - really in that state (checked against the address)
+  - rated ≥ 4.4★
+  - 40–8,000 reviews (real, but not mainstream)
+  - not hotels, food or shops
+- **Ranking:** by a review-weighted rating, with at most 5 of any one type (so temples can't fill a list). Top 24 per state.
+- **Refresh:** every 25 days, about 145 Text Search calls per run, inside Google's free monthly calls. *Admin → Nearby spots → All-India hidden gems* lets you re-fetch a state or hide any gem.
+- **Data and SEO:** every gem is Google data with attribution; nothing is AI-written. State pages are noindexed until they have gems.
+
 ## Live stay prices & budget per day (LiteAPI)
 
 Budgets come from real hotel rates, not scraping. [LiteAPI](https://liteapi.travel) (Nuitee) is a licensed hotel-rates API. Search and rate calls are free under a reasonable look-to-book ratio.

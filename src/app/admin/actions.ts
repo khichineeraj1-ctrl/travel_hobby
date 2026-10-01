@@ -13,6 +13,7 @@ import type { Crew, Destination, EventCategory, Hub, Month, OriginCity, RoadStop
 import { addSuggestions } from '@/lib/eventIngest';
 import { refreshRoutes, refreshRoutesInBackground } from '@/lib/routing';
 import { refreshRates, refreshRatesInBackground, ON_GROUND_DEFAULT } from '@/lib/rates';
+import { refreshGems } from '@/lib/gems';
 import { rankOsm, refreshSpots, refreshSpotsInBackground, rules, SPOT_DEFAULTS, type OsmEl } from '@/lib/places';
 
 /* ---------- helpers ---------- */
@@ -662,4 +663,15 @@ export async function refreshStayRates(fd: FormData) {
   if (!r.enabled) back(to, 'Add LITEAPI_KEY in Railway to turn on live stay prices.', 'err');
   if (r.error) back(to, `Stopped: ${r.error}. Updated ${r.fetched} place(s); ${r.remaining} still due.`, 'err');
   back(to, r.requested === 0 ? 'All prices are fresh (under 7 days old).' : `Updated prices for ${r.fetched} place(s).${r.remaining ? ` ${r.remaining} left — click again to continue.` : ''}`);
+}
+
+/* ---------- all-India hidden gems (Google Places) ---------- */
+
+export async function refreshAllGems(fd: FormData) {
+  await requireAdmin();
+  const only = str(fd, 'state');
+  const r = await refreshGems({ budgetMs: 50_000, only: only ? [only] : [] });
+  refresh();
+  if (r.error && !r.fetched) back('/admin/spots', `Hidden gems: ${r.error}`, 'err');
+  back('/admin/spots', `Hidden gems updated for ${r.fetched} state(s).${r.remaining ? ` ${r.remaining} left — click again to continue.` : ''}${r.error ? ` Last error: ${r.error}` : ''}`);
 }

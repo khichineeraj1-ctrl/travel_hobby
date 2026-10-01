@@ -9,6 +9,7 @@ import { readDb } from '@/lib/db';
 import { spotsFor } from '@/lib/places';
 import { currentMonth, monthLabel } from '@/lib/months';
 import { meta } from '@/lib/seo';
+import { SPOT_FILTERS } from '@/lib/spotFilters';
 import type { Spot } from '@/lib/types';
 
 export const metadata = meta({
@@ -17,18 +18,10 @@ export const metadata = meta({
   path: '/spots',
 });
 
-const FILTERS = [
-  { id: 'all', label: 'Everything', test: () => true },
-  { id: 'gems', label: '💎 Hidden gems', test: (s: Spot) => !!s.gem },
-  { id: 'water', label: '💧 Water', test: (s: Spot) => /water|lake|river|beach|spring|dam/i.test(`${s.kind} ${s.name}`) },
-  { id: 'views', label: '🔭 Views & peaks', test: (s: Spot) => /view|peak|point|top|pass|glacier|observ/i.test(`${s.kind} ${s.name}`) },
-  { id: 'wild', label: '🌳 Nature & treks', test: (s: Spot) => /park|reserve|forest|sanctuary|hik|trek|trail|cave|garden/i.test(`${s.kind} ${s.name}`) },
-  { id: 'heritage', label: '🏛️ Heritage', test: (s: Spot) => /fort|palace|ruin|archae|monument|museum|temple|monaster|gompa|church|mosque|historic|shrine/i.test(`${s.kind} ${s.name}`) },
-];
 
 export default async function Spots({ searchParams }: { searchParams: Promise<{ type?: string; season?: string }> }) {
   const { type = 'all', season } = await searchParams;
-  const f = FILTERS.find((x) => x.id === type) ?? FILTERS[0];
+  const f = SPOT_FILTERS.find((x) => x.id === type) ?? SPOT_FILTERS[0];
   const m = currentMonth();
   const places = readDb().destinations.filter((d) => d.published !== false && (season !== 'now' || d.bestMonths.includes(m) || d.okMonths.includes(m)));
   const q = (s: Spot) => (s.rating ? ((s.reviews ?? 0) * s.rating + 150 * 4) / ((s.reviews ?? 0) + 150) : 0);
@@ -45,8 +38,12 @@ export default async function Spots({ searchParams }: { searchParams: Promise<{ 
     <div className="wrap" {...guide('Found a spot you love? Open its place page — we’ll plan the trip around it.', { label: 'Free itinerary', href: '/plan-my-trip' })}>
       <GuideEnd text="Pick a spot you liked — we’ll build the whole trip around it, free." label="Plan around it" href="/plan-my-trip" />
       <PageHead crumbs={[{ name: 'Top spots', path: '/spots' }]} kicker="More choices" h1="Top spots." intro="The best-rated waterfalls, viewpoints, lakes, treks and ruins around every place on here. Pick a base, then pick your detours." />
+      <Link href="/hidden-gems" className="card card-hover mt-6 flex items-center justify-between gap-4 p-5">
+        <span><b>Want more?</b> <span className="text-mute">Hidden gems in all 36 states & UTs — not just around our places.</span></span>
+        <span className="text-blue-link">Explore ›</span>
+      </Link>
       <div className="mt-8 flex flex-wrap gap-2">
-        {FILTERS.map((x) => (
+        {SPOT_FILTERS.map((x) => (
           <Link key={x.id} href={href(x.id)} className={`chip ${x.id === f.id ? 'chip-on' : ''}`}>{x.label}</Link>
         ))}
         <Link href={href(f.id, season === 'now' ? undefined : 'now')} className={`chip ${season === 'now' ? 'chip-on' : ''}`}>📅 Good in {monthLabel(m)}</Link>

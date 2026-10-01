@@ -247,6 +247,8 @@ export interface Db {
   spots?: Record<string, SpotSet>; // destSlug → best-rated spots nearby (Google Places / OpenStreetMap)
   spotMeta?: { lastRun?: string; lastError?: string; provider?: string; fetched?: number };
   hiddenSpots?: string[]; // spot ids the admin has hidden
+  gems?: Record<string, GemSet>; // stateSlug → all-India hidden gems from Google Places
+  gemsMeta?: { lastRun?: string; lastError?: string; fetched?: number };
   stayRates?: Record<string, StayRates>; // destSlug → live hotel prices (LiteAPI)
   rateMeta?: { lastRun?: string; lastError?: string; fetched?: number };
   assistantUsage?: { day: string; count: number }; // voice assistant requests today (cost guard)
@@ -282,6 +284,10 @@ export interface Spot {
   gem?: boolean; // highly rated but not yet over-reviewed
   src: 'google' | 'osm';
 }
+
+/** A hidden gem anywhere in India (not tied to one of our destinations). */
+export type Gem = Spot & { area?: string; stateSlug: string };
+export interface GemSet { at: string; gems: Gem[]; error?: string }
 
 export interface SpotSet { at: string; src: 'google' | 'osm'; spots: Spot[]; error?: string }
 

@@ -6,7 +6,9 @@ export async function register() {
   if (process.env.NEXT_RUNTIME !== 'nodejs' || process.env.NODE_ENV !== 'production') return;
   const routes = () => import('./lib/routing').then((m) => m.refreshRoutesInBackground()).catch(() => {});
   // spots: only places that are missing/stale get fetched, so checking every 2h is cheap and retries failures
-  const spots = () => import('./lib/places').then((m) => m.refreshSpotsInBackground()).catch(() => {});
+  const spots = () => import('./lib/places').then((m) => m.refreshSpotsInBackground()).catch(() => {})
+    .then(() => new Promise((r) => setTimeout(r, 5 * 60_000))) // let place spots finish first
+    .then(() => import('./lib/gems')).then((m) => m.refreshGemsInBackground()).catch(() => {});
   setTimeout(routes, 20_000); // let the server settle / healthcheck pass first
   const rates = () => import('./lib/rates').then((m) => m.refreshRatesInBackground()).catch(() => {});
   setTimeout(spots, 30_000);
