@@ -60,9 +60,9 @@ export function HomeSearch({ total, states, chips, ask }: { total: number; state
   };
 
   return (
-    <div ref={box} className="relative mx-auto w-full max-w-3xl">
+    <div ref={box} className="relative mx-auto w-full max-w-2xl">
       <div className="relative">
-      <form onSubmit={go} role="search" className="flex items-center gap-2 rounded-full bg-white p-2 pl-5 shadow-tilehover ring-1 ring-black/5 focus-within:ring-2 focus-within:ring-blue">
+      <form onSubmit={go} role="search" className="flex items-center gap-2 rounded-full bg-white p-1.5 pl-5 shadow-tilehover ring-1 ring-black/5 focus-within:ring-2 focus-within:ring-blue">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="shrink-0 text-mute" aria-hidden><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
         <input
           value={q}
@@ -76,14 +76,14 @@ export function HomeSearch({ total, states, chips, ask }: { total: number; state
           placeholder={`Try “${EXAMPLES[ph]}”`}
           aria-label="Search places, states, months or vibes"
           aria-autocomplete="list" aria-expanded={open && hits.length > 0} aria-controls="home-search-list"
-          className="min-w-0 flex-1 bg-transparent py-2 text-[17px] outline-none placeholder:text-faint sm:text-lg"
+          className="min-w-0 flex-1 bg-transparent py-1.5 text-base outline-none placeholder:text-faint sm:text-[17px]"
         />
         {ask && (
           <button type="button" onClick={() => openAsk(q || undefined)} aria-label="Ask by voice" title="Ask by voice" className="hidden h-11 w-11 shrink-0 items-center justify-center rounded-full text-mute hover:bg-paper hover:text-ink sm:flex">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden><rect x="9" y="3" width="6" height="11" rx="3" /><path d="M5 11a7 7 0 0 0 14 0M12 18v3" /></svg>
           </button>
         )}
-        <button className="btn shrink-0 !px-5">Search</button>
+        <button className="btn btn-sm shrink-0 !px-5">Search</button>
       </form>
       {open && q.trim().length >= 2 && (
         <div id="home-search-list" role="listbox" className="absolute inset-x-0 top-full z-30 mt-2 max-h-[70vh] overflow-y-auto rounded-3xl bg-white text-left shadow-tilehover ring-1 ring-black/5">

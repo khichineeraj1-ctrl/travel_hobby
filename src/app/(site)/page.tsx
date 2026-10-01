@@ -83,14 +83,14 @@ export default function Home() {
         <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
           <div className="absolute inset-x-0 -top-40 mx-auto h-[520px] max-w-5xl rounded-full opacity-60 blur-3xl" style={{ background: 'radial-gradient(closest-side, rgba(255,122,24,.16), rgba(168,85,247,.12) 55%, rgba(0,113,227,.08) 80%, transparent)' }} />
         </div>
-        <div className="wrap relative pb-4 pt-14 text-center sm:pt-24">
+        <div className="wrap relative pb-2 pt-10 text-center sm:pt-16">
           <p className="kicker">{monthLabel(m)} edition · {(st.guides + st.gems).toLocaleString('en-IN')} offbeat places</p>
-          <h1 className="mx-auto mt-3 max-w-4xl text-[34px] font-semibold leading-[1.04] tracking-tightest sm:text-[64px] lg:text-[72px]">{s.hero.tagline}</h1>
-          <p className="mx-auto mt-4 max-w-2xl text-lg text-mute sm:text-xl">{s.hero.sub}</p>
-          <div className="mt-9">
-            <HomeSearch total={st.guides + st.gems} states={st.states} chips={chips.slice(0, 5)} ask={ask} />
+          <h1 className="mx-auto mt-3 max-w-3xl text-balance text-[30px] font-semibold leading-[1.08] tracking-tightest sm:text-[44px] lg:text-[52px]">{s.hero.tagline}</h1>
+          <p className="mx-auto mt-3 max-w-xl text-balance text-base text-mute sm:text-lg">{s.hero.sub}</p>
+          <div className="mt-7">
+            <HomeSearch total={st.guides + st.gems} states={st.states} chips={chips.slice(0, 4)} ask={ask} />
           </div>
-          <div className="mt-7 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[15px]">
+          <div className="mt-5 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[15px]">
             <Link href="#planner" className="link-arrow">{s.hero.primaryCta}</Link>
             <span aria-hidden className="hidden h-4 w-px bg-line sm:block" />
             <Link href="/roll" prefetch={false} className="link-arrow">🎲 {s.hero.secondaryCta}</Link>
