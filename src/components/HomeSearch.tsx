@@ -61,6 +61,7 @@ export function HomeSearch({ total, states, chips, ask }: { total: number; state
 
   return (
     <div ref={box} className="relative mx-auto w-full max-w-3xl">
+      <div className="relative">
       <form onSubmit={go} role="search" className="flex items-center gap-2 rounded-full bg-white p-2 pl-5 shadow-tilehover ring-1 ring-black/5 focus-within:ring-2 focus-within:ring-blue">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="shrink-0 text-mute" aria-hidden><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
         <input
@@ -84,9 +85,8 @@ export function HomeSearch({ total, states, chips, ask }: { total: number; state
         )}
         <button className="btn shrink-0 !px-5">Search</button>
       </form>
-
       {open && q.trim().length >= 2 && (
-        <div id="home-search-list" role="listbox" className="absolute inset-x-0 top-full z-30 mt-2 overflow-hidden rounded-3xl bg-white text-left shadow-tilehover ring-1 ring-black/5">
+        <div id="home-search-list" role="listbox" className="absolute inset-x-0 top-full z-30 mt-2 max-h-[70vh] overflow-y-auto rounded-3xl bg-white text-left shadow-tilehover ring-1 ring-black/5">
           {understood.length > 0 && <p className="border-b border-line/70 px-5 py-2 text-xs text-mute">Looking for: <b className="text-ink">{understood.join(' · ')}</b></p>}
           {hits.length === 0 ? (
             <p className="px-5 py-4 text-[15px] text-mute">No exact matches — press Enter to search more widely{ask ? ', or ask our voice guide' : ''}.</p>
@@ -116,9 +116,12 @@ export function HomeSearch({ total, states, chips, ask }: { total: number; state
         </div>
       )}
 
-      <p className="mt-3 text-center text-sm text-mute">{total.toLocaleString('en-IN')} offbeat places · {states} states & UTs · ranked by real traveller ratings</p>
-      <div className="no-scrollbar mt-3 flex gap-2 overflow-x-auto pb-1 sm:flex-wrap sm:justify-center">
-        {chips.map((c) => <Link key={c.href} href={c.href} className="chip shrink-0 !py-1.5 !text-sm">{c.label}</Link>)}
+      </div>
+
+      <div className="no-scrollbar -mx-5 mt-4 overflow-x-auto px-5 sm:mx-0 sm:px-0">
+        <div className="mx-auto flex w-max gap-2 pb-1 sm:w-auto sm:flex-wrap sm:justify-center">
+          {chips.map((c) => <Link key={c.href} href={c.href} className="chip shrink-0 !bg-white/80 !py-1.5 !text-sm">{c.label}</Link>)}
+        </div>
       </div>
     </div>
   );

@@ -3,7 +3,6 @@ import { meta } from '@/lib/seo';
 import { GuideEnd } from '@/components/GuideEnd';
 import { guide, guideQuiet } from '@/lib/guide';
 import { assistantEnabled } from '@/lib/assistant';
-import { MicButton } from '@/components/AskBeyond';
 import { Planner } from '@/components/Planner';
 import { Tile } from '@/components/PlaceCard';
 import { Rail } from '@/components/Rail';
@@ -79,23 +78,24 @@ export default function Home() {
   return (
     <>
       <GuideEnd text="Scrolled the whole thing and still undecided? That’s what the dice are for — or tell us 4 things." label="Match me" href="/plan-my-trip" />
-      {/* hero */}
-      <section className="wrap grid gap-10 pb-6 pt-14 sm:pt-20 lg:grid-cols-2 lg:items-end" {...guide('Hey 👋 no idea where to go? Tell us 4 things and we’ll match you in 10 seconds.', { label: 'Match me', href: '#planner' })}>
-        <h1 className="text-[64px] font-semibold leading-none tracking-tightest sm:text-[96px]">{s.hero.title}</h1>
-        <div className="lg:text-right">
-          <p className="text-[28px] font-semibold leading-tight tracking-headline sm:text-[32px] lg:ml-auto lg:max-w-md">{s.hero.tagline}</p>
-          <p className="mt-3 text-lg text-mute lg:ml-auto lg:max-w-md">{s.hero.sub}</p>
-          <div className="mt-5 flex flex-col gap-2 text-[17px] lg:items-end">
-            <Link href="#planner" className="text-blue-link hover:underline">{s.hero.primaryCta} ↗</Link>
-            <Link href="/roll" prefetch={false} className="text-blue-link hover:underline">{s.hero.secondaryCta} ↗</Link>
-            {assistantEnabled() && <MicButton className="inline-flex items-center gap-1.5 text-blue-link hover:underline lg:justify-end" label="Or just ask out loud" />}
+      {/* hero: one centred stack — headline, search, quick picks, two escape hatches */}
+      <section className="relative" aria-label="Find a place" {...guide('Type anything — a state, a month, “waterfalls”, “forts”. Or tell us 4 things and we’ll match you.', { label: 'Match me', href: '#planner' })}>
+        <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div className="absolute inset-x-0 -top-40 mx-auto h-[520px] max-w-5xl rounded-full opacity-60 blur-3xl" style={{ background: 'radial-gradient(closest-side, rgba(255,122,24,.16), rgba(168,85,247,.12) 55%, rgba(0,113,227,.08) 80%, transparent)' }} />
+        </div>
+        <div className="wrap relative pb-4 pt-14 text-center sm:pt-24">
+          <p className="kicker">{monthLabel(m)} edition · {(st.guides + st.gems).toLocaleString('en-IN')} offbeat places</p>
+          <h1 className="mx-auto mt-3 max-w-4xl text-[34px] font-semibold leading-[1.04] tracking-tightest sm:text-[64px] lg:text-[72px]">{s.hero.tagline}</h1>
+          <p className="mx-auto mt-4 max-w-2xl text-lg text-mute sm:text-xl">{s.hero.sub}</p>
+          <div className="mt-9">
+            <HomeSearch total={st.guides + st.gems} states={st.states} chips={chips.slice(0, 5)} ask={ask} />
+          </div>
+          <div className="mt-7 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[15px]">
+            <Link href="#planner" className="link-arrow">{s.hero.primaryCta}</Link>
+            <span aria-hidden className="hidden h-4 w-px bg-line sm:block" />
+            <Link href="/roll" prefetch={false} className="link-arrow">🎲 {s.hero.secondaryCta}</Link>
           </div>
         </div>
-      </section>
-
-      {/* search: the whole catalogue, type it like you'd say it */}
-      <section className="wrap mt-6 sm:mt-10" aria-label="Search places" {...guide('Type anything — a state, a month, “waterfalls”, “forts”. We’ll find it.', { label: 'Browse everything', href: '/explore' })}>
-        <HomeSearch total={st.guides + st.gems} states={st.states} chips={chips} ask={ask} />
       </section>
 
       {/* vibe rail — like the store's category nav */}
