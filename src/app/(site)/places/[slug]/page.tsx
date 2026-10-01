@@ -13,7 +13,8 @@ import { FromBanner } from '@/components/FromBanner';
 import { BookSection } from '@/components/BookSection';
 import { LeadForm } from '@/components/LeadForm';
 import { EventCard } from '@/components/EventCard';
-import { SpotAttribution, SpotCard } from '@/components/SpotList';
+import { SpotAttribution } from '@/components/SpotList';
+import { SpotTile } from '@/components/SpotTile';
 import { spotsFor } from '@/lib/places';
 import { StayPrices } from '@/components/StayPrices';
 import { RoadTripCard } from '@/components/RoadTrip';
@@ -224,11 +225,11 @@ export default async function PlacePage({ params }: { params: Promise<{ slug: st
               <>
                 {spots.length > 0 && (
                   <Section g={G.spots} id="spots" title={`Best spots around ${d.name}`} sub={spots[0].src === 'google' ? 'The highest-rated places within a short drive, ranked by what travellers actually rate them.' : 'Viewpoints, waterfalls, lakes and sights within a short drive.'}>
-                    <div className="grid gap-4 sm:grid-cols-2">{spots.slice(0, 8).map((s) => <SpotCard key={s.id} s={s} />)}</div>
+                    <div className="grid gap-4 sm:grid-cols-2">{spots.slice(0, 8).map((s) => <SpotTile key={s.id} s={s} area={s.distKm < 1 ? `In ${d.name}` : `${s.distKm} km from ${d.name}`} />)}</div>
                     {spots.length > 8 && (
                       <details className="mt-4">
                         <summary className="link-arrow cursor-pointer list-none text-[15px]">{spots.length - 8} more spots</summary>
-                        <div className="mt-4 grid gap-4 sm:grid-cols-2">{spots.slice(8).map((s) => <SpotCard key={s.id} s={s} />)}</div>
+                        <div className="mt-4 grid gap-4 sm:grid-cols-2">{spots.slice(8).map((s) => <SpotTile key={s.id} s={s} area={s.distKm < 1 ? `In ${d.name}` : `${s.distKm} km from ${d.name}`} />)}</div>
                       </details>
                     )}
                     <SpotAttribution spots={spots} />

@@ -149,7 +149,7 @@ export async function createBooking(_prev: FormState, fd: FormData): Promise<For
     const flexible = str(fd, 'flexibleWhen', 120);
     if (!flexible && !(isIsoDate(checkIn) && isIsoDate(checkOut) && nights(checkIn, checkOut) >= 0 && checkIn >= today)) errors.checkIn = 'Add dates, or tell us roughly when.';
     const details: Record<string, string> = {};
-    for (const k of ['event', 'eventDates', 'roadTrip', 'placeText', 'flexibleWhen', 'from', 'crew', 'budget', 'stayStyle', 'interests']) { const v = str(fd, k, 500); if (v) details[k] = v; }
+    for (const k of ['event', 'eventDates', 'roadTrip', 'gem', 'placeText', 'flexibleWhen', 'from', 'crew', 'budget', 'stayStyle', 'interests']) { const v = str(fd, k, 500); if (v) details[k] = v; }
     draft = { kind, contact: base, destSlug: destSlug || undefined, checkIn: isIsoDate(checkIn) ? checkIn : undefined, checkOut: isIsoDate(checkOut) ? checkOut : undefined, guests, details, notes: str(fd, 'notes', 1500) || undefined };
   } else {
     return { message: 'Unknown booking type.' };

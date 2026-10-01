@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { PageHead } from '@/components/Listing';
-import { SpotAttribution, SpotCard } from '@/components/SpotList';
+import { SpotAttribution } from '@/components/SpotList';
+import { SpotTile } from '@/components/SpotTile';
 import { GuideEnd } from '@/components/GuideEnd';
 import { JsonLd } from '@/lib/jsonld';
 import { INDIA_STATES, gemsFor } from '@/lib/gems';
@@ -47,13 +48,13 @@ export default async function HiddenGems({ searchParams }: { searchParams: Promi
             </div>
           </section>
 
-          <section className="mt-16" {...guide('These are the cream of each state. Tap one to open it in Maps.', { label: 'Plan a trip', href: '/plan-my-trip' })}>
+          <section className="mt-16" {...guide('These are the cream of each state. Tap one for directions, season and nearby stays.', { label: 'Plan a trip', href: '/plan-my-trip' })}>
             <h2 className="headline">Best of India. <span>{total} gems across {states.length} states & UTs.</span></h2>
             <div className="mt-6 flex flex-wrap gap-2">
               {SPOT_FILTERS.map((x) => <Link key={x.id} href={href(x.id)} className={`chip ${x.id === f.id ? 'chip-on' : ''}`}>{x.label}</Link>)}
             </div>
-            <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {picks.slice(0, 60).map((g) => <SpotCard key={g.id} s={g} />)}
+            <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {picks.slice(0, 60).map((g) => <SpotTile key={g.id} s={g} />)}
             </div>
             <SpotAttribution spots={picks} />
           </section>

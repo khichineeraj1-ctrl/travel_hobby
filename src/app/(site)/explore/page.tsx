@@ -1,10 +1,12 @@
 import Link from 'next/link';
 import { PageHead } from '@/components/Listing';
 import { PlaceCard } from '@/components/PlaceCard';
+import { GemCard } from '@/components/GemCard';
+import { cardOf } from '@/lib/gemPages';
 import { SpotCard } from '@/components/SpotList';
 import { GuideEnd } from '@/components/GuideEnd';
 import { AutoSubmit } from '@/components/AutoSubmit';
-import { search, stats, TYPE_SHORT, type Filters, type Item, type ItemType } from '@/lib/catalog';
+import { search, stats, TYPE_SHORT, type Filters, type ItemType } from '@/lib/catalog';
 import { getDestination } from '@/lib/repo';
 import { INDIA_STATES } from '@/lib/gems';
 import { allMonths, currentMonth, monthLabel, monthShort } from '@/lib/months';
@@ -26,10 +28,6 @@ export async function generateMetadata({ searchParams }: { searchParams: Promise
     noindex: filtered, // filtered combinations are for people, not for Google
   });
 }
-
-const SEASON_NOTE: Record<Item['monthsFrom'], string> = {
-  guide: '', state: 'usual season for the state', waterfall: 'waterfalls peak Jul–Oct',
-};
 
 export default async function Explore({ searchParams }: { searchParams: Promise<SP> }) {
   const sp = await searchParams;
@@ -131,7 +129,7 @@ export default async function Explore({ searchParams }: { searchParams: Promise<
           </div>
         </div>
       ) : (
-        <section className="mt-5" {...guide('Tap a full guide for travel times, weather and costs — or a gem to open it in Maps.', { label: 'Plan a trip', href: '/plan-my-trip' })}>
+        <section className="mt-5" {...guide('Tap a full guide for travel times, weather and costs — or any gem for directions, season and nearby stays.', { label: 'Plan a trip', href: '/plan-my-trip' })}>
           <h2 className="sr-only">Results</h2>
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {shown.map((it) => {
@@ -139,14 +137,9 @@ export default async function Explore({ searchParams }: { searchParams: Promise<
                 const d = getDestination(it.id.slice(6));
                 return d ? <PlaceCard key={it.id} d={d} /> : null;
               }
-              const months = it.months.length && it.months.length < 12 ? `${it.months.map((m) => monthShort(m)).join(', ')}` : '';
-              return (
-                <SpotCard
-                  key={it.id}
-                  s={{ id: it.id, name: it.name, kind: it.label, rating: it.rating, reviews: it.reviews, mapsUrl: it.href, gem: it.gem, area: it.area ? `${it.area}` : it.stateName, lat: 0, lng: 0, distKm: 0, src: 'google' }}
-                  note={months ? `Best: ${months} (${SEASON_NOTE[it.monthsFrom]})` : undefined}
-                />
-              );
+              const c = cardOf({ id: it.id.slice(4) });
+              if (c) return <GemCard key={it.id} g={c} />;
+              return <SpotCard key={it.id} s={{ id: it.id, name: it.name, kind: it.label, rating: it.rating, reviews: it.reviews, mapsUrl: it.href, gem: it.gem, area: it.area ?? it.stateName, lat: 0, lng: 0, distKm: 0, src: 'google' }} />;
             })}
           </div>
           {items.length > n && (

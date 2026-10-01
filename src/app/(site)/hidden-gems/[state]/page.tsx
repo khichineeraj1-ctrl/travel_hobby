@@ -2,7 +2,8 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { PageHead } from '@/components/Listing';
 import { PlaceGrid } from '@/components/PlaceCard';
-import { SpotAttribution, SpotCard } from '@/components/SpotList';
+import { SpotAttribution } from '@/components/SpotList';
+import { SpotTile } from '@/components/SpotTile';
 import { GuideEnd } from '@/components/GuideEnd';
 import { LinkChips } from '@/components/LinkChips';
 import { JsonLd } from '@/lib/jsonld';
@@ -62,7 +63,7 @@ export default async function StateGems({ params, searchParams }: P) {
           </div>
           <p className="mt-5 text-sm text-mute">{gems.length} of {all.length} gems</p>
           <div className="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {gems.map((g) => <SpotCard key={g.id} s={g} />)}
+            {gems.map((g) => <SpotTile key={g.id} s={g} />)}
           </div>
           {!gems.length && <Link href={href('all')} className="link-arrow mt-4 inline-block">Show all</Link>}
           <SpotAttribution spots={all} />

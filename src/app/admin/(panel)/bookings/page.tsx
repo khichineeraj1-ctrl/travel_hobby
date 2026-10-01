@@ -15,7 +15,7 @@ export default async function Bookings({ searchParams }: { searchParams: Promise
   const what = (b: (typeof items)[number]) =>
     b.departureId ? db.departures.find((d) => d.id === b.departureId)?.title
     : b.stayId ? db.stays.find((s) => s.id === b.stayId)?.name
-    : `Custom · ${db.destinations.find((d) => d.slug === b.destSlug)?.name ?? b.details.placeText ?? 'anywhere'}`;
+    : `Custom · ${db.destinations.find((d) => d.slug === b.destSlug)?.name ?? b.details.gem ?? b.details.placeText ?? 'anywhere'}`;
   const count = (s: string) => db.bookings.filter((b) => b.status === s).length;
 
   return (

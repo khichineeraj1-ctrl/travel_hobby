@@ -17,11 +17,11 @@ import { EventCard } from '@/components/EventCard';
 import { RoadTripCard } from '@/components/RoadTrip';
 import { countdown, recentPastEvents, upcomingEvents } from '@/lib/events';
 import { HomeSearch } from '@/components/HomeSearch';
-import { SpotCard } from '@/components/SpotList';
+import { GemTile } from '@/components/GemCard';
+import { cardOf } from '@/lib/gemPages';
 import { catalog, stats } from '@/lib/catalog';
 import { INDIA_STATES } from '@/lib/gems';
 import { STATE_SEASON } from '@/data/state-seasons';
-import { monthShort } from '@/lib/months';
 
 
 export const metadata = meta({
@@ -129,17 +129,18 @@ export default function Home() {
       </section>
 
       {nowGems.length > 0 && (
-        <section className="wrap mt-16" {...guide(`These are in season right now in ${seasonStates.length} states. Tap one to open it in Maps.`, { label: `All of ${monthLabel(m)}`, href: `/explore?month=${m}` })}>
-          <div className="flex flex-wrap items-end justify-between gap-4">
+        <section className="mt-16" {...guide(`In season right now in ${seasonStates.length} states. Tap one — directions, best months and stays are inside.`, { label: `All of ${monthLabel(m)}`, href: `/explore?month=${m}` })}>
+          <div className="wrap flex flex-wrap items-end justify-between gap-4">
             <h2 className="headline">Good right now. <span>Hidden gems across India in {monthLabel(m)}.</span></h2>
             <Link href={`/explore?month=${m}`} className="link-arrow text-[17px]">See all</Link>
           </div>
-          <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {nowGems.slice(0, 9).map((g) => (
-              <SpotCard key={g.id} s={{ id: g.id, name: g.name, kind: g.label, rating: g.rating, reviews: g.reviews, mapsUrl: g.href, gem: g.gem, area: g.area ?? g.stateName, lat: 0, lng: 0, distKm: 0, src: 'google' }} note={`${g.stateName} · best ${g.months.slice(0, 4).map((x) => monthShort(x)).join(', ')}${g.months.length > 4 ? '…' : ''}`} />
-            ))}
-          </div>
-          <p className="mt-4 text-xs text-faint">Ratings and places from Google Maps.</p>
+          <Rail label="Hidden gems in season">
+            {nowGems.map((g) => {
+              const c = cardOf({ id: g.id.slice(4) });
+              return c ? <GemTile key={g.id} g={c} eyebrow={`${g.label} · ${g.stateName}`} /> : null;
+            })}
+          </Rail>
+          <p className="wrap text-xs text-faint">Ratings from Google Maps.</p>
         </section>
       )}
 

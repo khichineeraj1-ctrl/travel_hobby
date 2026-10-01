@@ -5,6 +5,7 @@
 import { getAllDestinations, getVibes } from './repo';
 import { INDIA_STATES, allGems } from './gems';
 import { family } from './places';
+import { gemHref } from './gemPages';
 import { STATE_SEASON, WATERFALL_MONTHS } from '@/data/state-seasons';
 import { MONTHS, currentMonth } from './months';
 import type { Month } from './types';
@@ -60,7 +61,7 @@ export function catalog(): Item[] {
     const isFall = /fall|waterfall|jharna|kund\b/i.test(`${g.kind} ${g.name}`);
     return {
       id: `gem:${g.id}`, kind: 'gem', name: g.name, stateSlug: g.stateSlug, stateName: stateName(g.stateSlug),
-      types: [t], label: g.kind, area: g.area, rating: g.rating, reviews: g.reviews, href: g.mapsUrl, external: true,
+      types: [t], label: g.kind, area: g.area, rating: g.rating, reviews: g.reviews, href: gemHref(g.id) ?? g.mapsUrl, external: !gemHref(g.id),
       months: isFall ? WATERFALL_MONTHS : (STATE_SEASON[g.stateSlug] ?? []), monthsFrom: isFall ? 'waterfall' : 'state', gem: g.gem,
     };
   });

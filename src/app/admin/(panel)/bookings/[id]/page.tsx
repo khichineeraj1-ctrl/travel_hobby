@@ -6,7 +6,7 @@ import { fmtRange, KIND_LABEL, nights, roomsLeft, seatsLeft, STATUS_LABEL } from
 import { inr } from '@/lib/format';
 import { updateBooking } from '../../../actions';
 
-const Q: Record<string, string> = { event: 'For event', eventDates: 'Event dates', roadTrip: 'Road trip', placeText: 'Place (described)', flexibleWhen: 'When (flexible)', from: 'Starting from', crew: 'Who’s going', budget: 'Budget / person', stayStyle: 'Stay style', interests: 'Interests' };
+const Q: Record<string, string> = { event: 'For event', eventDates: 'Event dates', roadTrip: 'Road trip', gem: 'Hidden gem', placeText: 'Place (described)', flexibleWhen: 'When (flexible)', from: 'Starting from', crew: 'Who’s going', budget: 'Budget / person', stayStyle: 'Stay style', interests: 'Interests' };
 
 export default async function BookingDetail({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ ok?: string; err?: string }> }) {
   const { id } = await params;

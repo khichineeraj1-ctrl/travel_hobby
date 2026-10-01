@@ -3,6 +3,7 @@
  * search_places (the same engine as the planner), get_place, find_events, road_trips, save_lead.
  * Server-only. Needs ANTHROPIC_API_KEY (ASSISTANT_MODEL optional, default claude-haiku-4-5 for speed/cost).
  */
+import { gemHref } from './gemPages';
 import { readDb, updateDb } from './db';
 import { getAllDestinations, getCities, getDestination, getVibes } from './repo';
 import { suggest } from './engine';
@@ -168,6 +169,7 @@ function runTool(name: string, input: Record<string, unknown>, ctx: ToolCtx): un
     const f = SPOT_FILTERS.find((x) => x.id === input.type) ?? SPOT_FILTERS[0];
     const gems = gemsFor(st.slug).filter(f.test).slice(0, 6);
     ctx.cards.set(`g:${st.slug}`, { kind: 'place', title: `Hidden gems in ${st.name}`, sub: `${gemsFor(st.slug).length} top-rated, uncrowded spots`, href: `/hidden-gems/${st.slug}` });
+    gems.slice(0, 2).forEach((g) => { const h = gemHref(g.id); if (h) ctx.cards.set(`gem:${g.id}`, { kind: 'place', title: g.name, sub: `${g.kind} · ${g.area ?? st.name}`, href: h }); });
     return gems.length ? gems.map((g) => ({ name: g.name, type: g.kind, area: g.area, rating: g.rating, reviews: g.reviews })) : { note: `no gems mapped for ${st.name} yet` };
   }
 

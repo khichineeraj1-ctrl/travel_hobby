@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { gemsFor } from '@/lib/gems';
-import { SpotCard } from '@/components/SpotList';
+import { SpotTile } from '@/components/SpotTile';
 import { Listing, CrossLinks } from '@/components/Listing';
 import { LinkChips } from '@/components/LinkChips';
 import { getByState, getStates } from '@/lib/repo';
@@ -38,7 +38,7 @@ export default async function Page({ params }: { params: Promise<{ state: string
             <h2 className="text-2xl font-semibold tracking-headline">More hidden gems in {s.name}</h2>
             <Link href={`/hidden-gems/${s.slug}`} className="link-arrow text-[15px]">All {gemsFor(s.slug).length}</Link>
           </div>
-          <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{gemsFor(s.slug).slice(0, 6).map((g) => <SpotCard key={g.id} s={g} />)}</div>
+          <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{gemsFor(s.slug).slice(0, 6).map((g) => <SpotTile key={g.id} s={g} />)}</div>
         </section>
       )}
       <CrossLinks title="Other states">
