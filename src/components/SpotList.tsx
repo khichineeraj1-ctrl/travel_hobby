@@ -7,7 +7,7 @@ const ICON: Record<string, string> = {
 };
 const icon = (k: string) => ICON[k] ?? (/temple|monaster|gompa|church|mosque|shrine/i.test(k) ? '🛕' : /trek|hik|trail/i.test(k) ? '🥾' : '📍');
 
-export function SpotCard({ s, place }: { s: Spot & { area?: string }; place?: { name: string; href: string } }) {
+export function SpotCard({ s, place, note }: { s: Spot & { area?: string }; place?: { name: string; href: string }; note?: string }) {
   return (
     <a href={s.mapsUrl} target="_blank" rel="noreferrer" className="card card-hover flex gap-4 p-5">
       <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-paper text-xl" aria-hidden>{icon(s.kind)}</span>
@@ -23,6 +23,7 @@ export function SpotCard({ s, place }: { s: Spot & { area?: string }; place?: { 
         {s.rating ? (
           <span className="mt-1.5 block text-sm"><span className="text-[#f5a623]">★</span> <b>{s.rating.toFixed(1)}</b> <span className="text-faint">· {s.reviews?.toLocaleString('en-IN')} reviews</span></span>
         ) : null}
+        {note && <span className="mt-1 block text-xs text-faint">{note}</span>}
         <span className="link-out mt-2 block text-sm text-blue-link">Open in Maps</span>
       </span>
     </a>

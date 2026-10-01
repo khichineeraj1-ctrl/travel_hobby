@@ -9,7 +9,7 @@ import { MicButton } from './AskBeyond';
 import { MobileMenu } from './MobileMenu';
 
 const NAV = [
-  { href: '/places', label: 'Explore' },
+  { href: '/explore', label: 'Explore' },
   { href: '/hidden-gems', label: 'Hidden gems' },
   { href: '/spots', label: 'Top spots' },
   { href: '/events', label: 'Events' },
@@ -36,7 +36,7 @@ export function GlobalNav() {
         </ul>
         <div className="flex items-center gap-5">
           {assistantEnabled() && <MicButton className="flex items-center gap-1.5 rounded-full bg-ink px-3 py-1 text-[12px] font-medium text-white hover:bg-ink/85" label="Ask" />}
-          <Link href="/places" aria-label="Search places" className="hover:text-ink">
+          <Link href="/explore" aria-label="Search places" className="hover:text-ink">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
           </Link>
           <Link href="/roll" prefetch={false} aria-label="Surprise me" className="hover:text-ink">
@@ -72,7 +72,7 @@ export function Banner() {
 export function Footer() {
   const { footerNote } = getSettings();
   const cols = [
-    { h: 'Explore', l: [['All places', '/places'], ['Hidden gems', '/hidden-gems'], ['Top spots', '/spots'], ['Events', '/events'], ['Road trips', '/road-trips'], ['By vibe', '/vibe'], ['By month', '/when'], ['By state', '/state']] },
+    { h: 'Explore', l: [['Explore all', '/explore'], ['Full guides', '/places'], ['Hidden gems', '/hidden-gems'], ['Top spots', '/spots'], ['Events', '/events'], ['Road trips', '/road-trips'], ['By vibe', '/vibe'], ['By month', '/when'], ['By state', '/state']] },
     { h: 'Start from', l: [['Delhi', '/from/delhi'], ['Mumbai', '/from/mumbai'], ['Bengaluru', '/from/bengaluru'], ['All cities', '/from']] },
     { h: 'Who’s going', l: [['Solo', '/for/solo'], ['Couple', '/for/duo'], ['Squad', '/for/squad'], ['Family', '/for/fam']] },
     { h: 'Book', l: [['Upcoming trips', '/trips'], ['Custom trip', '/book/custom'], ['Plan my trip', '/plan-my-trip'], ['Surprise me', '/roll'], ['List your property', '/partners']] },

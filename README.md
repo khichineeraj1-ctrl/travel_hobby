@@ -119,6 +119,21 @@ Every place page gets a **Best spots around …** section, and `/spots` lists th
 - Refreshes on start-up, daily for anything older than 25 days (Google allows caching up to 30), and when you save a place. *Admin → Nearby spots* shows everything, lets you hide a spot, or re-fetch a place.
 - `PLACES_PROVIDER=off|osm` to disable or force OSM.
 
+## Explore & search (all content in one place)
+
+- **`/explore`:** every full guide plus every all-India hidden gem, about 690 places in 36 states and UTs, in one list.
+  - **Filters:** state, month, type (water / views / nature & treks / heritage / sacred), full guides vs hidden gems, sort. A "Good in <this month>" chip is built in.
+  - **Plain-language search:** "waterfalls in Meghalaya in October", "forts in Rajasthan", "snow", "north east", "monsoon". It picks out the state, month and type from the text and matches the rest by name.
+  - **SEO:** filtered URLs are noindexed; `/explore` itself is indexed.
+- **Home page:**
+  - a big search box with live suggestions (`/api/search`)
+  - season-aware quick chips: this month, monsoon waterfalls Jul–Oct, snow Dec–Feb, and the in-season states with the most gems
+  - a "Good right now" rail of in-season gems across India, rotating daily
+- **Seasons:**
+  - full guides use their own researched months
+  - hidden gems use the usual tourism season for their state (`src/data/state-seasons.ts`, labelled on the site as such)
+  - waterfalls use Jul–Oct
+
 ## All-India hidden gems (Google Places)
 
 `/hidden-gems` and `/hidden-gems/<state>` cover all 36 states and UTs, not just our 32 places. The best 6 also show on each `/state/<state>` page, and the voice assistant can answer "hidden waterfalls in Kerala" from them.

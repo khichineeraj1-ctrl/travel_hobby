@@ -17,6 +17,12 @@ import { seatsLeft, upcomingDepartures } from '@/lib/booking';
 import { EventCard } from '@/components/EventCard';
 import { RoadTripCard } from '@/components/RoadTrip';
 import { countdown, recentPastEvents, upcomingEvents } from '@/lib/events';
+import { HomeSearch } from '@/components/HomeSearch';
+import { SpotCard } from '@/components/SpotList';
+import { catalog, stats } from '@/lib/catalog';
+import { INDIA_STATES } from '@/lib/gems';
+import { STATE_SEASON } from '@/data/state-seasons';
+import { monthShort } from '@/lib/months';
 
 
 export const metadata = meta({
@@ -37,6 +43,39 @@ export default function Home() {
   const vibes = getVibes();
   const cities = getCities();
 
+  // the bigger catalogue: our guides + all-India hidden gems
+  const st = stats();
+  const ask = assistantEnabled();
+  const gemCount: Record<string, number> = {};
+  for (const i of catalog()) if (i.kind === 'gem') gemCount[i.stateSlug] = (gemCount[i.stateSlug] ?? 0) + 1;
+  // in-season states with the most to show first (rotated daily among the top 8)
+  const seasonStates = INDIA_STATES.filter((x) => STATE_SEASON[x.slug]?.includes(m) && (gemCount[x.slug] ?? 0) >= 8)
+    .sort((a, b) => (gemCount[b.slug] ?? 0) - (gemCount[a.slug] ?? 0)).slice(0, 8);
+  const day = Math.floor(Date.now() / 86_400_000);
+  const pick = <T,>(arr: T[], k: number) => Array.from({ length: Math.min(k, arr.length) }, (_, i) => arr[(day + i * 7) % arr.length]);
+  const chips = [
+    { label: `📅 Good in ${monthLabel(m)}`, href: `/explore?month=${m}` },
+    ...(m >= 7 && m <= 10 ? [{ label: '💧 Monsoon waterfalls', href: `/explore?type=water&month=${m}` }] : []),
+    ...([12, 1, 2].includes(m) ? [{ label: '❄️ Snow trips', href: `/explore?q=snow&month=${m}` }] : []),
+    { label: '🥾 Treks', href: '/explore?type=wild' },
+    { label: '🏰 Forts & ruins', href: '/explore?type=heritage' },
+    ...pick(seasonStates, 3).map((x) => ({ label: `📍 ${x.name}`, href: `/hidden-gems/${x.slug}` })),
+    { label: '💎 Hidden gems', href: '/hidden-gems' },
+  ];
+  // in-season gems across India: best few per in-season state, rotating daily
+  const nowGems = (() => {
+    const items = catalog().filter((i) => i.kind === 'gem' && i.months.includes(m) && (i.rating ?? 0) >= 4.5);
+    const byState: Record<string, typeof items> = {};
+    for (const i of items) (byState[i.stateSlug] ??= []).push(i);
+    const states = Object.keys(byState);
+    const out: typeof items = [];
+    for (let r = 0; out.length < 12 && r < 3; r++) for (let k = 0; k < states.length && out.length < 12; k++) {
+      const sl = states[(day + k) % states.length];
+      if (byState[sl][r]) out.push(byState[sl][r]);
+    }
+    return out;
+  })();
+
   return (
     <>
       <GuideEnd text="Scrolled the whole thing and still undecided? That’s what the dice are for — or tell us 4 things." label="Match me" href="/plan-my-trip" />
@@ -52,6 +91,11 @@ export default function Home() {
             {assistantEnabled() && <MicButton className="inline-flex items-center gap-1.5 text-blue-link hover:underline lg:justify-end" label="Or just ask out loud" />}
           </div>
         </div>
+      </section>
+
+      {/* search: the whole catalogue, type it like you'd say it */}
+      <section className="wrap mt-6 sm:mt-10" aria-label="Search places" {...guide('Type anything — a state, a month, “waterfalls”, “forts”. We’ll find it.', { label: 'Browse everything', href: '/explore' })}>
+        <HomeSearch total={st.guides + st.gems} states={st.states} chips={chips} ask={ask} />
       </section>
 
       {/* vibe rail — like the store's category nav */}
@@ -83,6 +127,21 @@ export default function Home() {
           ))}
         </Rail>
       </section>
+
+      {nowGems.length > 0 && (
+        <section className="wrap mt-16" {...guide(`These are in season right now in ${seasonStates.length} states. Tap one to open it in Maps.`, { label: `All of ${monthLabel(m)}`, href: `/explore?month=${m}` })}>
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <h2 className="headline">Good right now. <span>Hidden gems across India in {monthLabel(m)}.</span></h2>
+            <Link href={`/explore?month=${m}`} className="link-arrow text-[17px]">See all</Link>
+          </div>
+          <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {nowGems.slice(0, 9).map((g) => (
+              <SpotCard key={g.id} s={{ id: g.id, name: g.name, kind: g.label, rating: g.rating, reviews: g.reviews, mapsUrl: g.href, gem: g.gem, area: g.area ?? g.stateName, lat: 0, lng: 0, distKm: 0, src: 'google' }} note={`${g.stateName} · best ${g.months.slice(0, 4).map((x) => monthShort(x)).join(', ')}${g.months.length > 4 ? '…' : ''}`} />
+            ))}
+          </div>
+          <p className="mt-4 text-xs text-faint">Ratings and places from Google Maps.</p>
+        </section>
+      )}
 
       {/* events: what's about to happen + what people just missed */}
       {(() => {

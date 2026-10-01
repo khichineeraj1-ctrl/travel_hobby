@@ -16,6 +16,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     u('/', 1, 'daily'),
     u('/places', 0.8),
     u('/spots', 0.8),
+    u('/explore', 0.9, 'daily'),
     u('/hidden-gems', 0.9),
     ...INDIA_STATES.filter((s) => gemsFor(s.slug).length).map((s) => u(`/hidden-gems/${s.slug}`, 0.8)),
     u('/trips', 0.9, 'daily'),
