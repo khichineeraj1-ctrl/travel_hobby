@@ -22,6 +22,7 @@ h1, h2, h3, .display {
   /* brand wordmark gradient */
   .brand-dot { background: conic-gradient(from 200deg, #ff7a18, #ff2d78, #a855f7, #0071e3, #ff7a18); box-shadow: inset 0 0 0 7px rgba(29,29,31,.95); }
   html[data-ask='open'] .guide-bar { display: none; }
+  @keyframes loadbar { 0% { transform: translateX(-100%); } 100% { transform: translateX(300%); } }
   .guide-in { animation: guide-in .35s ease-out; }
   @keyframes guide-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
   .brand-gradient {

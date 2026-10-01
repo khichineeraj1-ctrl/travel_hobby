@@ -60,7 +60,7 @@ export function updateDb(mutate: (db: Db) => void): Db {
   const db = structuredClone(readDb());
   mutate(db);
   const tmp = `${DB_FILE}.${process.pid}.tmp`;
-  fs.writeFileSync(tmp, JSON.stringify(db, null, 2));
+  fs.writeFileSync(tmp, JSON.stringify(db)); // compact: ~40% smaller and faster to write/parse than pretty JSON
   fs.renameSync(tmp, DB_FILE);
   cache = null;
   return db;

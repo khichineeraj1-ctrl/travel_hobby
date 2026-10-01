@@ -137,16 +137,18 @@ export function search(f: Filters): { items: Item[]; parsed?: Parsed } {
     (!month || it.months.includes(month)) &&
     (f.show === 'guides' ? it.kind === 'guide' : f.show === 'gems' ? it.kind === 'gem' : true));
 
+  const guideVibes = vibeHits.length ? new Map(getAllDestinations().map((d) => [`guide:${d.slug}`, d.vibes])) : null;
+  const scoreCache = new Map<string, number>();
   const textScore = (it: Item) => {
     if (!words.length) return 1;
+    const hit = scoreCache.get(it.id);
+    if (hit !== undefined) return hit;
     const hay = norm(`${it.name} ${it.area ?? ''} ${it.stateName} ${it.label} ${it.hook ?? ''}`);
     const name = norm(it.name);
     let s = 0;
     for (const w of words) s += name.includes(w) ? 3 : hay.includes(w) ? 1 : 0;
-    if (it.kind === 'guide' && vibeHits.length) {
-      const d = getAllDestinations().find((x) => `guide:${x.slug}` === it.id);
-      if (d?.vibes.some((v) => vibeHits.includes(v))) s += 2;
-    }
+    if (it.kind === 'guide' && guideVibes?.get(it.id)?.some((v) => vibeHits.includes(v))) s += 2;
+    scoreCache.set(it.id, s);
     return s;
   };
   if (words.length) items = items.filter((it) => textScore(it) > 0);
