@@ -675,3 +675,72 @@ export async function refreshAllGems(fd: FormData) {
   if (r.error && !r.fetched) back('/admin/spots', `Hidden gems: ${r.error}`, 'err');
   back('/admin/spots', `Hidden gems updated for ${r.fetched} state(s).${r.remaining ? ` ${r.remaining} left — click again to continue.` : ''}${r.error ? ` Last error: ${r.error}` : ''}`);
 }
+
+/* ---------- authors (E-E-A-T bylines) ---------- */
+
+export async function saveAuthor(fd: FormData) {
+  await requireAdmin();
+  const name = str(fd, 'name');
+  const original = str(fd, 'originalSlug');
+  if (!name) back('/admin/authors', 'Name is required.', 'err');
+  // slugs are stable once created (they're in article schema and links)
+  const s = original || slug(str(fd, 'slug') || name);
+  const db = readDb();
+  const existing = (db.authors ?? []).find((a) => a.slug === s);
+  if (!original && existing) back('/admin/authors', `An author with the URL /authors/${s} already exists.`, 'err');
+  const bio = str(fd, 'bio');
+  if (bio.length < 80) back('/admin/authors', 'Write a real bio (at least a couple of sentences) — it’s what Google and readers use to trust the byline.', 'err');
+  const links = lines(fd, 'links');
+  const bad = links.find((u) => !/^https:\/\/[^\s]+$/i.test(u));
+  if (bad) back('/admin/authors', `Profile links must be full https:// URLs — check “${bad}”.`, 'err');
+  const email = str(fd, 'email');
+  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) back('/admin/authors', 'That email doesn’t look right.', 'err');
+
+  let photo = existing?.photo;
+  try {
+    const up = await saveUpload(fd, 'photo', `author-${s}`);
+    if (up) { await removeUpload(photo); photo = up; }
+    else if (fd.get('removePhoto')) { await removeUpload(photo); photo = undefined; }
+  } catch (e) {
+    back('/admin/authors', (e as Error).message, 'err');
+  }
+
+  const a = {
+    slug: s,
+    name,
+    kind: (str(fd, 'kind') === 'Person' ? 'Person' : 'Organization') as 'Person' | 'Organization',
+    role: str(fd, 'role') || 'Travel writer',
+    bio,
+    photo,
+    expertise: lines(fd, 'expertise'),
+    regions: lines(fd, 'regions'),
+    since: str(fd, 'since') || undefined,
+    standards: str(fd, 'standards') || undefined,
+    links,
+    email: email || undefined,
+  };
+  updateDb((db) => {
+    db.authors ??= [];
+    const i = db.authors.findIndex((x) => x.slug === s);
+    if (i === -1) db.authors.push(a);
+    else db.authors[i] = a;
+  });
+  refresh();
+  back('/admin/authors', `Saved ${name}.`);
+}
+
+export async function deleteAuthor(fd: FormData) {
+  await requireAdmin();
+  const s = str(fd, 'slug');
+  if (fd.get('confirm') !== 'on') back('/admin/authors', 'Tick the confirmation box to delete.', 'err');
+  const db = readDb();
+  if ((db.authors ?? []).length <= 1) back('/admin/authors', 'Keep at least one author — every article needs a byline.', 'err');
+  const { NOTES } = await import('@/data/notes');
+  const used = NOTES.filter((n) => n.authorSlug === s);
+  if (used.length) back('/admin/authors', `This author is on ${used.length} article(s). Reassign them first.`, 'err');
+  const a = (db.authors ?? []).find((x) => x.slug === s);
+  await removeUpload(a?.photo);
+  updateDb((db) => { db.authors = (db.authors ?? []).filter((x) => x.slug !== s); });
+  refresh();
+  back('/admin/authors', 'Author removed.');
+}

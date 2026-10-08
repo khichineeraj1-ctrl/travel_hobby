@@ -12,6 +12,7 @@ import { seedDb } from '@/data/seed';
 import { seedDepartures, seedStays } from '@/data/seed-booking';
 import { seedRoadTrips } from '@/data/seed-roadtrips';
 import { seedEvents } from '@/data/seed-events';
+import { DEFAULT_AUTHOR } from '@/data/authors';
 
 export const DATA_DIR = process.env.BHATKO_DATA_DIR ?? path.join(/* turbopackIgnore: true */ process.cwd(), 'data');
 export const UPLOAD_DIR = path.join(DATA_DIR, 'uploads');
@@ -34,6 +35,7 @@ function migrate(db: Partial<Db>): Db {
   if (!db.roadTrips) db.roadTrips = structuredClone(seedRoadTrips);
   if (!db.events) db.events = structuredClone(seedEvents);
   if (!db.routeCache) db.routeCache = {};
+  if (!db.authors?.length) db.authors = [structuredClone(DEFAULT_AUTHOR)];
 
   // one-time clean-ups of launch placeholders (only touch data nobody has booked or edited)
   const booked = new Set((db.bookings ?? []).flatMap((b) => [b.departureId, b.stayId]).filter(Boolean));

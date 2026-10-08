@@ -17,6 +17,7 @@ const NAV = [
   { href: '/admin/rates', label: 'Stay prices', icon: '₹' },
   { href: '/admin/vibes', label: 'Vibes', icon: '✦' },
   { href: '/admin/cities', label: 'Starting cities', icon: '◌' },
+  { href: '/admin/authors', label: 'Authors', icon: '✍' },
   { href: '/admin/settings', label: 'Site content', icon: '✎' },
 ];
 

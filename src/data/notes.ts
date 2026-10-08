@@ -23,7 +23,7 @@ export type FieldNote = {
   keywords: string;
   /** 16:9, ≥1200px wide — for Google Discover / share cards */
   cover: { src: string; width: number; height: number };
-  author: string;
+  authorSlug: string; // Admin → Authors
   published: string; // ISO date
   checked: string; // ISO date facts were last checked
   /** answer-first summary: direct answers AI search and skimmers can lift as-is */
@@ -48,7 +48,7 @@ export const NOTES: FieldNote[] = [
     hero: { src: '/notes/corbett/village-vatika-sign.jpg', alt: 'Village Vatika restaurant sign on the main road in Ramnagar, Jim Corbett', wide: true },
     shortName: 'Jim Corbett: safari zones, booking & where to eat',
     cover: { src: '/notes/corbett/cover-16x9.jpg', width: 1280, height: 720 },
-    author: 'Neeraj',
+    authorSlug: 'beyond-explored-team',
     published: '2026-10-08',
     checked: '2026-10-08',
     quick: [

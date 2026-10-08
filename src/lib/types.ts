@@ -231,7 +231,24 @@ export interface Lead {
   adminNotes?: string;
 }
 
+/** A byline on our articles — managed in Admin → Authors, shown at /authors/<slug> (E-E-A-T). */
+export interface Author {
+  slug: string;
+  name: string;
+  kind: 'Person' | 'Organization';
+  role: string; // "Travel writers & trip planners"
+  bio: string; // paragraphs separated by blank lines
+  photo?: string; // /media/… upload
+  expertise: string[];
+  regions: string[]; // places they know first-hand
+  since?: string; // "2024"
+  standards?: string; // editorial standards / how they write
+  links: string[]; // profile URLs (Instagram, LinkedIn, YouTube, website) → schema sameAs
+  email?: string; // public contact
+}
+
 export interface Db {
+  authors?: Author[];
   settings: SiteSettings;
   vibes: Vibe[];
   cities: OriginCity[];

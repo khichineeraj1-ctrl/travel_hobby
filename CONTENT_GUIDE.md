@@ -21,7 +21,7 @@ Content should be people-first and show unique expertise and experience.
 - [ ] **Question-led H2s** that match real queries ("Which Corbett zones are open — and when?", "Where should I eat in Ramnagar?", "Ideas for a spare day near …"). A blogger-style line goes above each as a kicker.
 - [ ] **Answer-first "Quick answers" box** under the intro: 4–6 Q→A pairs, each a direct, quotable answer.
 - [ ] **FAQ section** with 6–10 full-sentence answers, also output as FAQPage schema. The visible text must match the schema.
-- [ ] **Byline + experience**: author name, "visited <month year>", and "facts checked <date>".
+- [ ] **Byline + experience**: author picked from Admin → Authors (links to /authors/<slug> profile with bio, expertise, places visited, editorial standards, sameAs links), plus "visited <month year>" and "facts checked <date>".
 - [ ] **"How we wrote this" line** with links to the official sources.
 - [ ] **Our own photos** only. No children's faces and no number plates, and location data is stripped from the files.
 - [ ] **Large cover image**: 16:9, at least 1200px wide (about 300k+ pixels). It is used for og:image and Discover.

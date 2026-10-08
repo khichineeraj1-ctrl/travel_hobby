@@ -7,6 +7,8 @@ import { GuideEnd } from '@/components/GuideEnd';
 import { LeadForm } from '@/components/LeadForm';
 import { JsonLd } from '@/lib/jsonld';
 import { abs, meta } from '@/lib/seo';
+import { authorHref, authorLd, authorOrDefault } from '@/lib/authors';
+import { AuthorAvatar } from '@/components/AuthorAvatar';
 import { guide, guideQuiet } from '@/lib/guide';
 import { asCard, gemIndex } from '@/lib/gemPages';
 import { km } from '@/lib/places';
@@ -23,7 +25,7 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: P): Promise<Metadata> {
   const n = noteBySlug((await params).slug);
   if (!n) return {};
-  return meta({ title: n.seoTitle, description: n.description, path: `/notes/${n.slug}`, image: n.cover.src, imageSize: { width: n.cover.width, height: n.cover.height }, article: { published: n.published, modified: n.checked, author: n.author } });
+  return meta({ title: n.seoTitle, description: n.description, path: `/notes/${n.slug}`, image: n.cover.src, imageSize: { width: n.cover.width, height: n.cover.height }, article: { published: n.published, modified: n.checked, author: authorOrDefault(n.authorSlug).name } });
 }
 
 function Photo({ p, className = '' }: { p: NotePhoto; className?: string }) {
@@ -45,6 +47,7 @@ const OPENS: Record<Zone['opens'], { label: string; cls: string }> = {
 export default async function NotePage({ params }: P) {
   const n = noteBySlug((await params).slug);
   if (!n) notFound();
+  const author = authorOrDefault(n.authorSlug);
 
   const near = gemIndex().list
     .map((g) => ({ g, d: Math.round(km(n, g)) }))
@@ -62,7 +65,7 @@ export default async function NotePage({ params }: P) {
           '@context': 'https://schema.org', '@type': 'Article', headline: n.title, description: n.description,
           image: [abs(n.cover.src), abs(n.hero.src)], url: abs(`/notes/${n.slug}`), mainEntityOfPage: abs(`/notes/${n.slug}`),
           datePublished: n.published, dateModified: n.checked,
-          author: { '@type': 'Person', name: n.author, url: abs('/notes') },
+          author: authorLd(author),
           publisher: { '@type': 'Organization', name: 'Beyond Explored', url: abs('/') },
           about: { '@type': 'TouristDestination', name: 'Jim Corbett National Park', geo: { '@type': 'GeoCoordinates', latitude: n.lat, longitude: n.lng } },
           mentions: { '@type': 'Restaurant', name: 'Village Vatika', address: { '@type': 'PostalAddress', streetAddress: 'NH309, Ladwachaur', addressLocality: 'Ramnagar', addressRegion: 'Uttarakhand', addressCountry: 'IN' } },
@@ -79,7 +82,12 @@ export default async function NotePage({ params }: P) {
         <div className="min-w-0">
           <p className="kicker">Field notes · {n.stateName} · visited {n.visited}</p>
           <h1 className="mt-2 text-balance text-[32px] font-semibold leading-[1.08] tracking-tightest sm:text-[44px]">{n.title}</h1>
-          <p className="mt-3 text-sm text-mute">By <b className="text-ink">{n.author}</b> · visited {n.visited} · facts checked <time dateTime={n.checked}>{fmtDate(n.checked)}</time></p>
+          <div className="mt-4 flex items-center gap-3 text-sm text-mute">
+            <Link href={authorHref(author)} className="shrink-0" aria-label={`About ${author.name}`}>
+              <AuthorAvatar a={author} />
+            </Link>
+            <span>By <Link href={authorHref(author)} rel="author" className="font-semibold text-ink hover:underline">{author.name}</Link> · visited {n.visited} · facts checked <time dateTime={n.checked}>{fmtDate(n.checked)}</time></span>
+          </div>
           <p className="mt-4 text-lg leading-relaxed text-mute">{n.intro}</p>
           <div className="mt-6 flex flex-wrap gap-3">
             <a href="#zones" className="btn">See the 8 zones</a>
