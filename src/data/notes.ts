@@ -66,7 +66,7 @@ export const NOTES: FieldNote[] = [
       { q: 'Which month should I visit Jim Corbett?', a: 'If you want every zone open, go between 15 November and mid-June. In October you can still safari in the three all-year zones, and in Bijrani from 15 October. Core zones shut for the monsoon from around mid/late June.' },
       { q: 'How far in advance should I book a Corbett safari or jungle stay?', a: 'Book at least a month ahead — more for long weekends and the Diwali-to-New-Year season. Rooms inside the reserve are limited and the good dates go the day booking opens. Book only on the official Corbett Tiger Reserve website.' },
       { q: 'How do I improve my chances of seeing a tiger in Corbett?', a: 'Stay inside the reserve at a forest rest house so you are in the jungle at dawn and dusk, take the early-morning safari slot, and choose a deeper zone such as Dhikala once it opens on 15 November. Sightings are never guaranteed.' },
-      { q: 'Where should I eat in Ramnagar near Jim Corbett?', a: 'We loved Village Vatika on NH309 at Ladwachaur, Ramnagar. The food was excellent, the garden is full of families in the evening, and you can bring your own whisky or drinks.' },
+      { q: 'Where should I eat in Ramnagar near Jim Corbett?', a: 'We loved Village Vatika on NH309 at Ladwachaur, Ramnagar. The food was excellent, the evening crowd is mostly families, and you can bring your own whisky or drinks.' },
       { q: 'Can you bring your own alcohol to Village Vatika, Ramnagar?', a: 'Yes — when we visited in October 2026, guests could bring their own whisky or drinks and order food around it. Arrange a driver if you are drinking.' },
     ],
     sources: [

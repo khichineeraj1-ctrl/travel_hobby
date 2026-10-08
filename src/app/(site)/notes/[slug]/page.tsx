@@ -182,20 +182,19 @@ export default async function NotePage({ params }: P) {
             <h2 className="mt-1 text-[28px] font-semibold tracking-headline sm:text-[32px]">Where should I eat in Ramnagar?</h2>
             <div className="mt-4 space-y-4 text-[17px] leading-relaxed">
               <p>After a day of dust and early alarms, you want a long, slow dinner — not a resort buffet. Village Vatika sits right on the main road through Ramnagar (NH309, at Ladwachaur), so there’s no hunting for it down a dark lane. Walk in through the creeper-covered arch and the noise of the highway just drops away.</p>
-              <p>The food was <b>properly excellent</b> — the kind of meal where the table goes quiet for the first ten minutes. And here’s the bit that makes it a Corbett institution: you can <b>bring your own whisky</b> (or whatever you’re drinking), settle into the garden under the warm lights, and let the plates keep coming.</p>
-              <p>Don’t mistake BYOB for rowdy, though. When we were there it was almost entirely families — kids racing around the play area on the lawn, grandparents parked at the long tables, everyone in for the evening. It’s the rare place that works for a couples’ night out and a three-generation dinner at the same time.</p>
+              <p>The food was <b>properly excellent</b> — the kind of meal where the table goes quiet for the first ten minutes. And here’s the bit that makes it a Corbett institution: you can <b>bring your own whisky</b> (or whatever you’re drinking), settle in among the plants under the warm lights, and let the plates keep coming.</p>
+              <p>Don’t mistake BYOB for rowdy, though. When we were there it was almost entirely families — whole tables of parents, kids and grandparents, everyone settled in for a long evening. It’s the rare place that works for a couples’ night out and a three-generation dinner at the same time.</p>
             </div>
             <div className="mt-5 grid gap-4 sm:grid-cols-3">
               {[
                 ['Main road', 'NH309, Ladwachaur, Ramnagar'],
                 ['Bring your own', 'Whisky, beer or wine — they serve the food'],
-                ['Family crowd', 'Garden seating and a kids’ play area'],
+                ['Family crowd', 'Mostly families in the evening — relaxed, not rowdy'],
               ].map(([h, t]) => <div key={h} className="card p-5"><p className="font-semibold">{h}</p><p className="mt-1 text-[15px] text-mute">{t}</p></div>)}
             </div>
-            <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3">
+            <div className="mt-6 grid grid-cols-2 gap-4">
               <Photo p={P('village-vatika-entrance', 'Entrance arch of Village Vatika restaurant covered in creepers', 'Through the arch and the highway disappears.')} />
               <Photo p={P('village-vatika-night', 'Night seating at Village Vatika among potted plants and warm lights', 'After dark, among the plants and the lamps. Ask for a table out here.')} />
-              <Photo p={P('village-vatika-garden', 'Lawn and kids’ play area at Village Vatika', 'The lawn and play area — the reason parents actually get to finish their dinner.')} className="col-span-2 sm:col-span-1" />
             </div>
             <p className="mt-4 text-sm text-faint">Their listing says they’re open daily, roughly 10am to 10:30pm. Weekends fill up — go early or call ahead. And if you’re bringing a bottle, sort a driver first.</p>
             <div className="mt-4 flex flex-wrap gap-3">
