@@ -3,6 +3,7 @@ import { PageHead } from '@/components/Listing';
 import { PlaceCard } from '@/components/PlaceCard';
 import { GemCard } from '@/components/GemCard';
 import { cardOf } from '@/lib/gemPages';
+import { NoteCard } from '@/components/NoteBanner';
 import { SpotCard } from '@/components/SpotList';
 import { GuideEnd } from '@/components/GuideEnd';
 import { AutoSubmit } from '@/components/AutoSubmit';
@@ -133,6 +134,7 @@ export default async function Explore({ searchParams }: { searchParams: Promise<
           <h2 className="sr-only">Results</h2>
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {shown.map((it) => {
+              if (it.kind === 'note') return <NoteCard key={it.id} slug={it.id.slice(5)} />;
               if (it.kind === 'guide') {
                 const d = getDestination(it.id.slice(6));
                 return d ? <PlaceCard key={it.id} d={d} /> : null;

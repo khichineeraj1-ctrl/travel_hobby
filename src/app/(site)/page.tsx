@@ -19,6 +19,8 @@ import { countdown, recentPastEvents, upcomingEvents } from '@/lib/events';
 import { HomeSearch } from '@/components/HomeSearch';
 import { GemTile } from '@/components/GemCard';
 import { cardOf } from '@/lib/gemPages';
+import { NoteCard } from '@/components/NoteBanner';
+import { NOTES } from '@/data/notes';
 import { catalog, stats } from '@/lib/catalog';
 import { INDIA_STATES } from '@/lib/gems';
 import { STATE_SEASON } from '@/data/state-seasons';
@@ -141,6 +143,18 @@ export default function Home() {
             })}
           </Rail>
           <p className="wrap text-xs text-faint">Ratings from Google Maps.</p>
+        </section>
+      )}
+
+      {NOTES.length > 0 && (
+        <section className="wrap mt-16" {...guide('Written after our own trips — the stuff brochures leave out.', { label: 'All field notes', href: '/notes' })}>
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <h2 className="headline">Field notes. <span>What we learned on the ground.</span></h2>
+            <Link href="/notes" className="link-arrow text-[17px]">All notes</Link>
+          </div>
+          <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {NOTES.slice(0, 3).map((n) => <NoteCard key={n.slug} slug={n.slug} />)}
+          </div>
         </section>
       )}
 

@@ -17,6 +17,10 @@ export type FieldNote = {
   lng: number;
   hero: NotePhoto;
   intro: string;
+  /** short name used in search results and cards */
+  shortName: string;
+  /** extra words people may search for */
+  keywords: string;
 };
 
 export const NOTES: FieldNote[] = [
@@ -32,6 +36,8 @@ export const NOTES: FieldNote[] = [
     lat: 29.53,
     lng: 78.77,
     hero: { src: '/notes/corbett/village-vatika-sign.jpg', alt: 'Village Vatika restaurant sign on the main road in Ramnagar, Jim Corbett', wide: true },
+    shortName: 'Jim Corbett: safari zones, booking & where to eat',
+    keywords: 'jim corbett national park tiger reserve ramnagar nainital safari jungle stay forest rest house dhikala bijrani jhirna dhela garjia durga devi village vatika restaurant dinner byob whisky',
     intro: 'We just got back from Corbett. Two things we wish someone had told us before we went: the jungle isn’t one park — it’s eight zones that open on different dates — and the best dinner in Ramnagar is a garden restaurant right on the main road where families bring their own bottle.',
   },
 ];

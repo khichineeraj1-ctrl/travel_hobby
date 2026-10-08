@@ -6,6 +6,7 @@ import { getAllDestinations, getVibes } from './repo';
 import { INDIA_STATES, allGems } from './gems';
 import { family } from './places';
 import { gemHref } from './gemPages';
+import { NOTES } from '@/data/notes';
 import { STATE_SEASON, WATERFALL_MONTHS } from '@/data/state-seasons';
 import { MONTHS, currentMonth } from './months';
 import type { Month } from './types';
@@ -13,7 +14,7 @@ import type { Month } from './types';
 export type ItemType = 'water' | 'views' | 'wild' | 'heritage' | 'sacred' | 'other';
 export type Item = {
   id: string;
-  kind: 'guide' | 'gem';
+  kind: 'guide' | 'gem' | 'note';
   name: string;
   stateSlug: string;
   stateName: string;
@@ -26,7 +27,7 @@ export type Item = {
   href: string;
   external: boolean;
   months: Month[];
-  monthsFrom: 'guide' | 'state' | 'waterfall';
+  monthsFrom: 'guide' | 'state' | 'waterfall' | 'note';
   gem?: boolean;
   budgetFrom?: number;
   crowd?: number;
@@ -65,7 +66,12 @@ export function catalog(): Item[] {
       months: isFall ? WATERFALL_MONTHS : (STATE_SEASON[g.stateSlug] ?? []), monthsFrom: isFall ? 'waterfall' : 'state', gem: g.gem,
     };
   });
-  memo = { at: Date.now(), items: [...guides, ...gems] };
+  const notes: Item[] = NOTES.map((n) => ({
+    id: `note:${n.slug}`, kind: 'note', name: n.shortName, stateSlug: n.stateSlug, stateName: n.stateName,
+    types: ['wild'], label: 'Field notes', hook: `${n.keywords} ${n.intro}`, href: `/notes/${n.slug}`, external: false,
+    months: [], monthsFrom: 'note',
+  }));
+  memo = { at: Date.now(), items: [...notes, ...guides, ...gems] };
   return memo.items;
 }
 
@@ -135,8 +141,8 @@ export function search(f: Filters): { items: Item[]; parsed?: Parsed } {
     (!snowSlugs || (it.kind === 'guide' ? snowSlugs.has(it.id) : SNOW_STATES.includes(it.stateSlug) && it.types.some((t) => t === 'views' || t === 'wild'))) &&
     (!states.length || states.includes(it.stateSlug)) &&
     (!type || it.types.includes(type)) &&
-    (!month || it.months.includes(month)) &&
-    (f.show === 'guides' ? it.kind === 'guide' : f.show === 'gems' ? it.kind === 'gem' : true));
+    (!month || it.kind === 'note' || it.months.includes(month)) &&
+    (f.show === 'guides' ? it.kind !== 'gem' : f.show === 'gems' ? it.kind === 'gem' : true));
 
   const guideVibes = vibeHits.length ? new Map(getAllDestinations().map((d) => [`guide:${d.slug}`, d.vibes])) : null;
   const scoreCache = new Map<string, number>();
@@ -154,7 +160,7 @@ export function search(f: Filters): { items: Item[]; parsed?: Parsed } {
   };
   if (words.length) items = items.filter((it) => textScore(it) > 0);
 
-  const quality = (it: Item) => (it.kind === 'guide' ? 4.9 : ((it.reviews ?? 0) * (it.rating ?? 0) + 200 * 4.1) / ((it.reviews ?? 0) + 200));
+  const quality = (it: Item) => (it.kind === 'note' ? 5 : it.kind === 'guide' ? 4.9 : ((it.reviews ?? 0) * (it.rating ?? 0) + 200 * 4.1) / ((it.reviews ?? 0) + 200));
   const sort = f.sort ?? 'best';
   items = [...items].sort((a, b) =>
     sort === 'az' ? a.name.localeCompare(b.name)

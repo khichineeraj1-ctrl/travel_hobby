@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { notesForState } from '@/data/notes';
+import { NOTES, notesForState } from '@/data/notes';
 
 /** "We've been here" card linking a state's field notes. Renders nothing if there are none. */
 export function NoteBanner({ stateSlug, className = '' }: { stateSlug: string; className?: string }) {
@@ -19,5 +19,25 @@ export function NoteBanner({ stateSlug, className = '' }: { stateSlug: string; c
         </Link>
       ))}
     </div>
+  );
+}
+
+/** Grid card (PlaceCard-style) for a field note. */
+export function NoteCard({ slug }: { slug: string }) {
+  const n = NOTES.find((x) => x.slug === slug);
+  if (!n) return null;
+  return (
+    <Link href={`/notes/${n.slug}`} className="card card-hover group flex flex-col overflow-hidden">
+      <div className="relative">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={n.hero.src} alt={n.hero.alt} className="aspect-[16/9] w-full object-cover" loading="lazy" />
+        <span className="absolute left-4 top-4 rounded-full bg-black/45 px-3 py-1 text-xs font-semibold text-white backdrop-blur">📝 Field notes · our own trip</span>
+      </div>
+      <div className="flex flex-1 flex-col p-5">
+        <p className="text-xs font-semibold uppercase tracking-wide text-faint">{n.stateName} · visited {n.visited}</p>
+        <h3 className="mt-1 line-clamp-2 text-xl font-semibold leading-snug tracking-headline">{n.shortName}</h3>
+        <p className="mt-1 line-clamp-2 text-[15px] text-mute">{n.intro}</p>
+      </div>
+    </Link>
   );
 }

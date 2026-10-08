@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { openAsk } from './AskBeyond';
 
-type Hit = { name: string; sub: string; href: string; external: boolean; kind: 'guide' | 'gem' };
+type Hit = { name: string; sub: string; href: string; external: boolean; kind: 'guide' | 'gem' | 'note' };
 
 const EXAMPLES = [
   'waterfalls in Meghalaya',
@@ -99,7 +99,7 @@ export function HomeSearch({ total, states, chips, ask }: { total: number; state
                     onMouseEnter={() => setActive(i)}
                     className={`flex items-center gap-3 px-5 py-3 ${i === active ? 'bg-paper' : ''}`}
                   >
-                    <span className="text-lg" aria-hidden>{h.kind === 'guide' ? '⛰️' : '💎'}</span>
+                    <span className="text-lg" aria-hidden>{h.kind === 'note' ? '📝' : h.kind === 'guide' ? '⛰️' : '💎'}</span>
                     <span className="min-w-0 flex-1">
                       <span className="block truncate font-semibold">{h.name}</span>
                       <span className="block truncate text-sm text-mute">{h.sub}</span>

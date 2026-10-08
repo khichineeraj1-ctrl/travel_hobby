@@ -20,7 +20,7 @@ export function GET(req: Request) {
     understood,
     items: items.slice(0, 7).map((it) => ({
       name: it.name, href: it.href, external: it.external, kind: it.kind,
-      sub: it.kind === 'guide' ? `Full guide · ${it.stateName}` : `${it.label} · ${it.area ?? it.stateName}${it.rating ? ` · ★ ${it.rating.toFixed(1)}` : ''}`,
+      sub: it.kind === 'note' ? `Field notes · our own trip · ${it.stateName}` : it.kind === 'guide' ? `Full guide · ${it.stateName}` : `${it.label} · ${it.area ?? it.stateName}${it.rating ? ` · ★ ${it.rating.toFixed(1)}` : ''}`,
     })),
   }, { headers: { 'Cache-Control': 'public, max-age=60' } });
 }
