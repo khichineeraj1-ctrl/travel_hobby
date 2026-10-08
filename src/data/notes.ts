@@ -26,7 +26,7 @@ export type FieldNote = {
 export const NOTES: FieldNote[] = [
   {
     slug: 'jim-corbett-safari-zones-booking-village-vatika',
-    title: 'Jim Corbett: which safari zone is open when, and where to eat after.',
+    title: 'Jim Corbett, done right: the zone calendar nobody tells you about.',
     seoTitle: 'Jim Corbett Safari Zones, Booking & Village Vatika',
     description: 'Field notes from Jim Corbett: which of the 8 safari zones are open year-round, from 15 October or 15 November, how to book a jungle stay a month ahead, and dinner at Village Vatika, Ramnagar.',
     place: 'Jim Corbett',
@@ -38,7 +38,7 @@ export const NOTES: FieldNote[] = [
     hero: { src: '/notes/corbett/village-vatika-sign.jpg', alt: 'Village Vatika restaurant sign on the main road in Ramnagar, Jim Corbett', wide: true },
     shortName: 'Jim Corbett: safari zones, booking & where to eat',
     keywords: 'jim corbett national park tiger reserve ramnagar nainital safari jungle stay forest rest house dhikala bijrani jhirna dhela garjia durga devi village vatika restaurant dinner byob whisky',
-    intro: 'We just got back from Corbett. Two things we wish someone had told us before we went: the jungle isn’t one park — it’s eight zones that open on different dates — and the best dinner in Ramnagar is a garden restaurant right on the main road where families bring their own bottle.',
+    intro: 'Most people treat Corbett like a single gate you drive up to. It isn’t. It’s eight separate jungles stitched together, each with its own gate and its own opening day — and if you don’t know which is which, you can drive five hours from Delhi to stare at a locked barrier. We were there in early October, right on the edge of the season. Here’s what we’d tell a friend before they go — plus the dinner spot we’d go back for tomorrow.',
   },
 ];
 
