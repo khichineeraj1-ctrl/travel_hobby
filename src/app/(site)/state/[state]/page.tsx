@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { gemsFor } from '@/lib/gems';
 import { SpotTile } from '@/components/SpotTile';
+import { NoteBanner } from '@/components/NoteBanner';
 import { Listing, CrossLinks } from '@/components/Listing';
 import { LinkChips } from '@/components/LinkChips';
 import { getByState, getStates } from '@/lib/repo';
@@ -32,6 +33,7 @@ export default async function Page({ params }: { params: Promise<{ state: string
       items={getByState(s.slug).sort((a, b) => a.crowd - b.crowd)}
       end={{ text: `That’s our ${s.name} list. Want us to string two or three of these into one trip?`, label: 'Plan a combo', href: `/book/custom` }}
     >
+      <NoteBanner stateSlug={s.slug} />
       {gemsFor(s.slug).length > 0 && (
         <section>
           <div className="flex flex-wrap items-end justify-between gap-3">

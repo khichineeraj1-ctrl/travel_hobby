@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { PageHead } from '@/components/Listing';
+import { NoteBanner } from '@/components/NoteBanner';
 import { PlaceGrid } from '@/components/PlaceCard';
 import { SpotAttribution } from '@/components/SpotList';
 import { SpotTile } from '@/components/SpotTile';
@@ -53,6 +54,7 @@ export default async function StateGems({ params, searchParams }: P) {
         h1={`Hidden gems in ${st.name}.`}
         intro={`Rated 4.4★+ by people who went, but still nowhere near the crowds. Real places, straight from Google Maps.`}
       />
+      <NoteBanner stateSlug={st.slug} className="mt-6" />
 
       {all.length === 0 ? (
         <p className="card mt-10 p-8 text-mute">We’re still mapping {st.name}. Meanwhile, <Link href="/hidden-gems" className="text-blue-link underline">see other states</Link>.</p>
