@@ -21,6 +21,16 @@ export type FieldNote = {
   shortName: string;
   /** extra words people may search for */
   keywords: string;
+  /** 16:9, ≥1200px wide — for Google Discover / share cards */
+  cover: { src: string; width: number; height: number };
+  author: string;
+  published: string; // ISO date
+  checked: string; // ISO date facts were last checked
+  /** answer-first summary: direct answers AI search and skimmers can lift as-is */
+  quick: { q: string; a: string }[];
+  /** FAQ (also emitted as FAQPage schema) */
+  faq: { q: string; a: string }[];
+  sources: { label: string; href: string }[];
 };
 
 export const NOTES: FieldNote[] = [
@@ -37,6 +47,32 @@ export const NOTES: FieldNote[] = [
     lng: 78.77,
     hero: { src: '/notes/corbett/village-vatika-sign.jpg', alt: 'Village Vatika restaurant sign on the main road in Ramnagar, Jim Corbett', wide: true },
     shortName: 'Jim Corbett: safari zones, booking & where to eat',
+    cover: { src: '/notes/corbett/cover-16x9.jpg', width: 1280, height: 720 },
+    author: 'Neeraj',
+    published: '2026-10-08',
+    checked: '2026-10-08',
+    quick: [
+      { q: 'Which zones are open all year?', a: 'Jhirna, Dhela and Garjia.' },
+      { q: 'When does Bijrani open?', a: '15 October.' },
+      { q: 'When do Dhikala, Durga Devi, Sonanadi and Pakhro open?', a: '15 November.' },
+      { q: 'Best way to see a tiger?', a: 'Stay overnight inside the reserve at a forest rest house, not just a day safari.' },
+      { q: 'How early should I book?', a: 'At least a month ahead, on the official Corbett Tiger Reserve website only.' },
+      { q: 'Where should I eat in Ramnagar?', a: 'Village Vatika on NH309 — great food, family crowd, bring your own drinks.' },
+    ],
+    faq: [
+      { q: 'Which Jim Corbett safari zones are open all year?', a: 'Three zones run all year: Jhirna and Dhela (both through Dhela gate) and Garjia (Garjia gate). The other five zones close for the monsoon and reopen in October or November.' },
+      { q: 'When does the Bijrani zone open in Corbett?', a: 'Bijrani opens on 15 October each year. You enter through Amdanda gate near Ramnagar. It is the most popular day-safari zone and the easiest first safari.' },
+      { q: 'When does Dhikala open, and why is it special?', a: 'Dhikala opens on 15 November. It is the deepest and wildest part of the reserve, entered through Dhangarhi gate, and is best experienced with an overnight stay at a forest rest house inside the zone.' },
+      { q: 'Which month should I visit Jim Corbett?', a: 'If you want every zone open, go between 15 November and mid-June. In October you can still safari in the three all-year zones, and in Bijrani from 15 October. Core zones shut for the monsoon from around mid/late June.' },
+      { q: 'How far in advance should I book a Corbett safari or jungle stay?', a: 'Book at least a month ahead — more for long weekends and the Diwali-to-New-Year season. Rooms inside the reserve are limited and the good dates go the day booking opens. Book only on the official Corbett Tiger Reserve website.' },
+      { q: 'How do I improve my chances of seeing a tiger in Corbett?', a: 'Stay inside the reserve at a forest rest house so you are in the jungle at dawn and dusk, take the early-morning safari slot, and choose a deeper zone such as Dhikala once it opens on 15 November. Sightings are never guaranteed.' },
+      { q: 'Where should I eat in Ramnagar near Jim Corbett?', a: 'We loved Village Vatika on NH309 at Ladwachaur, Ramnagar. The food was excellent, the garden is full of families in the evening, and you can bring your own whisky or drinks.' },
+      { q: 'Can you bring your own alcohol to Village Vatika, Ramnagar?', a: 'Yes — when we visited in October 2026, guests could bring their own whisky or drinks and order food around it. Arrange a driver if you are drinking.' },
+    ],
+    sources: [
+      { label: 'Official Corbett Tiger Reserve booking site', href: 'https://corbettonline.uk.gov.in/' },
+      { label: 'Corbett jungle safari zones (official)', href: 'https://corbettonline.uk.gov.in/crbt_junglesafari.aspx' },
+    ],
     keywords: 'jim corbett national park tiger reserve ramnagar nainital safari jungle stay forest rest house dhikala bijrani jhirna dhela garjia durga devi village vatika restaurant dinner byob whisky',
     intro: 'Most people treat Corbett like a single gate you drive up to. It isn’t. It’s eight separate jungles stitched together, each with its own gate and its own opening day — and if you don’t know which is which, you can drive five hours from Delhi to stare at a locked barrier. We were there in early October, right on the edge of the season. Here’s what we’d tell a friend before they go — plus the dinner spot we’d go back for tomorrow.',
   },

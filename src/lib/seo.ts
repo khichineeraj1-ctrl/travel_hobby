@@ -19,7 +19,7 @@ export const fitDescription = (d: string, max = 158) => {
   return cut.slice(0, Math.max(cut.lastIndexOf(' '), max - 20)).replace(/[\s,.;:—–-]+$/, '') + '…';
 };
 
-export function meta(opts: { title: string; description: string; path: string; noindex?: boolean; image?: string }): Metadata {
+export function meta(opts: { title: string; description: string; path: string; noindex?: boolean; image?: string; imageSize?: { width: number; height: number }; article?: { published: string; modified: string; author: string } }): Metadata {
   const url = abs(opts.path);
   const suffix = ` · ${SITE_NAME}`;
   const description = fitDescription(opts.description);
@@ -28,9 +28,13 @@ export function meta(opts: { title: string; description: string; path: string; n
     title: opts.title.length + suffix.length <= 62 ? opts.title : { absolute: opts.title },
     description,
     alternates: { canonical: url },
-    robots: opts.noindex ? { index: false, follow: true } : undefined,
+    // large image previews + full snippets help Discover and AI answers quote us
+    robots: opts.noindex ? { index: false, follow: true } : { index: true, follow: true, googleBot: { index: true, follow: true, 'max-image-preview': 'large', 'max-snippet': -1, 'max-video-preview': -1 } },
     // default share card (place/event/road-trip pages override it with their own generated image)
-    openGraph: { images: [{ url: abs(opts.image ?? '/opengraph-image'), width: 1200, height: 630 }], title: opts.title, description, url, siteName: SITE_NAME, type: 'website', locale: 'en_IN' },
+    openGraph: {
+      images: [{ url: abs(opts.image ?? '/opengraph-image'), ...(opts.imageSize ?? { width: 1200, height: 630 }) }], title: opts.title, description, url, siteName: SITE_NAME, locale: 'en_IN',
+      ...(opts.article ? { type: 'article' as const, publishedTime: opts.article.published, modifiedTime: opts.article.modified, authors: [opts.article.author] } : { type: 'website' as const }),
+    },
     twitter: { card: 'summary_large_image', title: opts.title, description, images: [abs(opts.image ?? '/opengraph-image')] },
   };
 }
