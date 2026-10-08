@@ -5,6 +5,7 @@ import { currentAccount } from '@/lib/contrib';
 import { isAdmin } from '@/lib/auth';
 import { INDIA_STATES } from '@/lib/gems';
 import { NoteEditor } from '@/components/studio/NoteEditor';
+import { draftEnabled } from '@/lib/draft';
 import { deleteDraft } from '../../actions';
 
 export default async function EditNote({ params }: { params: Promise<{ id: string }> }) {
@@ -25,7 +26,7 @@ export default async function EditNote({ params }: { params: Promise<{ id: strin
           <form action={deleteDraft}><input type="hidden" name="id" value={note.id} /><button className="text-sm text-mute hover:text-[#d70015]">Delete note</button></form>
         )}
       </div>
-      <NoteEditor initial={note} states={INDIA_STATES.map((s) => ({ slug: s.slug, name: s.name }))} bioOk={(author?.bio ?? '').length >= 80} admin={admin} locked={locked} />
+      <NoteEditor initial={note} states={INDIA_STATES.map((s) => ({ slug: s.slug, name: s.name }))} bioOk={(author?.bio ?? '').length >= 80} admin={admin} locked={locked} ai={draftEnabled()} />
     </>
   );
 }

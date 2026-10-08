@@ -34,6 +34,9 @@ function clean(input: NoteDoc, base: NoteDoc): NoteDoc {
     sources: (input.sources ?? []).slice(0, 8).map((x) => ({ label: clip(x.label, 120), href: clip(x.href, 400) })).filter((x) => x.label && x.href),
     keywords: clip(input.keywords, 400),
     photoConsent: !!input.photoConsent,
+    context: clip(input.context, 12000),
+    pool: (input.pool ?? []).slice(0, 10).map(photo).filter((p) => p.src),
+    gaps: (input.gaps ?? []).slice(0, 10).map((g) => clip(g, 300)),
     updatedAt: new Date().toISOString(),
   };
 }
@@ -107,4 +110,35 @@ export async function saveMyProfile(fd: FormData): Promise<void> {
 export async function signOut() {
   await endContribSession();
   redirect('/contribute');
+}
+
+/* ---------- AI first draft ---------- */
+
+const draftsToday = new Map<string, { day: string; n: number }>();
+
+export async function draftWithAI(id: string, context: string, pool: NoteDoc['pool']): Promise<{ ok: boolean; msg: string; note?: NoteDoc }> {
+  const { draftEnabled, draftNote } = await import('@/lib/draft');
+  if (!draftEnabled()) return { ok: false, msg: 'AI drafting isn’t switched on yet — you can still write it yourself.' };
+  const { note, admin, acc } = await canEdit(id);
+  if (!note) return { ok: false, msg: 'Please sign in again.' };
+  if (!admin && (note.status === 'pending' || note.status === 'published')) return { ok: false, msg: 'This note is with the editor right now.' };
+  const ctx = String(context ?? '').slice(0, 12000).trim();
+  const photos = (pool ?? []).filter((p) => /^\/media\/[\w.-]+$/.test(String(p?.src))).slice(0, 10)
+    .map((p) => ({ src: p.src, alt: String(p.alt ?? '').slice(0, 200), caption: String(p.caption ?? '').slice(0, 200) || undefined, wide: !!p.wide }));
+  if (ctx.split(/\s+/).length < 60) return { ok: false, msg: 'Tell us a bit more first — at least a few lines about where you went, what you did, ate, paid and what surprised you.' };
+  if (!photos.length) return { ok: false, msg: 'Add at least one of your photos.' };
+  if ((note.drafts ?? 0) >= 5 && !admin) return { ok: false, msg: 'You’ve used the 5 AI drafts for this note — edit it by hand from here.' };
+  const who = acc?.id ?? 'admin';
+  const day = new Date().toISOString().slice(0, 10);
+  const used = draftsToday.get(who);
+  const count = used?.day === day ? used.n : 0;
+  if (count >= 10 && !admin) return { ok: false, msg: 'That’s 10 drafts today — try again tomorrow.' };
+  draftsToday.set(who, { day, n: count + 1 });
+  try {
+    const next = await draftNote(note, ctx, photos);
+    updateDb((db) => { const i = (db.notes ?? []).findIndex((n) => n.id === id); if (i >= 0) db.notes![i] = next; });
+    return { ok: true, msg: next.gaps?.length ? 'Draft ready — read it through, fix anything that isn’t right, and fill the gaps listed at the top.' : 'Draft ready — read it through and make it yours.', note: next };
+  } catch (e) {
+    return { ok: false, msg: (e as Error).message };
+  }
 }

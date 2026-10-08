@@ -308,6 +308,10 @@ export interface NoteDoc {
   sources: { label: string; href: string }[];
   keywords: string;
   photoConsent?: boolean; // writer confirmed: own photos, no kids' faces/number plates
+  context?: string; // writer's raw trip notes (used for the AI draft)
+  pool?: NotePhotoDoc[]; // photos uploaded for the AI draft
+  gaps?: string[]; // what the AI draft still needs from the writer
+  drafts?: number; // AI drafts used on this note
   createdAt: string;
   updatedAt: string;
   submittedAt?: string;

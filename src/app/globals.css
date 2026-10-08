@@ -72,3 +72,7 @@ input[type='range'] { accent-color: #0071e3; }
 /* rails align with page content and snap without eating the gutter */
 .rail-pad { padding-inline: 20px; scroll-padding-inline: 20px; }
 @media (min-width: 640px) { .rail-pad { padding-inline: max(40px, calc((100vw - 1180px) / 2)); scroll-padding-inline: max(40px, calc((100vw - 1180px) / 2)); } }
+
+/* non-English pages: hide the English first paint until translations are applied (JS removes the class; CSS fallback reveals after 1.8s) */
+.be-tr-pending body { opacity: 0; animation: be-reveal 0s linear 1.8s forwards; }
+@keyframes be-reveal { to { opacity: 1; } }

@@ -20,6 +20,7 @@ const NAV = [
   { href: '/admin/notes', label: 'Field notes', icon: '❡', badge: 'notes' },
   { href: '/admin/contributors', label: 'Contributors', icon: '☺', badge: 'applications' },
   { href: '/admin/authors', label: 'Authors', icon: '✍' },
+  { href: '/admin/languages', label: 'Languages & AI', icon: '🌐' },
   { href: '/admin/settings', label: 'Site content', icon: '✎' },
 ];
 

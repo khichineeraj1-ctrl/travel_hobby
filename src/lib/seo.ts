@@ -27,7 +27,7 @@ export function meta(opts: { title: string; description: string; path: string; n
     // add the brand only when it still fits in ~60 chars
     title: opts.title.length + suffix.length <= 62 ? opts.title : { absolute: opts.title },
     description,
-    alternates: { canonical: url },
+    // canonical + hreflang are emitted per language by app/(site)/layout.tsx
     // large image previews + full snippets help Discover and AI answers quote us
     robots: opts.noindex ? { index: false, follow: true } : { index: true, follow: true, googleBot: { index: true, follow: true, 'max-image-preview': 'large', 'max-snippet': -1, 'max-video-preview': -1 } },
     // default share card (place/event/road-trip pages override it with their own generated image)

@@ -2,6 +2,7 @@ import type { MetadataRoute } from 'next';
 import { getAllDestinations, getCities, getStates, getVibes } from '@/lib/repo';
 import { MONTHS } from '@/lib/months';
 import { abs } from '@/lib/seo';
+import { LANGS, withLang } from '@/lib/langs';
 import { readDb } from '@/lib/db';
 import { INDIA_STATES, gemsFor } from '@/lib/gems';
 import { allNotes } from '@/lib/notes';
@@ -11,8 +12,10 @@ export const dynamic = 'force-dynamic';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
+  // every page exists in each language at /<lang>/… — list them as hreflang alternates
   const u = (path: string, priority: number, changeFrequency: 'daily' | 'weekly' | 'monthly' = 'weekly') => ({
     url: abs(path), lastModified: now, changeFrequency, priority,
+    alternates: { languages: Object.fromEntries(LANGS.map((l) => [l.hreflang, abs(withLang(l.code, path))])) },
   });
   return [
     u('/', 1, 'daily'),

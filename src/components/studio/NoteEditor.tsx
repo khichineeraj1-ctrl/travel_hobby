@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useRef, useState, useTransition } from 'react';
-import { saveNote } from '@/app/studio/actions';
+import { draftWithAI, saveNote } from '@/app/studio/actions';
 import { noteChecklist } from '@/lib/noteRules';
 import type { NoteDoc, NotePhotoDoc, NoteSection } from '@/lib/types';
 
@@ -74,7 +74,7 @@ function PairList({ items, onChange, qLabel, aLabel, min, long }: { items: { q: 
   );
 }
 
-export function NoteEditor({ initial, states, bioOk, admin, locked }: { initial: NoteDoc; states: State[]; bioOk: boolean; admin: boolean; locked: boolean }) {
+export function NoteEditor({ initial, states, bioOk, admin, locked, ai }: { initial: NoteDoc; states: State[]; bioOk: boolean; admin: boolean; locked: boolean; ai: boolean }) {
   const [d, setD] = useState<NoteDoc>(initial);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [pending, start] = useTransition();
@@ -92,6 +92,18 @@ export function NoteEditor({ initial, states, bioOk, admin, locked }: { initial:
   });
 
   const readOnly = locked && !admin;
+  const [drafting, setDrafting] = useState(false);
+  const hasContent = !!(d.intro.trim() || d.sections.some((s) => s.body.trim()));
+  const ctxWords = (d.context ?? '').trim().split(/\s+/).filter(Boolean).length;
+  const draft = async () => {
+    if (hasContent && !window.confirm('This replaces the text you have now with a fresh draft. Continue?')) return;
+    setDrafting(true); setMsg(null);
+    const r = await draftWithAI(d.id, d.context ?? '', d.pool ?? []);
+    setDrafting(false);
+    setMsg({ ok: r.ok, text: r.msg });
+    if (r.ok && r.note) { setD(r.note); setDirty(false); }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   return (
     <div className="grid gap-8 lg:grid-cols-[1fr_300px]">
@@ -103,6 +115,46 @@ export function NoteEditor({ initial, states, bioOk, admin, locked }: { initial:
         {readOnly && <p className="rounded-2xl bg-paper px-5 py-3 text-[15px] text-mute">{d.status === 'pending' ? 'This note is with the editor. You can edit again if it’s sent back.' : 'This note is live. Ask the editor if something needs changing.'}</p>}
 
         <fieldset disabled={readOnly} className="space-y-8">
+          {ai && (
+            <section className="card space-y-4 border-2 border-[#0071e3]/20 p-6">
+              <div>
+                <p className="kicker">Start here</p>
+                <h2 className="text-xl font-semibold">Tell us about your trip — we’ll draft it for you</h2>
+                <p className="mt-1 text-sm text-mute">Write it like a WhatsApp message to a friend: where you went and when, how you got there, where you stayed and ate, what it cost, what surprised you, what you’d do differently. Add your photos. Our AI editor turns it into a polished field note in our house style — using only what you tell it. Then you check and polish.</p>
+              </div>
+              <textarea rows={8} className="field leading-relaxed" placeholder="We went to Jim Corbett in early October 2026, drove from Delhi via Moradabad (about 5 hours)…" value={d.context ?? ''} onChange={(e) => set({ context: e.target.value })} />
+              <div>
+                <Label hint="Up to 10 photos. Add a few words on what each shows if it isn’t obvious.">Your photos</Label>
+                {(d.pool ?? []).length > 0 && (
+                  <div className="mb-3 grid gap-3 sm:grid-cols-4">
+                    {(d.pool ?? []).map((p, k) => (
+                      <div key={p.src} className="card overflow-hidden">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={p.src} alt="" className="aspect-square w-full object-cover" />
+                        <div className="space-y-1 p-2">
+                          <input className="field !py-1.5 text-xs" placeholder="What is this? (optional)" value={p.caption ?? ''} onChange={(e) => set({ pool: (d.pool ?? []).map((x, j) => (j === k ? { ...x, caption: e.target.value } : x)) })} />
+                          <button type="button" onClick={() => set({ pool: (d.pool ?? []).filter((_, j) => j !== k) })} className="text-xs text-[#d70015] hover:underline">Remove</button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {(d.pool ?? []).length < 10 && <UploadButton kind="photo" multiple label="Add photos" onDone={(p) => setD((x) => ({ ...x, pool: [...(x.pool ?? []), p].slice(0, 10) }))} />}
+              </div>
+              <div className="flex flex-wrap items-center gap-3">
+                <button type="button" onClick={draft} disabled={drafting || ctxWords < 60 || !(d.pool ?? []).length} className="btn disabled:opacity-40">{drafting ? 'Drafting… (about a minute)' : hasContent ? '✨ Redraft it for me' : '✨ Draft it for me'}</button>
+                <span className="text-sm text-mute">{ctxWords < 60 ? `${60 - ctxWords} more words to go` : !(d.pool ?? []).length ? 'Add at least one photo' : 'Ready'}{(d.drafts ?? 0) > 0 ? ` · ${5 - (d.drafts ?? 0)} drafts left` : ''}</span>
+              </div>
+            </section>
+          )}
+
+          {(d.gaps ?? []).length > 0 && (
+            <section className="rounded-2xl bg-[#fff4e5] p-5 text-[15px] text-[#7a3e00]">
+              <p className="font-semibold">The draft needs a few facts only you know:</p>
+              <ul className="mt-2 list-disc space-y-1 pl-5">{(d.gaps ?? []).map((g) => <li key={g}>{g}</li>)}</ul>
+              <p className="mt-2 text-sm">Add them in the text below (or to your trip notes and redraft).</p>
+            </section>
+          )}
           <section className="card space-y-4 p-6">
             <h2 className="text-lg font-semibold">The basics</h2>
             <label className="block"><Label hint="Say what the reader gets. e.g. “Jim Corbett, done right: the zone calendar nobody tells you about”">Title</Label>

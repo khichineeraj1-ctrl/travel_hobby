@@ -41,3 +41,13 @@ A senior travel blogger: confident, sensory, opinionated, and practical. Write "
 - They write in **/studio**. The editor enforces this guide as a live checklist: question headings, quick answers, FAQ, own photos with alt text, 400+ words, a bio on their author profile, and the photo promise.
 - Photos are auto-rotated, resized and **stripped of EXIF/GPS** on upload. Covers are cropped to 1600×900 (16:9).
 - Nothing goes live without review: Admin → **Field notes** → Preview / Edit / Send back with comments / Publish. Use "Mark facts checked today" when you re-verify a live note.
+
+## AI first draft (studio)
+- Writers paste their trip notes (WhatsApp-style) and add up to 10 photos, then press **✨ Draft it for me**. Claude (`DRAFT_MODEL`, default claude-sonnet-4-5) writes the full note in this guide's structure and voice, writes alt text and captions, and picks the cover.
+- It may **only use facts the writer gave** or that are visible in the photos. Anything missing comes back as "gaps" questions for the writer to answer. Limits: 5 drafts per note and 10 per writer per day.
+
+## Languages
+- Every page exists in 12 languages at `/hi/…`, `/ta/…`, `/te/…`, `/kn/…`, `/ml/…`, `/bn/…`, `/mr/…`, `/gu/…`, `/pa/…`, `/or/…` and `/as/…`, with canonical + hreflang tags and sitemap alternates.
+- First-time visitors are switched to their state's language based on their IP address. The 🌐 toggle overrides this and is remembered. Crawlers are never redirected.
+- Text is machine-translated by Claude (`I18N_MODEL`, default claude-haiku-4-5) the first time a page is opened in a language, then cached in `DATA_DIR/i18n/<lang>.json`. Daily cap: `I18N_DAILY_CHARS`. Mark anything that must stay English with `data-no-tr`.
+- Write the English so it translates well: short sentences, no idioms that only make sense in English, and numbers/₹/dates written as digits.

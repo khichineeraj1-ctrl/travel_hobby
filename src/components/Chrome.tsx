@@ -7,6 +7,8 @@ import { SITE_NAME } from '@/lib/seo';
 import { assistantEnabled } from '@/lib/assistant';
 import { MicButton } from './AskBeyond';
 import { MobileMenu } from './MobileMenu';
+import { LangSwitcher } from './LangSwitcher';
+import { getLang } from '@/lib/i18n';
 
 const NAV = [
   { href: '/explore', label: 'Explore' },
@@ -20,7 +22,8 @@ const NAV = [
   { href: '/plan-my-trip', label: 'Plan my trip' },
 ];
 
-export function GlobalNav() {
+export async function GlobalNav() {
+  const lang = await getLang();
   return (
     <header className="sticky top-0 z-40 bg-[rgba(245,245,247,0.8)] backdrop-blur-xl backdrop-saturate-150">
       <nav aria-label="Primary" className="mx-auto flex h-11 max-w-[1024px] items-center justify-between px-5 text-xs text-ink/80">
@@ -34,7 +37,8 @@ export function GlobalNav() {
             </li>
           ))}
         </ul>
-        <div className="flex items-center gap-5">
+        <div className="flex items-center gap-4 sm:gap-5">
+          <LangSwitcher lang={lang} compact />
           {assistantEnabled() && <MicButton className="flex items-center gap-1.5 rounded-full bg-ink px-3 py-1 text-[12px] font-medium text-white hover:bg-ink/85" label="Ask" />}
           <Link href="/explore" aria-label="Search places" className="hover:text-ink">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>

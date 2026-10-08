@@ -58,7 +58,8 @@ export default async function Studio() {
       <div className="card mt-10 p-6 text-[15px]">
         <p className="font-semibold">How it works</p>
         <ol className="mt-2 list-decimal space-y-1 pl-5 text-mute">
-          <li>Write your note — the checklist on the right shows what a great field note needs.</li>
+          <li>Tell us about your trip and add photos — “Draft it for me” writes a first draft in our house style, using only what you told it.</li>
+          <li>Check it, fill any gaps it flags, and polish — the checklist shows what a great field note needs.</li>
           <li>Submit for review. Our editor reads every note before it goes live.</li>
           <li>We publish it with your byline linking to your author page — or send it back with notes.</li>
         </ol>

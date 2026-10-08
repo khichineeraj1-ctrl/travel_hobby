@@ -3,7 +3,7 @@ import type { NoteDoc } from './types';
 /** The bar a field note must clear before review — mirrors CONTENT_GUIDE.md (SEO + GEO + E-E-A-T). Pure, so the editor can show it live. */
 export function noteChecklist(d: NoteDoc, bioOk: boolean) {
   const words = (s: string) => s.trim().split(/\s+/).filter(Boolean).length;
-  const photos = d.sections.reduce((n, s) => n + s.photos.length, 0);
+  const photos = d.sections.reduce((n, s) => n + s.photos.length, 0) + (d.cover ? 1 : 0);
   const bodyWords = words(d.intro) + d.sections.reduce((n, s) => n + words(s.body), 0);
   const questionHeads = d.sections.filter((s) => /\?\s*$/.test(s.heading.trim())).length;
   return [
@@ -15,7 +15,7 @@ export function noteChecklist(d: NoteDoc, bioOk: boolean) {
     { ok: questionHeads >= 2, label: 'At least 2 headings written as questions people ask (“Where should I…?”, “Which…?”)' },
     { ok: bodyWords >= 400, label: `At least 400 words in total (now ${bodyWords})` },
     { ok: !!d.cover, label: 'A cover photo (landscape works best)' },
-    { ok: photos >= 3, label: `At least 3 of your own photos in sections (now ${photos})` },
+    { ok: photos >= 3, label: `At least 3 of your own photos, cover included (now ${photos})` },
     { ok: d.cover ? !!d.cover.alt.trim() : false, label: 'Describe every photo (alt text) — cover included' },
     { ok: d.sections.every((s) => s.photos.every((p) => p.alt.trim())), label: 'Alt text on every section photo' },
     { ok: d.quick.filter((x) => x.q.trim() && x.a.trim()).length >= 3, label: 'At least 3 quick answers' },
