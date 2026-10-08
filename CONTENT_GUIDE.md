@@ -31,7 +31,16 @@ Content should be people-first and show unique expertise and experience.
 - [ ] Add the page to `/llms.txt`, the sitemap, and search (catalog keywords).
 
 ## Voice
-A senior travel blogger: confident, sensory, opinionated, and practical. Write "we" for first-hand experience. Short paragraphs. Give one honest "here's the catch" per section, and end sections with what to do next.
+A warm, experienced travel blogger talking to a friend: honest and practical.
+
+**Plain language first — anyone should understand it easily** (many readers use English as a second language, and pages are machine-translated into 11 Indian languages):
+- Short sentences (under ~20 words), one idea each; 2–4 sentence paragraphs.
+- Everyday words ("go", "really good", "book"), no fancy metaphors, idioms or poetic lines.
+- Explain local terms once, e.g. "gypsy (open safari jeep)".
+- Digits for numbers, "15 October" for dates, "₹1,500" for money.
+- Translations use simple spoken language, keeping common English words people already use (safari, booking, hotel).
+
+Original voice note: Write "we" for first-hand experience. Short paragraphs. Give one honest "here's the catch" per section, and end sections with what to do next.
 
 ## Still to do (outside the code)
 - Set up the Search profile in Search Console / Google for publishers and creators, to shape how we appear in search and to highlight content.

@@ -199,7 +199,7 @@ export function NoteEditor({ initial, states, bioOk, admin, locked, ai }: { init
                 <input className="field text-lg font-semibold" value={s.heading} onChange={(e) => setSection(i, { heading: e.target.value })} /></label>
               <label className="block"><Label hint="Optional one-liner above the heading, in your voice — e.g. “If you want the stripes, sleep inside the forest”">Kicker</Label>
                 <input className="field" value={s.kicker ?? ''} onChange={(e) => setSection(i, { kicker: e.target.value })} /></label>
-              <label className="block"><Label hint="Answer first, then the story. What you saw, what it cost, the catch, what you’d do differently. Only what you experienced.">Text</Label>
+              <label className="block"><Label hint="Answer first, then the story. Use simple words and short sentences — write like you’re telling a friend. Only what you experienced.">Text</Label>
                 <textarea rows={8} className="field leading-relaxed" value={s.body} onChange={(e) => setSection(i, { body: e.target.value })} /></label>
               <div>
                 <Label hint="Your own photos only.">Photos</Label>

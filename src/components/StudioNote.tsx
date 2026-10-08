@@ -153,7 +153,7 @@ export function StudioNote({ d, preview }: { d: NoteDoc; preview?: React.ReactNo
         <aside className="space-y-5 lg:sticky lg:top-16 lg:self-start">
           {d.quick.length > 0 && (
             <div className="card p-6">
-              <p className="text-lg font-semibold">If you read nothing else</p>
+              <p className="text-lg font-semibold">In short</p>
               <ul className="mt-3 space-y-2 text-[15px] text-mute">{d.quick.slice(0, 4).map((x) => <li key={x.q}>• {x.a}</li>)}</ul>
               <a href="#enquire" className="btn mt-5 w-full justify-center">Plan my {d.place} trip</a>
             </div>

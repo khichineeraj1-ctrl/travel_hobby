@@ -80,7 +80,7 @@ export default async function NotePage({ params }: P) {
         },
         { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: n.faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) },
       ]} />
-      <GuideEnd text="Made it to the end? You’re ready. Tell us your dates and we’ll check which zones are open for you." label="Plan Corbett" href="#enquire" />
+      <GuideEnd text="Ready to plan? Tell us your dates and we’ll check which zones are open for you." label="Plan Corbett" href="#enquire" />
 
       <div className="wrap pt-6">
         <Breadcrumbs items={[{ name: 'Field notes', path: '/notes' }, { name: n.place, path: `/notes/${n.slug}` }]} />
@@ -124,11 +124,11 @@ export default async function NotePage({ params }: P) {
         <div className="min-w-0 space-y-16">
           {/* zones */}
           <section id="zones" className="scroll-mt-20" {...guide('Bookmark this — most people only find out a zone is shut when they reach the gate.', { label: 'Plan Corbett', href: '#enquire' })}>
-            <p className="kicker">Eight jungles, three opening days</p>
+            <p className="kicker">8 zones, 3 opening dates</p>
             <h2 className="mt-1 text-[28px] font-semibold tracking-headline sm:text-[32px]">Which Corbett zones are open — and when?</h2>
             <div className="mt-4 space-y-4 text-[17px] leading-relaxed">
-              <p>Here’s the thing the brochures skip. Corbett Tiger Reserve is carved into eight safari zones, and they wake up on a staggered calendar. Three of them run all year. One — Bijrani, the crowd favourite — swings open on <b>15 October</b>. The remaining four, including Dhikala, the deep-forest heart of the park, wait until <b>15 November</b>.</p>
-              <p>So the month you pick quietly decides which Corbett you get. Go in early October and you’re choosing between the all-season zones and, from mid-month, Bijrani. Go after mid-November and the whole reserve is yours to play with. Plan around this one detail and half your trip is already sorted.</p>
+              <p>Most people don’t know this before they go. Corbett Tiger Reserve has eight safari zones, and they don’t all open on the same day. Three zones are open all year. Bijrani, the most popular one, opens on <b>15 October</b>. The other four, including Dhikala in the deep forest, open on <b>15 November</b>.</p>
+              <p>So your travel month decides which zones you can visit. In early October, you can only go to the three all-year zones, and to Bijrani after 15 October. After mid-November, every zone is open. Check this first and half your planning is done.</p>
             </div>
 
             <div className="mt-6 grid grid-cols-3 gap-3">
@@ -151,27 +151,27 @@ export default async function NotePage({ params }: P) {
             <p className="mt-3 text-sm text-faint">As we found it in October 2026. The core zones shut for the monsoon (roughly mid/late June) and dates can shift by a few days — confirm on the <a href={CORBETT_OFFICIAL} target="_blank" rel="noreferrer" className="underline">official Corbett site</a> before you go.</p>
 
             <div className="mt-6 grid grid-cols-2 gap-4">
-              <Photo p={P('amdanda-gate-bijrani', 'Amdanda gate, the entry to the Bijrani zone in Corbett', 'Amdanda gate, the doorway to Bijrani — it opens on 15 October.')} />
-              <Photo p={P('gate-signboard', 'Corbett Tiger Reserve signboard pointing to Dhangarhi gate and Durga Devi gate', 'The fork in the road: Dhangarhi gate for Dhikala, Durga Devi gate for its namesake zone. Both open from 15 November.')} />
+              <Photo p={P('amdanda-gate-bijrani', 'Amdanda gate, the entry to the Bijrani zone in Corbett', 'Amdanda gate — this is how you enter Bijrani. It opens on 15 October.')} />
+              <Photo p={P('gate-signboard', 'Corbett Tiger Reserve signboard pointing to Dhangarhi gate and Durga Devi gate', 'Signboard to Dhangarhi gate (for Dhikala) and Durga Devi gate. Both open from 15 November.')} />
             </div>
           </section>
 
           {/* tigers */}
           <section {...guide('Inside-the-jungle rooms go first. A month ahead is the minimum, not the ideal.', { label: 'Help me book', href: '#enquire' })}>
-            <p className="kicker">If you want the stripes, sleep inside the forest</p>
+            <p className="kicker">Want to see a tiger? Stay inside the forest</p>
             <h2 className="mt-1 text-[28px] font-semibold tracking-headline sm:text-[32px]">Where should I stay in Corbett to see a tiger?</h2>
             <div className="mt-4 space-y-4 text-[17px] leading-relaxed">
-              <p>Let’s be honest about the classic Corbett day trip. You queue at a gate before sunrise, bounce around for three hours in a gypsy alongside a convoy of other gypsies, and head back to your resort for breakfast. It’s a good morning. It is rarely a tiger morning.</p>
-              <p>The travellers who come home with the photo almost always did one thing differently: they <b>stayed inside the reserve</b>, in one of the forest rest houses deep in the zones. When you wake up in the jungle, you’re already there at first light — and last light — when the forest actually moves. No commute, no gate queue, no convoy.</p>
-              <p>The catch is that everyone knows this. Those rooms are few, and the good dates vanish the day booking opens. <b>Book on the official Corbett Tiger Reserve website at least a month ahead</b> — more if you’re eyeing a long weekend or the Diwali–Christmas stretch. Day-safari permits disappear on weekends too.</p>
+              <p>Most people do a day safari. You wait at the gate before sunrise, ride for about three hours in an open jeep (gypsy) along with many other jeeps, and go back to your hotel for breakfast. It’s a nice morning, but you usually don’t see a tiger.</p>
+              <p>People who do see a tiger usually <b>stay inside the reserve</b>, at a forest rest house. You wake up inside the jungle, so you are already there early in the morning and in the evening — the time when animals come out. No driving to the gate, no waiting in line.</p>
+              <p>The problem: there are very few of these rooms, and good dates get booked on the first day. <b>Book on the official Corbett Tiger Reserve website at least one month before</b> — even earlier for long weekends and the Diwali-to-Christmas season. Day safari permits also sell out on weekends.</p>
             </div>
-            <p className="mt-6 text-[15px] font-semibold">A few things we’d tell you over chai:</p>
+            <p className="mt-6 text-[15px] font-semibold">A few simple tips:</p>
             <ul className="mt-5 space-y-2.5 text-[15px]">
               {[
-                'Only book on the official site. Lookalike websites and roadside agents add fat markups — and a permit bought through the wrong channel can simply be cancelled.',
-                'Carry the exact ID you booked with. The gate staff check, and “it’s on my other phone” won’t get you in.',
-                'Pick the dawn slot every time. The air is cool, the light is golden, and the animals haven’t gone into hiding from the heat yet.',
-                'First time? Bijrani is the friendliest introduction. Coming back for more? Dhikala is the one to sleep in — it’s the wildest corner of the park.',
+                'Book only on the official website. Fake look-alike websites and agents charge much more, and a permit bought from them can be cancelled.',
+                'Carry the same ID card you used for booking. They check it at the gate.',
+                'Choose the early morning safari. It’s cooler, and animals are more active before the day gets hot.',
+                'First time? Start with Bijrani. Want more? Stay a night in Dhikala — it’s the wildest part of the park.',
               ].map((t) => <li key={t} className="flex gap-2"><span className="text-blue">●</span>{t}</li>)}
             </ul>
             <div className="mt-5 flex flex-wrap gap-3">
@@ -179,19 +179,19 @@ export default async function NotePage({ params }: P) {
               <a href="#enquire" className="link-arrow self-center">Or let us book it for you</a>
             </div>
             <div className="mt-6 grid grid-cols-2 gap-4">
-              <Photo p={P('safari-gypsy', 'Open safari gypsy parked by the forest at Corbett', 'The open gypsies line up before sunrise. Grab a jacket — October mornings bite.')} />
-              <Photo p={P('forest-road-morning', 'Early-morning sunlight on the forest road through Corbett', 'Seven in the morning on the forest road. This light is the whole reason you set the alarm.')} />
+              <Photo p={P('safari-gypsy', 'Open safari gypsy parked by the forest at Corbett', 'Safari jeeps wait near the gate before sunrise. Carry a jacket — October mornings are cold.')} />
+              <Photo p={P('forest-road-morning', 'Early-morning sunlight on the forest road through Corbett', 'The forest road at 7 am. Early mornings are the best time to be here.')} />
             </div>
           </section>
 
           {/* eat */}
           <section id="eat" className="scroll-mt-20" {...guide('Busy on weekends — book a table or go early.', { label: 'Plan the trip', href: '#enquire' })}>
-            <p className="kicker">Village Vatika — the dinner we’d drive back for</p>
+            <p className="kicker">Village Vatika — we’d go back just for dinner</p>
             <h2 className="mt-1 text-[28px] font-semibold tracking-headline sm:text-[32px]">Where should I eat in Ramnagar?</h2>
             <div className="mt-4 space-y-4 text-[17px] leading-relaxed">
-              <p>After a day of dust and early alarms, you want a long, slow dinner — not a resort buffet. Village Vatika sits right on the main road through Ramnagar (NH309, at Ladwachaur), so there’s no hunting for it down a dark lane. Walk in through the creeper-covered arch and the noise of the highway just drops away.</p>
-              <p>The food was <b>properly excellent</b> — the kind of meal where the table goes quiet for the first ten minutes. And here’s the bit that makes it a Corbett institution: you can <b>bring your own whisky</b> (or whatever you’re drinking), settle in among the plants under the warm lights, and let the plates keep coming.</p>
-              <p>Don’t mistake BYOB for rowdy, though. When we were there it was almost entirely families — whole tables of parents, kids and grandparents, everyone settled in for a long evening. It’s the rare place that works for a couples’ night out and a three-generation dinner at the same time.</p>
+              <p>After a long safari day, you want a relaxed dinner, not a hotel buffet. Village Vatika is right on the main road in Ramnagar (NH309, Ladwachaur), so it’s easy to find. Once you walk in through the green arch, it’s calm and quiet inside.</p>
+              <p>The food was <b>really good</b>. And the best part: you can <b>bring your own whisky</b> or drinks, sit among the plants under soft lights, and order food as you go.</p>
+              <p>But it’s not a noisy party place. When we were there, it was mostly families — parents, kids and grandparents enjoying a long dinner. It works well for couples and for the whole family.</p>
             </div>
             <div className="mt-5 grid gap-4 sm:grid-cols-3">
               {[
@@ -201,8 +201,8 @@ export default async function NotePage({ params }: P) {
               ].map(([h, t]) => <div key={h} className="card p-5"><p className="font-semibold">{h}</p><p className="mt-1 text-[15px] text-mute">{t}</p></div>)}
             </div>
             <div className="mt-6 grid grid-cols-2 gap-4">
-              <Photo p={P('village-vatika-entrance', 'Entrance arch of Village Vatika restaurant covered in creepers', 'Through the arch and the highway disappears.')} />
-              <Photo p={P('village-vatika-night', 'Night seating at Village Vatika among potted plants and warm lights', 'After dark, among the plants and the lamps. Ask for a table out here.')} />
+              <Photo p={P('village-vatika-entrance', 'Entrance arch of Village Vatika restaurant covered in creepers', 'The entrance, right on the main road.')} />
+              <Photo p={P('village-vatika-night', 'Night seating at Village Vatika among potted plants and warm lights', 'Seating at night, among the plants. Ask for a table here.')} />
             </div>
             <p className="mt-4 text-sm text-faint">Their listing says they’re open daily, roughly 10am to 10:30pm. Weekends fill up — go early or call ahead. And if you’re bringing a bottle, sort a driver first.</p>
             <div className="mt-4 flex flex-wrap gap-3">
@@ -215,13 +215,13 @@ export default async function NotePage({ params }: P) {
             <p className="kicker">The road in</p>
             <h2 className="mt-1 text-[28px] font-semibold tracking-headline sm:text-[32px]">How do I get to Jim Corbett from Delhi?</h2>
             <div className="mt-4 space-y-4 text-[17px] leading-relaxed">
-              <p>Ramnagar is your base — almost every gate is a short drive from town, and it’s where the hotels, the gypsies and the dinner tables are. From Delhi it’s one long, straightforward road east via Moradabad; leave before the city wakes up and you’ll miss the worst of the traffic.</p>
-              <p>You’ll know you’ve arrived when the Kosi river opens up beside you at the Ramnagar barrage. A few minutes later the plains give way to tall, straight sal trees, the air cools a couple of degrees, and the phone signal starts to flicker. That’s Corbett saying hello.</p>
+              <p>Stay in Ramnagar. Most safari gates are a short drive from here, and it has the hotels, safari jeeps and restaurants. From Delhi, it’s one straight road via Moradabad. Leave early in the morning to avoid traffic.</p>
+              <p>When you see the Kosi river at the Ramnagar barrage, you’re almost there. Soon you’ll see tall sal trees, the air gets a little cooler, and the phone signal gets weak. Welcome to Corbett.</p>
             </div>
             <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3">
-              <Photo p={P('highway-to-ramnagar', 'Highway sign towards Moradabad and Bareilly on the drive to Ramnagar', 'Early on the highway. Moradabad first, then the hills.')} />
-              <Photo p={P('kosi-barrage', 'Kosi river barrage at Ramnagar', 'The Kosi at Ramnagar — the unofficial welcome sign.')} />
-              <Photo p={P('sal-forest', 'Sal forest at Jim Corbett', 'Sal forest closing in. You’re here.')} className="col-span-2 sm:col-span-1" />
+              <Photo p={P('highway-to-ramnagar', 'Highway sign towards Moradabad and Bareilly on the drive to Ramnagar', 'On the highway towards Moradabad.')} />
+              <Photo p={P('kosi-barrage', 'Kosi river barrage at Ramnagar', 'The Kosi river at Ramnagar.')} />
+              <Photo p={P('sal-forest', 'Sal forest at Jim Corbett', 'Sal forest — you’ve reached Corbett.')} className="col-span-2 sm:col-span-1" />
             </div>
           </section>
 
@@ -263,11 +263,11 @@ export default async function NotePage({ params }: P) {
 
         <aside className="space-y-5 lg:sticky lg:top-16 lg:self-start">
           <div className="card p-6">
-            <p className="text-lg font-semibold">If you read nothing else</p>
+            <p className="text-lg font-semibold">In short</p>
             <ul className="mt-3 space-y-2 text-[15px] text-mute">
               <li>🗓️ 3 zones all year · Bijrani from 15 Oct · 4 more from 15 Nov</li>
-              <li>🐅 Serious about tigers? Sleep inside the forest</li>
-              <li>📅 Book a month or more ahead — official site only</li>
+              <li>🐅 Want to see a tiger? Stay inside the forest</li>
+              <li>📅 Book 1 month before — official website only</li>
               <li>🍽️ Dinner at Village Vatika — bring your own bottle</li>
             </ul>
             <a href="#enquire" className="btn mt-5 w-full justify-center">Plan my Corbett trip</a>

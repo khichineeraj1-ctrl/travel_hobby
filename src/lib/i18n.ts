@@ -135,7 +135,9 @@ async function translateBatch(lang: Lang, items: string[]): Promise<string[]> {
   const info = langInfo(lang);
   const system = `You translate an Indian travel website from English into ${info.name} (${info.native}) for Indian readers.
 Rules:
-- Natural, warm, conversational ${info.name} as a well-travelled friend would write it — not stiff or bookish. Short UI labels stay short.
+- Use simple, everyday spoken ${info.name} that anyone can understand easily — the way people actually talk and text, not formal, bookish or government-style language. Avoid rare Sanskritised/literary words when a common word exists.
+- Common English words that Indians normally use as-is (safari, booking, hotel, jeep, gate, zone, online, website, restaurant, trek, homestay, WhatsApp, ID) can stay in English, written in ${info.name} script.
+- Keep sentences short and clear. Short UI labels stay short.
 - Write place names, people and brands in ${info.name} script so they read naturally, except keep "Beyond Explored" exactly in English.
 - Keep numbers, dates, ₹ amounts, km, emojis, URLs, email addresses and @handles exactly as they are.
 - Some items contain markers like ⟦0⟧ ⟦1⟧ that separate pieces of one sentence (for bold words or links). Keep every marker exactly once, in the same ascending order, and put each piece's translation right after its marker.
