@@ -41,7 +41,7 @@ export default async function Explore({ searchParams }: { searchParams: Promise<
     sort: sp.sort === 'rating' || sp.sort === 'az' ? sp.sort : 'best',
   };
   const n = Math.min(600, Math.max(PAGE, Number(sp.n) || PAGE));
-  const { items, parsed } = search(f);
+  const { items, parsed, fallback } = search(f);
   const s = stats();
   const now = currentMonth();
   const shown = items.slice(0, n);
@@ -119,6 +119,10 @@ export default async function Explore({ searchParams }: { searchParams: Promise<
         {active && <Link href="/explore" className="text-sm text-blue-link hover:underline">Clear all</Link>}
       </div>
 
+      {fallback && (
+        <p className="card mt-4 p-4 text-[15px]">We don’t have a page for <b className="capitalize">{fallback.town}</b> yet — here’s the offbeat side of <b>{fallback.stateName}</b> around it. <Link href={`/book/custom`} className="text-blue-link hover:underline">Or ask us about {fallback.town} ›</Link></p>
+      )}
+
       {items.length === 0 ? (
         <div className="card mt-6 p-8">
           <p className="text-xl font-semibold">Nothing matches that exact combo.</p>
@@ -127,6 +131,12 @@ export default async function Explore({ searchParams }: { searchParams: Promise<
             {f.month && <Link href={link({ month: undefined })} className="btn-secondary btn-sm">Any month</Link>}
             {(f.type || parsed?.type) && <Link href={link({ type: undefined, q: undefined })} className="btn-secondary btn-sm">Any type</Link>}
             <Link href="/book/custom" className="btn btn-sm">Ask a human</Link>
+          </div>
+          <p className="mt-6 text-sm text-mute">Or try one of these:</p>
+          <div className="mt-2 flex flex-wrap gap-2">
+            {['waterfalls in Meghalaya', 'treks in Himachal', 'forts in Rajasthan', 'Jim Corbett', `good in ${monthShort(now)}`, 'beaches in Karnataka'].map((x) => (
+              <Link key={x} href={`/explore?q=${encodeURIComponent(x)}`} className="chip !text-sm">{x}</Link>
+            ))}
           </div>
         </div>
       ) : (

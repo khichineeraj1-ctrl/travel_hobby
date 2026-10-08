@@ -9,11 +9,12 @@ export const dynamic = 'force-dynamic';
 export function GET(req: Request) {
   const q = (new URL(req.url).searchParams.get('q') ?? '').slice(0, 120);
   if (q.trim().length < 2) return NextResponse.json({ items: [], understood: [] });
-  const { items, parsed } = search({ q });
+  const { items, parsed, fallback } = search({ q });
   const understood = [
     ...(parsed?.states ?? []).map((s) => INDIA_STATES.find((x) => x.slug === s)?.name ?? s),
     ...(parsed?.month ? [monthLabel(parsed.month)] : []),
     ...(parsed?.type ? [parsed.type] : []),
+    ...(fallback ? [`near ${fallback.town[0].toUpperCase()}${fallback.town.slice(1)} (${fallback.stateName})`] : []),
   ];
   return NextResponse.json({
     total: items.length,

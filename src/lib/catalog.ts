@@ -91,7 +91,7 @@ const TYPE_WORDS: [RegExp, ItemType][] = [
   [/\b(forts?|palaces?|ruins?|heritage|histor\w*|museums?|step ?wells?|caves? temples?)\b/i, 'heritage'],
   [/\b(temples?|monaster\w*|gompa|church(es)?|mosques?|spiritual)\b/i, 'sacred'],
 ];
-const STOP = /\b(in|at|near|for|the|a|an|to|of|and|with|best|top|places?|place|spots?|visit|go|trip|travel|india|indian|hidden|gems?|offbeat|somewhere|some|me|show|find|want|month|season|during|this|next)\b/gi;
+const STOP = /\b(in|at|near|for|the|a|an|to|of|and|with|best|top|places?|place|spots?|visit|go|trip|travel|india|indian|hidden|gems?|offbeat|somewhere|some|me|show|find|want|month|season|during|this|next|good|great|nice|time|around|nearby|things|do)\b/gi;
 
 export type Parsed = { text: string; states: string[]; month?: Month; type?: ItemType; snow?: boolean };
 const SNOW_STATES = ['himachal-pradesh', 'uttarakhand', 'jammu-kashmir', 'ladakh', 'sikkim', 'arunachal-pradesh'];
@@ -122,13 +122,66 @@ export function parseQuery(raw: string): Parsed {
   return out;
 }
 
+
+/* ---------------- fuzzy matching (typos) ---------------- */
+
+const tokCache = new Map<string, string[]>();
+function tokensOf(hay: string) {
+  let t = tokCache.get(hay);
+  if (!t) { t = [...new Set(hay.split(/[^a-z0-9]+/).filter((x) => x.length > 2))]; if (tokCache.size > 5000) tokCache.clear(); tokCache.set(hay, t); }
+  return t;
+}
+/** Damerau-ish edit distance with an early exit above `max`. */
+function within(a: string, b: string, max: number) {
+  if (Math.abs(a.length - b.length) > max) return false;
+  let prev = Array.from({ length: b.length + 1 }, (_, i) => i);
+  let pp = prev;
+  for (let i = 1; i <= a.length; i++) {
+    const cur = [i];
+    let rowMin = i;
+    for (let j = 1; j <= b.length; j++) {
+      cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+      // swapped neighbours ("chpota" → chopta) count as one edit
+      if (i > 1 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1]) cur[j] = Math.min(cur[j], pp[j - 2] + 1);
+      rowMin = Math.min(rowMin, cur[j]);
+    }
+    if (rowMin > max) return false;
+    pp = prev;
+    prev = cur;
+  }
+  return prev[b.length] <= max;
+}
+/** "corbet" → corbett, "meghalya" → meghalaya, "rishikes" → rishikesh. Also prefix typing: "dhik" → dhikala. */
+function fuzzyHit(w: string, toks: string[]) {
+  if (w.length < 4) return false;
+  const max = w.length >= 7 ? 2 : 1;
+  return toks.some((t) => (t.startsWith(w)) || (t[0] === w[0] && within(w, t, max)));
+}
+
+/** Popular towns we may not list yet → their state, so a search never dead-ends. */
+const TOWNS: Record<string, string> = {
+  ramnagar: 'uttarakhand', nainital: 'uttarakhand', rishikesh: 'uttarakhand', mussoorie: 'uttarakhand', haridwar: 'uttarakhand', dehradun: 'uttarakhand', auli: 'uttarakhand', almora: 'uttarakhand', kedarnath: 'uttarakhand', badrinath: 'uttarakhand', lansdowne: 'uttarakhand',
+  manali: 'himachal-pradesh', shimla: 'himachal-pradesh', kasol: 'himachal-pradesh', dharamshala: 'himachal-pradesh', mcleodganj: 'himachal-pradesh', dalhousie: 'himachal-pradesh', kasauli: 'himachal-pradesh', bir: 'himachal-pradesh',
+  srinagar: 'jammu-kashmir', gulmarg: 'jammu-kashmir', pahalgam: 'jammu-kashmir', sonamarg: 'jammu-kashmir', nubra: 'ladakh', pangong: 'ladakh',
+  jaipur: 'rajasthan', udaipur: 'rajasthan', jaisalmer: 'rajasthan', jodhpur: 'rajasthan', pushkar: 'rajasthan', bikaner: 'rajasthan', ranthambore: 'rajasthan', 'mount abu': 'rajasthan',
+  agra: 'uttar-pradesh', varanasi: 'uttar-pradesh', lucknow: 'uttar-pradesh',
+  darjeeling: 'west-bengal', kalimpong: 'west-bengal', sundarbans: 'west-bengal', gangtok: 'sikkim', pelling: 'sikkim', shillong: 'meghalaya', cherrapunji: 'meghalaya', sohra: 'meghalaya', tawang: 'arunachal-pradesh', ziro: 'arunachal-pradesh', kaziranga: 'assam', majuli: 'assam',
+  goa: 'goa', panaji: 'goa', gokarna: 'karnataka', hampi: 'karnataka', chikmagalur: 'karnataka', mysore: 'karnataka', mysuru: 'karnataka', kabini: 'karnataka',
+  munnar: 'kerala', alleppey: 'kerala', alappuzha: 'kerala', wayanad: 'kerala', varkala: 'kerala', kochi: 'kerala', thekkady: 'kerala',
+  ooty: 'tamil-nadu', kodaikanal: 'tamil-nadu', pondicherry: 'puducherry', rameswaram: 'tamil-nadu', madurai: 'tamil-nadu',
+  lonavala: 'maharashtra', mahabaleshwar: 'maharashtra', alibaug: 'maharashtra', 'tadoba': 'maharashtra', khajuraho: 'madhya-pradesh', pachmarhi: 'madhya-pradesh', kanha: 'madhya-pradesh', bandhavgarh: 'madhya-pradesh', orchha: 'madhya-pradesh',
+  kutch: 'gujarat', 'gir': 'gujarat', puri: 'odisha', konark: 'odisha', 'havelock': 'andaman-nicobar', 'araku': 'andhra-pradesh', 'gandikota': 'andhra-pradesh',
+};
+
 /* ---------------- filtering & ranking ---------------- */
 
 export type Filters = { q?: string; state?: string; type?: ItemType; month?: Month; show?: 'all' | 'guides' | 'gems'; sort?: 'best' | 'rating' | 'az' };
 
 const norm = (s: string) => s.toLowerCase().normalize('NFKD').replace(/[̀-ͯ]/g, '');
 
-export function search(f: Filters): { items: Item[]; parsed?: Parsed } {
+export type Fallback = { town: string; stateSlug: string; stateName: string };
+
+export function search(f: Filters): { items: Item[]; parsed?: Parsed; fallback?: Fallback } {
   const parsed = f.q ? parseQuery(f.q) : undefined;
   const states = f.state ? [f.state] : parsed?.states ?? [];
   const type = f.type ?? parsed?.type;
@@ -138,29 +191,55 @@ export function search(f: Filters): { items: Item[]; parsed?: Parsed } {
 
   const snowSlugs = parsed?.snow ? new Set(getAllDestinations().filter((d) => d.vibes.includes('cold-weather-arc')).map((d) => `guide:${d.slug}`)) : null;
   let items = catalog().filter((it) =>
-    (!snowSlugs || (it.kind === 'guide' ? snowSlugs.has(it.id) : SNOW_STATES.includes(it.stateSlug) && it.types.some((t) => t === 'views' || t === 'wild'))) &&
+    (!snowSlugs || (it.kind === 'guide' ? snowSlugs.has(it.id) : it.kind === 'gem' && SNOW_STATES.includes(it.stateSlug) && it.types.some((t) => t === 'views' || t === 'wild'))) &&
     (!states.length || states.includes(it.stateSlug)) &&
     (!type || it.types.includes(type)) &&
     (!month || it.kind === 'note' || it.months.includes(month)) &&
     (f.show === 'guides' ? it.kind !== 'gem' : f.show === 'gems' ? it.kind === 'gem' : true));
 
   const guideVibes = vibeHits.length ? new Map(getAllDestinations().map((d) => [`guide:${d.slug}`, d.vibes])) : null;
-  const scoreCache = new Map<string, number>();
-  const textScore = (it: Item) => {
-    if (!words.length) return 1;
+  const scoreCache = new Map<string, { s: number; n: number; exact: boolean }>();
+  const score = (it: Item) => {
+    if (!words.length) return { s: 1, n: 0, exact: true };
     const hit = scoreCache.get(it.id);
-    if (hit !== undefined) return hit;
+    if (hit) return hit;
     const hay = norm(`${it.name} ${it.area ?? ''} ${it.stateName} ${it.label} ${it.hook ?? ''}`);
     const name = norm(it.name);
-    let s = 0;
-    for (const w of words) s += name.includes(w) ? 3 : hay.includes(w) ? 1 : 0;
-    if (it.kind === 'guide' && guideVibes?.get(it.id)?.some((v) => vibeHits.includes(v))) s += 2;
-    scoreCache.set(it.id, s);
-    return s;
+    const toks = tokensOf(hay);
+    let s = 0, n = 0, exact = true;
+    for (const w of words) {
+      const v = name.includes(w) ? 3 : hay.includes(w) ? 1 : fuzzyHit(w, toks) ? 0.8 : 0;
+      if (v) { s += v; n++; if (v < 1) exact = false; }
+    }
+    if (it.kind === 'guide' && guideVibes?.get(it.id)?.some((v) => vibeHits.includes(v))) { s += 2; n = Math.max(n, 1); }
+    const r = { s, n, exact };
+    scoreCache.set(it.id, r);
+    return r;
   };
-  if (words.length) items = items.filter((it) => textScore(it) > 0);
+  const textScore = (it: Item) => score(it).s;
+  let fallback: Fallback | undefined;
+  if (words.length) {
+    const base = items;
+    items = base.filter((it) => score(it).s > 0);
+    // precision: when some results match more of the words, keep only those ("village vatika" ≠ every village)
+    const best = Math.max(0, ...items.map((it) => score(it).n));
+    if (best > 1) items = items.filter((it) => score(it).n === best);
+    // exact hits beat typo-guesses: only fall back to fuzzy when nothing matches exactly
+    if (items.some((it) => score(it).exact)) items = items.filter((it) => score(it).exact);
+    // nothing at all? a well-known town we don't list yet → show its state instead of a dead end
+    if (!items.length) {
+      const town = words.map((w) => [w, TOWNS[w]] as const).find(([, st]) => st);
+      if (town && !states.length) {
+        const st = town[1]!;
+        fallback = { town: town[0], stateSlug: st, stateName: INDIA_STATES.find((x) => x.slug === st)?.name ?? st };
+        items = catalog().filter((it) => it.stateSlug === st && (!type || it.types.includes(type)) && (!month || it.kind === 'note' || it.months.includes(month)));
+        scoreCache.clear();
+        words.length = 0;
+      }
+    }
+  }
 
-  const quality = (it: Item) => (it.kind === 'note' ? 5 : it.kind === 'guide' ? 4.9 : ((it.reviews ?? 0) * (it.rating ?? 0) + 200 * 4.1) / ((it.reviews ?? 0) + 200));
+  const quality = (it: Item) => (it.kind === 'note' ? (words.length ? 5 : 4.3) : it.kind === 'guide' ? 4.9 : ((it.reviews ?? 0) * (it.rating ?? 0) + 200 * 4.1) / ((it.reviews ?? 0) + 200));
   const sort = f.sort ?? 'best';
   items = [...items].sort((a, b) =>
     sort === 'az' ? a.name.localeCompare(b.name)
@@ -172,7 +251,7 @@ export function search(f: Filters): { items: Item[]; parsed?: Parsed } {
     for (const it of items) ((seen[it.stateSlug] = (seen[it.stateSlug] ?? 0) + 1) <= 3 ? first : later).push(it);
     items = [...first, ...later];
   }
-  return { items, parsed };
+  return { items, parsed, fallback };
 }
 
 export function stats() {
