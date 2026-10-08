@@ -35,3 +35,9 @@ A senior travel blogger: confident, sensory, opinionated, and practical. Write "
 
 ## Still to do (outside the code)
 - Set up the Search profile in Search Console / Google for publishers and creators, to shape how we appear in search and to highlight content.
+
+## Guest writers (contributor studio)
+- Writers join with an **invite link** (Admin → Contributors) or by **applying** at /contribute and being approved. Sign-in is with Google.
+- They write in **/studio**. The editor enforces this guide as a live checklist: question headings, quick answers, FAQ, own photos with alt text, 400+ words, a bio on their author profile, and the photo promise.
+- Photos are auto-rotated, resized and **stripped of EXIF/GPS** on upload. Covers are cropped to 1600×900 (16:9).
+- Nothing goes live without review: Admin → **Field notes** → Preview / Edit / Send back with comments / Publish. Use "Mark facts checked today" when you re-verify a live note.

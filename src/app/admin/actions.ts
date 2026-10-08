@@ -736,11 +736,87 @@ export async function deleteAuthor(fd: FormData) {
   const db = readDb();
   if ((db.authors ?? []).length <= 1) back('/admin/authors', 'Keep at least one author — every article needs a byline.', 'err');
   const { NOTES } = await import('@/data/notes');
-  const used = NOTES.filter((n) => n.authorSlug === s);
+  const used = [...NOTES.filter((n) => n.authorSlug === s), ...(db.notes ?? []).filter((n) => n.authorSlug === s)];
+  if ((db.accounts ?? []).some((x) => x.authorSlug === s)) back('/admin/authors', 'This byline belongs to a contributor account — suspend the account instead.', 'err');
   if (used.length) back('/admin/authors', `This author is on ${used.length} article(s). Reassign them first.`, 'err');
   const a = (db.authors ?? []).find((x) => x.slug === s);
   await removeUpload(a?.photo);
   updateDb((db) => { db.authors = (db.authors ?? []).filter((x) => x.slug !== s); });
   refresh();
   back('/admin/authors', 'Author removed.');
+}
+
+/* ---------- contributors & field-note review ---------- */
+
+export async function createInvite(fd: FormData) {
+  await requireAdmin();
+  const token = crypto.randomBytes(12).toString('base64url');
+  const days = clamp(num(fd, 'days', 14), 1, 60);
+  updateDb((db) => {
+    db.invites ??= [];
+    db.invites.unshift({ token, note: str(fd, 'note').slice(0, 120) || undefined, createdAt: new Date().toISOString(), expiresAt: new Date(Date.now() + days * 864e5).toISOString() });
+  });
+  back('/admin/contributors', `Invite created — copy the link below and send it.`);
+}
+
+export async function revokeInvite(fd: FormData) {
+  await requireAdmin();
+  const t = str(fd, 'token');
+  updateDb((db) => { db.invites = (db.invites ?? []).filter((i) => i.token !== t); });
+  back('/admin/contributors', 'Invite revoked.');
+}
+
+export async function setApplication(fd: FormData) {
+  await requireAdmin();
+  const id = str(fd, 'id');
+  const status = str(fd, 'status') === 'approved' ? 'approved' : 'rejected';
+  let email = '';
+  updateDb((db) => { const a = (db.applications ?? []).find((x) => x.id === id); if (a) { a.status = status; email = a.email; } });
+  back('/admin/contributors', status === 'approved' ? `Approved. Tell ${email} to sign in with Google at /contribute using that email.` : 'Application declined.');
+}
+
+export async function setAccountStatus(fd: FormData) {
+  await requireAdmin();
+  const id = str(fd, 'id');
+  const status = str(fd, 'status') === 'suspended' ? 'suspended' : 'active';
+  updateDb((db) => { const a = (db.accounts ?? []).find((x) => x.id === id); if (a) a.status = status; });
+  back('/admin/contributors', status === 'suspended' ? 'Writer paused — they can’t sign in.' : 'Writer re-activated.');
+}
+
+export async function reviewNote(fd: FormData) {
+  await requireAdmin();
+  const id = str(fd, 'id');
+  const action = str(fd, 'do');
+  const db = readDb();
+  const note = (db.notes ?? []).find((n) => n.id === id);
+  if (!note) back('/admin/notes', 'Note not found.', 'err');
+  if (action === 'publish') {
+    const { NOTES } = await import('@/data/notes');
+    const taken = new Set([...NOTES.map((n) => n.slug), ...(db.notes ?? []).filter((n) => n.id !== id).map((n) => n.slug)]);
+    const base = slug(`${note!.place} ${note!.title}`);
+    let s = note!.slug || (base.length > 64 ? base.slice(0, base.lastIndexOf('-', 64)) : base);
+    if (!s) back('/admin/notes', 'Give the note a title first.', 'err');
+    while (!note!.slug && taken.has(s)) s = `${s}-${crypto.randomBytes(2).toString('hex')}`;
+    const now = new Date().toISOString();
+    updateDb((d) => { const n = d.notes!.find((x) => x.id === id)!; n.slug = s; n.status = 'published'; n.publishedAt ??= now; n.checked = now; n.reviewNote = undefined; });
+    refresh();
+    back('/admin/notes', `Published at /notes/${s}.`);
+  }
+  if (action === 'changes') {
+    const comment = str(fd, 'comment');
+    if (!comment) back('/admin/notes', 'Write a note to the writer so they know what to change.', 'err');
+    updateDb((d) => { const n = d.notes!.find((x) => x.id === id)!; n.status = 'changes'; n.reviewNote = comment.slice(0, 2000); });
+    back('/admin/notes', 'Sent back to the writer with your notes.');
+  }
+  if (action === 'unpublish') {
+    updateDb((d) => { const n = d.notes!.find((x) => x.id === id)!; n.status = 'draft'; });
+    refresh();
+    back('/admin/notes', 'Unpublished — it’s a draft again (the URL is kept for when you republish).');
+  }
+  if (action === 'recheck') {
+    updateDb((d) => { const n = d.notes!.find((x) => x.id === id)!; n.checked = new Date().toISOString(); });
+    refresh();
+    back('/admin/notes', '“Facts checked” date updated to today.');
+  }
+  back('/admin/notes', 'Nothing changed.', 'err');
 }

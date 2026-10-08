@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import { PageHead } from '@/components/Listing';
-import { NOTES } from '@/data/notes';
+import { allNotes } from '@/lib/notes';
+
+export const dynamic = 'force-dynamic';
 import { meta } from '@/lib/seo';
 
 export const metadata = meta({
@@ -14,10 +16,10 @@ export default function Notes() {
     <div className="wrap">
       <PageHead crumbs={[{ name: 'Field notes', path: '/notes' }]} kicker="From our own trips" h1="Field notes." intro="What we learned on the ground — the stuff that isn’t on the brochure. Our photos, our mistakes, so you skip them." />
       <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {NOTES.map((n) => (
+        {allNotes().map((n) => (
           <Link key={n.slug} href={`/notes/${n.slug}`} className="card card-hover group flex flex-col overflow-hidden">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={n.hero.src} alt={n.hero.alt} className="aspect-[16/10] w-full object-cover" loading="lazy" />
+            <img src={n.image.src} alt={n.image.alt} className="aspect-[16/10] w-full object-cover" loading="lazy" />
             <div className="flex flex-1 flex-col p-6">
               <p className="text-xs font-semibold uppercase tracking-wide text-faint">{n.stateName} · {n.visited}</p>
               <h2 className="mt-1 text-xl font-semibold leading-snug tracking-headline">{n.title}</h2>

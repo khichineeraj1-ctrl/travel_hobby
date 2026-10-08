@@ -6,8 +6,8 @@ import { AuthorAvatar } from '@/components/AuthorAvatar';
 import { NoteCard } from '@/components/NoteBanner';
 import { JsonLd } from '@/lib/jsonld';
 import { abs, meta } from '@/lib/seo';
-import { authorBySlug, authorHref, authorLd, authorOrDefault } from '@/lib/authors';
-import { NOTES } from '@/data/notes';
+import { authorBySlug, authorHref, authorLd } from '@/lib/authors';
+import { notesByAuthor } from '@/lib/notes';
 
 type P = { params: Promise<{ slug: string }> };
 
@@ -27,7 +27,7 @@ export async function generateMetadata({ params }: P): Promise<Metadata> {
 export default async function AuthorPage({ params }: P) {
   const a = authorBySlug((await params).slug);
   if (!a) notFound();
-  const notes = NOTES.filter((n) => authorOrDefault(n.authorSlug).slug === a.slug);
+  const notes = notesByAuthor(a.slug);
   const paras = a.bio.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean);
   const standards = (a.standards ?? '').split('\n').map((s) => s.trim()).filter(Boolean);
 

@@ -6,7 +6,7 @@ import { getAllDestinations, getVibes } from './repo';
 import { INDIA_STATES, allGems } from './gems';
 import { family } from './places';
 import { gemHref } from './gemPages';
-import { NOTES } from '@/data/notes';
+import { allNotes } from './notes';
 import { STATE_SEASON, WATERFALL_MONTHS } from '@/data/state-seasons';
 import { MONTHS, currentMonth } from './months';
 import type { Month } from './types';
@@ -66,7 +66,7 @@ export function catalog(): Item[] {
       months: isFall ? WATERFALL_MONTHS : (STATE_SEASON[g.stateSlug] ?? []), monthsFrom: isFall ? 'waterfall' : 'state', gem: g.gem,
     };
   });
-  const notes: Item[] = NOTES.map((n) => ({
+  const notes: Item[] = allNotes().map((n) => ({
     id: `note:${n.slug}`, kind: 'note', name: n.shortName, stateSlug: n.stateSlug, stateName: n.stateName,
     types: ['wild'], label: 'Field notes', hook: `${n.keywords} ${n.intro}`, href: `/notes/${n.slug}`, external: false,
     months: [], monthsFrom: 'note',

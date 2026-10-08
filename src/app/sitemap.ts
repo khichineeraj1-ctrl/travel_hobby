@@ -4,7 +4,7 @@ import { MONTHS } from '@/lib/months';
 import { abs } from '@/lib/seo';
 import { readDb } from '@/lib/db';
 import { INDIA_STATES, gemsFor } from '@/lib/gems';
-import { NOTES } from '@/data/notes';
+import { allNotes } from '@/lib/notes';
 import { getAuthors } from '@/lib/authors';
 
 export const dynamic = 'force-dynamic';
@@ -23,8 +23,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...INDIA_STATES.filter((s) => gemsFor(s.slug).length).map((s) => u(`/hidden-gems/${s.slug}`, 0.8)),
     u('/notes', 0.7),
     u('/authors', 0.4, 'monthly'),
+    u('/contribute', 0.4, 'monthly'),
     ...getAuthors().map((a) => u(`/authors/${a.slug}`, 0.5, 'monthly')),
-    ...NOTES.map((n) => u(`/notes/${n.slug}`, 0.85)),
+    ...allNotes().map((n) => u(`/notes/${n.slug}`, 0.85)),
     u('/trips', 0.9, 'daily'),
     u('/events', 0.9, 'daily'),
     u('/road-trips', 0.9),

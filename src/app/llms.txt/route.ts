@@ -1,4 +1,4 @@
-import { NOTES } from '@/data/notes';
+import { allNotes } from '@/lib/notes';
 import { getAllDestinations } from '@/lib/repo';
 import { abs, SITE_NAME } from '@/lib/seo';
 
@@ -12,7 +12,7 @@ export function GET() {
     '> Offbeat and less-crowded places in India, matched to travel time, season, budget and group. First-hand field notes, full destination guides, and top-rated hidden gems in every state.',
     '',
     '## Field notes (first-hand, with our own photos)',
-    ...NOTES.map((n) => `- [${n.shortName}](${abs(`/notes/${n.slug}`)}): ${n.description}`),
+    ...allNotes().map((n) => `- [${n.shortName}](${abs(`/notes/${n.slug}`)}): ${n.description}`),
     '',
     '## Key pages',
     `- [Explore & search](${abs('/explore')}): search every guide and hidden gem by state, month and type`,

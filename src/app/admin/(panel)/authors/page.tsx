@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { AdminHeader, Area, Field, Flash, Select, Text } from '@/components/admin/ui';
 import { AuthorAvatar } from '@/components/AuthorAvatar';
 import { getAuthors } from '@/lib/authors';
-import { NOTES } from '@/data/notes';
+import { notesByAuthor } from '@/lib/notes';
 import type { Author } from '@/lib/types';
 import { deleteAuthor, saveAuthor } from '../../actions';
 
@@ -47,7 +47,7 @@ export default async function Authors({ searchParams }: { searchParams: Promise<
       <Flash ok={ok} err={err} />
       <div className="space-y-6">
         {authors.map((a) => {
-          const count = NOTES.filter((n) => n.authorSlug === a.slug).length;
+          const count = notesByAuthor(a.slug).length;
           return (
             <section key={a.slug} className="card p-6">
               <div className="mb-5 flex items-center gap-4">

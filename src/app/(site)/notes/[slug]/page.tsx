@@ -12,19 +12,22 @@ import { AuthorAvatar } from '@/components/AuthorAvatar';
 import { guide, guideQuiet } from '@/lib/guide';
 import { asCard, gemIndex } from '@/lib/gemPages';
 import { km } from '@/lib/places';
-import { CORBETT_OFFICIAL, CORBETT_ZONES, NOTES, noteBySlug, type NotePhoto, type Zone } from '@/data/notes';
+import { CORBETT_OFFICIAL, CORBETT_ZONES, noteBySlug, type NotePhoto, type Zone } from '@/data/notes';
+import { studioNoteBySlug } from '@/lib/notes';
+import { StudioNote } from '@/components/StudioNote';
 
 type P = { params: Promise<{ slug: string }> };
 
 const fmtDate = (x: string) => new Date(x).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
 
-export function generateStaticParams() {
-  return NOTES.map((n) => ({ slug: n.slug }));
-}
-
 export async function generateMetadata({ params }: P): Promise<Metadata> {
-  const n = noteBySlug((await params).slug);
-  if (!n) return {};
+  const slug = (await params).slug;
+  const n = noteBySlug(slug);
+  if (!n) {
+    const d = studioNoteBySlug(slug);
+    if (!d) return {};
+    return meta({ title: d.title, description: d.description, path: `/notes/${d.slug}`, image: d.cover?.src, imageSize: d.cover ? { width: 1600, height: 900 } : undefined, article: { published: (d.publishedAt ?? d.updatedAt).slice(0, 10), modified: (d.checked ?? d.updatedAt).slice(0, 10), author: authorOrDefault(d.authorSlug).name } });
+  }
   return meta({ title: n.seoTitle, description: n.description, path: `/notes/${n.slug}`, image: n.cover.src, imageSize: { width: n.cover.width, height: n.cover.height }, article: { published: n.published, modified: n.checked, author: authorOrDefault(n.authorSlug).name } });
 }
 
@@ -45,8 +48,13 @@ const OPENS: Record<Zone['opens'], { label: string; cls: string }> = {
 };
 
 export default async function NotePage({ params }: P) {
-  const n = noteBySlug((await params).slug);
-  if (!n) notFound();
+  const slug = (await params).slug;
+  const n = noteBySlug(slug);
+  if (!n) {
+    const d = studioNoteBySlug(slug);
+    if (!d) notFound();
+    return <StudioNote d={d} />;
+  }
   const author = authorOrDefault(n.authorSlug);
 
   const near = gemIndex().list

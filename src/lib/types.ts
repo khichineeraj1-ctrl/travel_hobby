@@ -247,8 +247,80 @@ export interface Author {
   email?: string; // public contact
 }
 
+/* ---------- contributors (Google sign-in) ---------- */
+
+export interface Account {
+  id: string;
+  email: string; // from Google, lower-case
+  googleSub?: string;
+  name: string;
+  picture?: string;
+  authorSlug: string; // their public byline (Author)
+  status: 'active' | 'suspended';
+  createdAt: string;
+  lastLogin?: string;
+  via: 'invite' | 'application';
+}
+
+export interface Invite {
+  token: string;
+  note?: string; // who it's for
+  createdAt: string;
+  expiresAt: string;
+  usedBy?: string; // account id
+  usedAt?: string;
+}
+
+export interface Application {
+  id: string;
+  name: string;
+  email: string;
+  phone?: string;
+  places: string; // where they've travelled
+  sample?: string; // link to their writing / Instagram
+  pitch: string; // what they'd write about
+  createdAt: string;
+  status: 'new' | 'approved' | 'rejected';
+  note?: string; // admin note
+}
+
+export interface NotePhotoDoc { src: string; alt: string; caption?: string; wide?: boolean }
+export interface NoteSection { kicker?: string; heading: string; body: string; photos: NotePhotoDoc[] }
+
+/** A field note written in the contributor studio (stored in the DB). */
+export interface NoteDoc {
+  id: string;
+  slug: string; // set on first publish, then fixed
+  authorSlug: string;
+  accountId?: string; // who can edit it
+  status: 'draft' | 'pending' | 'changes' | 'published';
+  reviewNote?: string; // admin → writer
+  title: string;
+  description: string; // meta description / card text
+  place: string;
+  stateSlug: string;
+  visited: string; // "October 2026"
+  intro: string;
+  cover?: NotePhotoDoc;
+  sections: NoteSection[];
+  quick: { q: string; a: string }[];
+  faq: { q: string; a: string }[];
+  sources: { label: string; href: string }[];
+  keywords: string;
+  photoConsent?: boolean; // writer confirmed: own photos, no kids' faces/number plates
+  createdAt: string;
+  updatedAt: string;
+  submittedAt?: string;
+  publishedAt?: string;
+  checked?: string; // facts checked date (ISO)
+}
+
 export interface Db {
   authors?: Author[];
+  accounts?: Account[];
+  invites?: Invite[];
+  applications?: Application[];
+  notes?: NoteDoc[];
   settings: SiteSettings;
   vibes: Vibe[];
   cities: OriginCity[];

@@ -17,6 +17,8 @@ const NAV = [
   { href: '/admin/rates', label: 'Stay prices', icon: '₹' },
   { href: '/admin/vibes', label: 'Vibes', icon: '✦' },
   { href: '/admin/cities', label: 'Starting cities', icon: '◌' },
+  { href: '/admin/notes', label: 'Field notes', icon: '❡', badge: 'notes' },
+  { href: '/admin/contributors', label: 'Contributors', icon: '☺', badge: 'applications' },
   { href: '/admin/authors', label: 'Authors', icon: '✍' },
   { href: '/admin/settings', label: 'Site content', icon: '✎' },
 ];
@@ -28,6 +30,8 @@ export default async function Panel({ children }: { children: React.ReactNode })
     bookings: db.bookings.filter((b) => b.status === 'pending').length,
     leads: db.leads.filter((l) => l.status === 'new').length,
     events: db.events.filter((e) => e.status === 'suggested').length,
+    notes: (db.notes ?? []).filter((n) => n.status === 'pending').length,
+    applications: (db.applications ?? []).filter((a) => a.status === 'new').length,
   };
   return (
     <div className="lg:grid lg:min-h-screen lg:grid-cols-[240px_1fr]">
